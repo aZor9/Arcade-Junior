@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Confidentialité et RGPD – Arcade Junior</title>
+  <meta name="description" content="Politique de confidentialité d’Arcade Junior : aucune donnée collectée, aucun cookie, tout reste sur ton appareil.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="theme-color" content="#efeaff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#15122a" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">🕹️</span><span>Arcade Junior</span></a>
+    <a class="back-link" href="index.html">← Jouer</a>
+  </header>
+
+  <main class="prose">
+    <h1>Confidentialité et RGPD</h1>
+    <p class="updated">Dernière mise à jour : octobre 2026</p>
+
+    <h2>En bref</h2>
+    <p>Arcade Junior ne collecte aucune donnée personnelle. Pas de compte, pas de cookie, pas de publicité, pas d’outil de mesure d’audience, aucun service tiers. Tes parties et tes statistiques sont enregistrées uniquement dans ton navigateur et ne quittent jamais ton appareil.</p>
+
+    <h2>Ce qui est stocké sur ton appareil</h2>
+    <p>Le site utilise le <code>localStorage</code> de ton navigateur pour fonctionner, avec des clés qui commencent par <code>aj:</code> :</p>
+    <table>
+      <thead><tr><th>Clé</th><th>Contenu</th><th>Pourquoi</th></tr></thead>
+      <tbody>
+        <tr><td><code>aj:s:…</code></td><td>Une partie en cours (grille, coups, temps écoulé)</td><td>Pouvoir reprendre la partie plus tard</td></tr>
+        <tr><td><code>aj:profile</code></td><td>Pseudo, avatar, statistiques et records</td><td>Afficher ta page profil</td></tr>
+        <tr><td><code>aj:settings</code></td><td>Thème et vibrations</td><td>Mémoriser tes préférences</td></tr>
+      </tbody>
+    </table>
+    <p>Le pseudo est facultatif et tu le choisis librement : il n’est jamais transmis. Le site met aussi en cache ses propres fichiers (service worker) pour fonctionner hors connexion.</p>
+
+    <h2>Base légale et consentement</h2>
+    <p>Ces données sont indispensables au service que tu demandes (jouer et reprendre une partie) et ne servent à aucun suivi. Elles entrent dans les exceptions au consentement prévues pour le stockage strictement nécessaire (article 82 de la loi Informatique et Libertés, transposant la directive ePrivacy). C’est pourquoi il n’y a pas de bandeau de cookies.</p>
+
+    <h2>Hébergement</h2>
+    <p>Le site est hébergé par GitHub Pages (GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis). Comme tout hébergeur, GitHub peut enregistrer des données techniques de connexion (adresse IP, date, fichier demandé) dans ses journaux. Le site lui-même n’y a pas accès. Voir la <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">politique de confidentialité de GitHub</a>.</p>
+    <p>Le site ne charge ni police, ni script, ni image depuis un autre domaine.</p>
+
+    <h2>Tes droits</h2>
+    <p>Aucune donnée ne nous étant transmise, nous n’en détenons aucune te concernant. Tu gardes toutefois le contrôle total des données stockées dans ton navigateur, depuis la page Profil :</p>
+    <ul>
+      <li><strong>Accès et portabilité</strong> : « Exporter » télécharge tes données dans un fichier JSON lisible.</li>
+      <li><strong>Rectification</strong> : « Modifier » change ton pseudo et ton avatar.</li>
+      <li><strong>Effacement</strong> : « Tout effacer » supprime toutes les données du site. Tu peux aussi vider les données du site dans les réglages de ton navigateur.</li>
+    </ul>
+    <p>Si tu partages un appareil, sache que les personnes qui l’utilisent peuvent voir tes parties et tes statistiques.</p>
+
+    <h2>Enfants</h2>
+    <p>Le site ne demande aucune information et ne contient aucun contenu externe ni aucune communication avec d’autres joueurs.</p>
+
+    <h2>Contact et réclamation</h2>
+    <p>Pour toute question, ouvre une « issue » sur le dépôt GitHub du projet. Tu peux aussi introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" rel="noopener">cnil.fr</a>).</p>
+  </main>
+
+  <footer class="site-footer">
+    <ul>
+      <li><a href="about.html">À propos</a></li>
+      <li><a href="privacy.html">Confidentialité</a></li>
+      <li><a href="legal.html">Mentions légales</a></li>
+    </ul>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Parcours complet</title></head>
+<body><pre id="out"></pre><iframe id="f" src="../index.html" width="390" height="800"></iframe>
+<script>
+// Ouvre tests/app-flow.html : pilote l'appli réelle (même origine) et affiche PASS/FAIL dans #out.
+const out = document.getElementById('out');
+const log = [];
+const f = document.getElementById('f');
+let w, d;
+const $ = (s) => [...d.querySelectorAll(s)];
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const until = async (fn, ms = 3000) => { for (let t = 0; t < ms; t += 25) { try { if (fn()) return true; } catch (e) { /* pas prêt */ } await sleep(25); } return false; };
+const check = (name, ok) => log.push((ok ? 'PASS ' : 'FAIL ') + name + (ok ? '' : ' [' + w.location.hash + ' | ' + d.querySelector('main').textContent.slice(0, 120) + ']'));
+const dbg = [];
+const keys = () => Object.keys(w.localStorage).filter((k) => k.startsWith('aj:s:'));
+const sheet = () => d.querySelector('dialog.sheet[open]');
+
+async function newGame(index) {
+  w.location.hash = '#/';
+  await until(() => $('.game-card').length === 8 && !sheet());
+  const before = keys().length;
+  $('.game-card')[index].click();
+  await until(sheet);
+  const c = d.querySelector('dialog[open] .choice');
+  if (!c) { dbg.push('no choice; sheet=' + !!sheet() + ' cards=' + $('.game-card').length); return false; }
+  c.click();
+  // Succès = une session de plus ; sinon la boîte « limite atteinte » doit apparaître.
+  const okk = await until(() => keys().length > before || (sheet() && sheet().textContent.includes('Trop de parties')));
+  if (!okk) dbg.push('no session created; before=' + before + ' hash=' + w.location.hash + ' dialogs=' + d.querySelectorAll('dialog').length + ' open=' + !!sheet() + ' toast=' + (d.getElementById('toast') || {}).textContent + ' keysNow=' + keys().length);
+  return okk;
+}
+
+let started = false;
+f.addEventListener('load', async () => {
+  if (started) return; started = true;
+  try {
+    w = f.contentWindow; d = w.document;
+    w.localStorage.clear();
+    const oldDoc = d;
+    w.location.reload();
+    await until(() => f.contentWindow.document !== oldDoc && f.contentWindow.document.querySelector('.game-card'));
+    w = f.contentWindow; d = w.document;
+
+    check('accueil : 8 jeux affichés', $('.game-card').length === 8);
+    check('nouvelle partie 2048 créée', await newGame(0));
+    check('route de partie', w.location.hash.startsWith('#/jeu/2048/'));
+    check('session enregistrée en localStorage', keys().length === 1);
+    check('plateau 2048 affiché', $('.cell2048').length > 0);
+
+    for (let i = 0; i < 6; i++) d.dispatchEvent(new w.KeyboardEvent('keydown', { key: ['ArrowLeft', 'ArrowDown'][i % 2] }));
+    const saved = JSON.parse(w.localStorage.getItem(keys()[0]));
+    check('coups sauvegardés', saved.state.grid.flat().filter(Boolean).length >= 2 && saved.updatedAt > 0);
+    const gridBefore = JSON.stringify(saved.state.grid);
+
+    check('2e partie (Mastermind) créée', await newGame(1));
+    w.location.hash = '#/';
+    await until(() => $('.session').length === 2);
+    check('deux parties « en cours »', $('.session').length === 2 && keys().length === 2);
+
+    $('.session-main').find((a) => a.textContent.includes('2048')).click();
+    await until(() => $('.cell2048').length > 0);
+    const shown = JSON.stringify([...$('.cell2048')].map((c) => Number(c.textContent) || 0));
+    check('reprise : la grille sauvegardée est restaurée', shown === JSON.stringify(JSON.parse(gridBefore).flat()));
+
+    w.location.hash = '#/profil';
+    await until(() => $('.tile').length === 4);
+    check('profil affiché (4 tuiles de stats)', $('.tile').length === 4);
+    check('profil : jauge de stockage', !!d.querySelector('.meter-legend') && d.querySelector('.meter-legend').textContent.includes('Total du site'));
+    check('profil : 8 jeux listés', $('.stat').length === 8);
+    check('profil : badges', $('.badges li').length === 6);
+
+    w.location.hash = '#/';
+    await until(() => $('.session .icon-btn').length === 2);
+    $('.session .icon-btn')[0].click();
+    await until(sheet);
+    d.querySelector('dialog[open] .btn-danger').click();
+    await until(() => $('.session').length === 1);
+    check('suppression d’une partie', $('.session').length === 1 && keys().length === 1);
+
+    w.location.hash = '#/jeu/2048/inexistant';
+    await until(() => w.location.hash === '#/');
+    check('partie inconnue : retour à l’accueil', w.location.hash === '#/');
+
+    for (let i = 0; i < 24; i++) { await newGame(4); d.querySelectorAll('dialog').forEach((x) => x.close()); await sleep(20); }
+    check('limite de 20 parties respectée', keys().length === 20);
+    w.location.hash = '#/';
+    await until(() => $('.game-card').length === 8);
+    $('.game-card')[4].click();
+    await until(sheet);
+    d.querySelector('dialog[open] .choice').click();
+    await until(() => sheet() && sheet().textContent.includes('Trop de parties'));
+    check('21e partie refusée avec un message', !!sheet() && sheet().textContent.includes('Trop de parties'));
+
+    // Fin de partie : victoire forcée sur « Nombre mystère »
+    d.querySelectorAll('dialog').forEach((x) => x.close());
+    w.localStorage.clear();
+    w.location.hash = '#/profil';
+    await until(() => $('.tile').length === 4);
+    check('nombre mystère créé', await newGame(3));
+    const sid = w.location.hash.split('/')[3];
+    const sess = JSON.parse(w.localStorage.getItem('aj:s:' + sid));
+    for (const ch of String(sess.state.secret)) $('.key').find((b) => b.textContent === ch).click();
+    $('.key-ok')[0].click();
+    await until(() => sheet() && sheet().textContent.includes('Victoire'), 4000);
+    check('victoire : boîte de résultat affichée', !!sheet() && sheet().textContent.includes('Victoire'));
+    check('victoire : session supprimée', !w.localStorage.getItem('aj:s:' + sid));
+    const prof = JSON.parse(w.localStorage.getItem('aj:profile'));
+    check('victoire : statistiques enregistrées', prof.stats.nombre.played === 1 && prof.stats.nombre.won === 1 && prof.stats.nombre.best[sess.diff] === 1);
+
+    // Export / import
+    const exported = JSON.parse((await import('../js/storage.js')).exportAll());
+    check('export : format attendu', exported.app === 'arcade-junior' && !!exported.data['aj:profile']);
+  } catch (e) { log.push('FAIL exception: ' + e.message); }
+  out.textContent = log.concat(dbg.slice(0, 6)).join(String.fromCharCode(10));
+});
+</script></body></html>

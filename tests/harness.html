@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harnais de test des jeux</title>
+<link rel="stylesheet" href="../css/style.css"><script src="../js/theme.js"></script></head>
+<body><main><div id="err" class="notice" hidden></div><div id="stage" class="stage"></div></main>
+<script type="module">
+// Usage : tests/harness.html?g=sudoku&d=normal&seed=3  (monte un jeu avec un faux contexte)
+import { GAMES, getGame } from '../js/games/index.js';
+import { createRng } from '../js/rng.js';
+const q = new URLSearchParams(location.search);
+const err = document.getElementById('err');
+const show = (m) => { err.hidden = false; err.textContent += m + ' | '; };
+addEventListener('error', (e) => show(e.message));
+addEventListener('unhandledrejection', (e) => show(String(e.reason)));
+const g = getGame(q.get('g'));
+const d = q.get('d') || g.difficulties[0].id;
+const state = g.create(createRng(Number(q.get('seed') || 5)), d);
+const stage = document.getElementById('stage');
+stage.style.setProperty('--c', g.color);
+const ctx = { save() {}, elapsed: () => 0, toast: show, vibrate() {}, finish: (r) => show('FINISH ' + JSON.stringify(r)) };
+g.mount(stage, state, ctx);
+window.__state = state;
+
+// ?auto=1 : joue quelques coups scriptés et affiche PASS/FAIL (pour les captures d'écran).
+if (q.get('auto')) {
+  const log = [];
+  const check = (name, cond) => log.push((cond ? 'PASS ' : 'FAIL ') + name);
+  const key = (k) => document.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true }));
+  const click = (el) => el && el.click();
+  const $ = (sel) => [...stage.querySelectorAll(sel)];
+  const id = g.id;
+  if (id === '2048') {
+    for (let i = 0; i < 40; i++) key(['ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp'][i % 4]);
+    check('2048 : des tuiles ont bougé et le score évolue', state.score > 0 || state.grid.flat().filter(Boolean).length > 2);
+  } else if (id === 'mastermind') {
+    $('.mm-palette .peg-btn').slice(0, state.len).forEach(click);
+    check('mastermind : combinaison remplie', !state.current.includes(null));
+    click($('.mm-actions .btn-primary')[0]);
+    check('mastermind : un essai enregistré', state.guesses.length === 1);
+    check('mastermind : ligne d’essai affichée avec retour', $('.mm-row.done .mm-fb i').length === state.len);
+  } else if (id === 'nombre') {
+    '5'.split('').forEach((c) => click($('.key').find((b) => b.textContent === c)));
+    click($('.key-ok')[0]);
+    check('nombre : un essai enregistré', state.guesses.length === 1);
+    check('nombre : indice affiché', $('.nb-history li').length === 1);
+  } else if (id === 'lights') {
+    const on0 = state.cells.filter(Boolean).length;
+    click($('.bulb')[4]);
+    check('lumières : un coup joué', state.moves === 1);
+    check('lumières : le voisinage a basculé', state.cells.filter(Boolean).length !== on0);
+    click($('.bulb')[4]);
+    check('lumières : 2 appuis annulent', JSON.stringify(state.cells) === JSON.stringify(g.create(createRng(Number(q.get('seed') || 5)), d).cells));
+  } else if (id === 'taquin') {
+    const n = state.n; const blank = state.tiles.indexOf(0);
+    const nb = [blank - 1, blank + 1, blank - n, blank + n].find((i) => i >= 0 && i < n * n && (Math.floor(i / n) === Math.floor(blank / n) || i % n === blank % n));
+    click($('.tq-tile').find((b) => Number(b.textContent) === state.tiles[nb]));
+    check('taquin : un coup joué', state.moves === 1 && state.tiles[nb] === 0);
+  } else if (id === 'memory') {
+    const first = state.cards[0];
+    const j = state.cards.findIndex((c, i) => i > 0 && c === first);
+    click($('.mem-card')[0]); click($('.mem-card')[j]);
+    check('mémoire : une paire trouvée', state.matched[0] && state.matched[j] && state.attempts === 1);
+    const other = state.cards.findIndex((c, i) => !state.matched[i]);
+    const other2 = state.cards.findIndex((c, i) => !state.matched[i] && i !== other && c !== state.cards[other]);
+    click($('.mem-card')[other]); click($('.mem-card')[other2]);
+    check('mémoire : paire ratée comptée', state.attempts === 2 && state.flipped.length === 2);
+  } else if (id === 'demineur') {
+    click($('.ms-cell')[0]);
+    check('démineur : mines placées, premier coup sûr', state.mines && !state.mines[0] && state.open[0]);
+    check('démineur : nombre de mines correct', state.mines.filter(Boolean).length === state.mineCount);
+    check('démineur : cases révélées', $('.ms-cell.open').length >= 1);
+    click($('.mode-btn')[0]);
+    const closed = $('.ms-cell').findIndex((b, i) => !state.open[i]);
+    click($('.ms-cell')[closed]);
+    check('démineur : drapeau posé en mode drapeau', state.flags[closed] === true);
+  } else if (id === 'sudoku') {
+    const empty = state.cur.findIndex((v, i) => !state.puzzle[i]);
+    click($('.sd-cell')[empty]);
+    check('sudoku : case sélectionnée', state.sel === empty);
+    click($('.sd-pad .key')[state.solution[empty] - 1]);
+    check('sudoku : chiffre posé', state.cur[empty] === state.solution[empty]);
+    // Remplit tout avec la solution : doit terminer la partie.
+    state.solution.forEach((v, i) => { if (!state.puzzle[i]) { click($('.sd-cell')[i]); click($('.sd-pad .key')[v - 1]); } });
+    check('sudoku : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  }
+  const box = document.createElement('pre'); box.className = 'notice'; box.textContent = log.join(String.fromCharCode(10));
+  document.querySelector('main').prepend(box);
+}
+</script></body></html>

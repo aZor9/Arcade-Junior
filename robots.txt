@@ -1,0 +1,5 @@
+# Site statique de mini-jeux : tout est public, aucune zone privée.
+User-agent: *
+Allow: /
+
+Sitemap: https://azor9.github.io/Arcade-Junior/sitemap.xml
