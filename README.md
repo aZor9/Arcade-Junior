@@ -2,7 +2,7 @@
 
 Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (HTML, CSS, JavaScript natif) : pas de serveur, pas de compte, pas de pub, pas de suivi. Tes parties sont enregistrées dans ton navigateur et le site marche aussi hors ligne.
 
-**Jouer :** https://azor9.github.io/Arcade-Junior/
+**Jouer :** https://arcade.hugo-lembrez.fr/
 
 ## Les jeux
 
@@ -47,9 +47,17 @@ python -m http.server 8000
 
 1. Pousse le code sur la branche `main`.
 2. Sur GitHub : **Settings → Pages → Build and deployment → Source : Deploy from a branch**, branche `main`, dossier `/ (root)`.
-3. Le site est en ligne quelques minutes plus tard sur `https://<utilisateur>.github.io/Arcade-Junior/`.
+3. Le site est en ligne quelques minutes plus tard. `.nojekyll` désactive Jekyll : les fichiers sont servis tels quels.
 
-Tous les chemins sont relatifs, donc le site marche dans un sous-dossier. Si tu changes l’URL, mets à jour `sitemap.xml` et `robots.txt`.
+### Nom de domaine personnalisé
+
+Le site est servi sur `arcade.hugo-lembrez.fr` :
+
+- le fichier `CNAME` à la racine contient le domaine (GitHub le crée quand on renseigne **Settings → Pages → Custom domain**) ;
+- chez OVH, zone DNS de `hugo-lembrez.fr` : un enregistrement `CNAME` `arcade` qui pointe vers `azor9.github.io.` ;
+- activer **Enforce HTTPS** dans les réglages Pages une fois le certificat émis.
+
+Tous les chemins étant relatifs, le site fonctionnerait aussi dans un sous-dossier. Si tu changes de domaine, mets à jour `CNAME`, `sitemap.xml`, `robots.txt` et les balises `canonical` / `og:url` de `index.html`.
 
 ## Structure
 
@@ -114,4 +122,4 @@ Wordle en français, Nonogram, Tours de Hanoï, Simon, Sudoku avec annotations, 
 
 ## Licence
 
-[MIT](LICENSE) © 2026 Hugo
+[MIT](LICENSE) © 2026 Hugo Lembrez

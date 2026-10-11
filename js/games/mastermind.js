@@ -1,7 +1,17 @@
-import { h } from '../ui.js';
+import { h, svg } from '../ui.js';
 
-// Symboles en plus des couleurs : le jeu reste jouable en cas de daltonisme.
-const SYMBOLS = ['●', '▲', '■', '◆', '★', '♥', '✚', '☾'];
+// Une forme par couleur : le jeu reste jouable en cas de daltonisme. Dessinées en SVG pour être parfaitement centrées.
+const SHAPES = [
+  '<circle cx="12" cy="12" r="6.5"/>',
+  '<path d="M12 4.5 20 19H4z"/>',
+  '<rect x="5.5" y="5.5" width="13" height="13" rx="1.5"/>',
+  '<path d="M12 3.5 20.5 12 12 20.5 3.5 12z"/>',
+  '<path d="m12 3.5 2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7z"/>',
+  '<path d="M12 20s-8-4.9-8-10.6A4.4 4.4 0 0 1 12 7a4.4 4.4 0 0 1 8 2.4C20 15.1 12 20 12 20z"/>',
+  '<path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5z"/>',
+  '<path d="M15 4a8.5 8.5 0 1 0 5 15.4A7.5 7.5 0 0 1 15 4z"/>',
+];
+const shape = (i) => svg(SHAPES[i]);
 
 export function evaluate(secret, guess) {
   let black = 0;
@@ -25,7 +35,7 @@ export default {
   emoji: '🎯',
   color: '#6a4cff',
   tagline: 'Devine le code secret',
-  howto: 'Un code de couleurs est caché (une couleur peut apparaître plusieurs fois). Compose une combinaison puis valide. Pastille noire : bonne couleur au bon endroit. Pastille blanche : bonne couleur au mauvais endroit.',
+  howto: 'Un code de couleurs est caché. Une couleur peut apparaître plusieurs fois.\nTouche les couleurs pour composer ta combinaison, puis valide.\nPastille noire : bonne couleur au bon endroit.\nPastille blanche : bonne couleur au mauvais endroit.\nChaque couleur a sa propre forme, pour t’aider si tu confonds certaines teintes.',
   score: { label: 'Moins d’essais', better: 'low', fmt: (v) => `${v} essai${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile', desc: '4 pions, 5 couleurs, 12 essais' },
@@ -51,7 +61,7 @@ export default {
     const delBtn = h('button', { class: 'btn btn-ghost', type: 'button', 'aria-label': 'Effacer le dernier pion', text: '⌫' });
     root.append(h('div', { class: 'mm' }, board, h('div', { class: 'mm-controls' }, palette, h('div', { class: 'mm-actions' }, delBtn, okBtn))));
 
-    const peg = (v, extra = '') => h('span', { class: `peg ${v === null ? 'empty' : 'c' + v} ${extra}`, text: v === null ? '' : SYMBOLS[v] });
+    const peg = (v, extra = '') => h('span', { class: `peg ${v === null ? 'empty' : 'c' + v} ${extra}` }, v === null ? null : shape(v));
 
     function feedback(f) {
       const total = state.len;
@@ -73,7 +83,7 @@ export default {
         } else if (i === state.guesses.length && !state.over) {
           board.append(h('div', { class: 'mm-row current' },
             h('div', { class: 'mm-pegs' }, state.current.map((v, idx) => {
-              const b = h('button', { type: 'button', class: `peg-btn ${v === null ? 'empty' : 'c' + v}`, 'aria-label': `Pion ${idx + 1}`, text: v === null ? '' : SYMBOLS[v] });
+              const b = h('button', { type: 'button', class: `peg-btn ${v === null ? 'empty' : 'c' + v}`, 'aria-label': `Pion ${idx + 1}` }, v === null ? null : shape(v));
               b.addEventListener('click', () => { state.current[idx] = null; update(); });
               return b;
             })),
@@ -95,7 +105,7 @@ export default {
 
     for (let c = 0; c < state.colors; c++) {
       palette.append(h('button', {
-        type: 'button', class: `peg-btn c${c}`, 'aria-label': `Couleur ${c + 1}`, text: SYMBOLS[c],
+        type: 'button', class: `peg-btn c${c}`, 'aria-label': `Couleur ${c + 1}`,
         onclick: () => {
           if (state.over) return;
           const i = state.current.indexOf(null);
@@ -103,7 +113,7 @@ export default {
           state.current[i] = c;
           update();
         },
-      }));
+      }, shape(c)));
     }
 
     delBtn.addEventListener('click', () => {

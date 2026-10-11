@@ -20,7 +20,7 @@ export default {
   emoji: '🧩',
   color: '#ff5c8a',
   tagline: 'Remets les tuiles dans l’ordre',
-  howto: 'Fais glisser les tuiles vers la case vide (touche une tuile de la même ligne ou colonne que le vide) pour les ranger de 1 à la dernière, la case vide en bas à droite.',
+  howto: 'Touche une tuile alignée avec la case vide : elle glisse vers elle, avec celles qui la séparent du vide.\nRange les tuiles dans l’ordre, de 1 à la dernière.\nLa case vide termine en bas à droite.',
   score: { label: 'Moins de coups', better: 'low', fmt: (v) => `${v} coup${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile 3×3', desc: '8 tuiles' },

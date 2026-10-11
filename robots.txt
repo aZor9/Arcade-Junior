@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://azor9.github.io/Arcade-Junior/sitemap.xml
+Sitemap: https://arcade.hugo-lembrez.fr/sitemap.xml

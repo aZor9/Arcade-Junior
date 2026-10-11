@@ -1,5 +1,5 @@
 import * as store from './storage.js';
-import { h, toast, dialog, confirmDialog, formatDuration } from './ui.js';
+import { h, toast, dialog, confirmDialog, formatDuration, howtoList } from './ui.js';
 import { GAMES, getGame } from './games/index.js';
 import { createRng, newSeed, newId } from './rng.js';
 
@@ -63,7 +63,7 @@ async function chooseDifficulty(game) {
     title: `${game.emoji} ${game.name}`,
     actions: [{ label: 'Fermer', value: null, kind: 'ghost' }],
     body: (close) => h('div', null,
-      h('p', { class: 'muted', text: game.howto }),
+      howtoList(game.howto),
       h('div', { class: 'choices' },
         game.difficulties.map((d) => h('button', { type: 'button', class: 'choice', vars: gameStyle(game), onclick: () => close(d.id) },
           h('strong', { text: d.label }), h('span', { text: d.desc }))),
@@ -222,7 +222,7 @@ function playView(gameId, sid) {
             title: game.name,
             actions: [{ label: 'Fermer', value: null }],
             body: (close) => h('div', null,
-              h('p', { class: 'muted', text: game.howto }),
+              howtoList(game.howto),
               h('div', { class: 'choices' },
                 h('button', { type: 'button', class: 'choice', onclick: () => close('new') }, h('strong', { text: '↻ Nouvelle partie' }), h('span', { text: 'Même niveau, nouvelle grille. Celle-ci reste en cours.' })),
                 finished ? null : h('button', { type: 'button', class: 'choice choice-danger', onclick: () => close('abandon') }, h('strong', { text: '🗑 Abandonner' }), h('span', { text: 'Supprime la partie sans toucher aux statistiques.' })))),

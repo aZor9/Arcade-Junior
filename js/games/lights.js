@@ -16,7 +16,7 @@ export default {
   emoji: '💡',
   color: '#ffcf3f',
   tagline: 'Éteins toutes les ampoules',
-  howto: 'Toucher une ampoule change son état et celui de ses 4 voisines (haut, bas, gauche, droite). Éteins-les toutes en un minimum de coups. Chaque grille est garantie résoluble.',
+  howto: 'Toucher une ampoule change son état et celui de ses 4 voisines (haut, bas, gauche, droite).\nÉteins-les toutes en un minimum de coups.\nChaque grille est garantie résoluble.',
   score: { label: 'Moins de coups', better: 'low', fmt: (v) => `${v} coup${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile 3×3', desc: 'Pour s’échauffer' },

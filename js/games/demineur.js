@@ -22,7 +22,7 @@ export default {
   emoji: '💣',
   color: '#8a8fa8',
   tagline: 'Évite toutes les mines',
-  howto: 'Touche une case pour la révéler. Un chiffre indique le nombre de mines dans les 8 cases voisines. Appui long (ou bouton 🚩) pour poser un drapeau. Toucher un chiffre déjà entouré du bon nombre de drapeaux révèle ses voisines. Le premier coup est toujours sans danger.',
+  howto: 'Touche une case pour la révéler.\nUn chiffre indique le nombre de mines dans les 8 cases voisines.\nAppui long (ou bouton Drapeau) pour poser un drapeau sur une case suspecte.\nToucher un chiffre déjà entouré du bon nombre de drapeaux révèle ses voisines.\nLe premier coup est toujours sans danger.',
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
     { id: 'easy', label: 'Facile', desc: '8×8, 8 mines' },

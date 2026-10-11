@@ -8,7 +8,7 @@ export default {
   emoji: '🃏',
   color: '#3aa0ff',
   tagline: 'Retrouve toutes les paires',
-  howto: 'Retourne deux cartes à la fois. Si elles sont identiques, elles restent visibles. Sinon, elles se retournent : retiens leur place ! Trouve toutes les paires en un minimum d’essais.',
+  howto: 'Retourne deux cartes à la fois.\nSi elles sont identiques, elles restent visibles. Sinon elles se retournent : retiens leur place !\nTrouve toutes les paires en un minimum d’essais.',
   score: { label: 'Moins d’essais', better: 'low', fmt: (v) => `${v} essai${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile', desc: '6 paires (3×4)' },

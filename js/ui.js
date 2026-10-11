@@ -20,6 +20,17 @@ export function h(tag, props, ...kids) {
   return el;
 }
 
+// Élément SVG (espace de noms requis, createElement ne suffit pas).
+export function svg(markup) {
+  const doc = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">${markup}</svg>`, 'image/svg+xml');
+  return document.importNode(doc.documentElement, true);
+}
+
+// Règles d'un jeu : chaque ligne de `howto` devient un point de la liste.
+export function howtoList(text) {
+  return h('ul', { class: 'howto' }, text.split('\n').map((line) => h('li', { text: line })));
+}
+
 let toastTimer;
 export function toast(msg) {
   let el = document.getElementById('toast');

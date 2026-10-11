@@ -18,6 +18,8 @@ const state = g.create(createRng(Number(q.get('seed') || 5)), d);
 const stage = document.getElementById('stage');
 stage.style.setProperty('--c', g.color);
 const ctx = { save() {}, elapsed: () => 0, toast: show, vibrate() {}, finish: (r) => show('FINISH ' + JSON.stringify(r)) };
+if (q.get('big') && state.grid) state.grid = state.grid.map((r, i) => r.map((_, j) => 2 ** (1 + ((i * state.size + j) % 17))));
+if (q.get('fill') && g.id === 'mastermind') { for (let k = 0; k < 3; k++) { state.guesses.push({ g: state.secret.map((_, i) => (i + k) % state.colors), black: k, white: 1 }); } state.current = state.current.map((_, i) => i % state.colors); }
 g.mount(stage, state, ctx);
 window.__state = state;
 
