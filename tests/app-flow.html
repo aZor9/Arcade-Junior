@@ -17,7 +17,7 @@ const sheet = () => d.querySelector('dialog.sheet[open]');
 
 async function newGame(index) {
   w.location.hash = '#/';
-  await until(() => $('.game-card').length === 8 && !sheet());
+  await until(() => $('.game-card').length === NB && !sheet());
   const before = keys().length;
   $('.game-card')[index].click();
   await until(sheet);
@@ -30,10 +30,12 @@ async function newGame(index) {
   return okk;
 }
 
+let NB = 0;
 let started = false;
 f.addEventListener('load', async () => {
   if (started) return; started = true;
   try {
+    NB = (await import('../js/games/index.js')).GAMES.length;
     w = f.contentWindow; d = w.document;
     w.localStorage.clear();
     const oldDoc = d;
@@ -41,7 +43,7 @@ f.addEventListener('load', async () => {
     await until(() => f.contentWindow.document !== oldDoc && f.contentWindow.document.querySelector('.game-card'));
     w = f.contentWindow; d = w.document;
 
-    check('accueil : 8 jeux affichés', $('.game-card').length === 8);
+    check('accueil : tous les jeux affichés', $('.game-card').length === NB);
     check('nouvelle partie 2048 créée', await newGame(0));
     check('route de partie', w.location.hash.startsWith('#/jeu/2048/'));
     check('session enregistrée en localStorage', keys().length === 1);
@@ -66,7 +68,7 @@ f.addEventListener('load', async () => {
     await until(() => $('.tile').length === 4);
     check('profil affiché (4 tuiles de stats)', $('.tile').length === 4);
     check('profil : jauge de stockage', !!d.querySelector('.meter-legend') && d.querySelector('.meter-legend').textContent.includes('Total du site'));
-    check('profil : 8 jeux listés', $('.stat').length === 8);
+    check('profil : tous les jeux listés', $('.stat').length === NB);
     check('profil : badges', $('.badges li').length === 6);
 
     w.location.hash = '#/';
@@ -84,7 +86,7 @@ f.addEventListener('load', async () => {
     for (let i = 0; i < 24; i++) { await newGame(4); d.querySelectorAll('dialog').forEach((x) => x.close()); await sleep(20); }
     check('limite de 20 parties respectée', keys().length === 20);
     w.location.hash = '#/';
-    await until(() => $('.game-card').length === 8);
+    await until(() => $('.game-card').length === NB);
     $('.game-card')[4].click();
     await until(sheet);
     d.querySelector('dialog[open] .choice').click();

@@ -1,0 +1,73 @@
+name: Site
+
+# À chaque push ou pull request : on lance les tests.
+# Sur la branche main, si les tests passent, le site est publié sur GitHub Pages.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Un seul déploiement à la fois ; on n'interrompt jamais un déploiement en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Tests de logique (génération, solutions uniques, règles)
+        run: node tests/games.test.mjs
+
+      - name: Tests dans le navigateur (jeux, parcours complet, défilement)
+        run: bash tests/run-browser.sh
+        env:
+          CHROME: google-chrome
+
+  deploy:
+    name: Publication
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Seuls les fichiers du site sont publiés (pas les tests, le README, etc.).
+      - name: Assembler le site
+        run: |
+          mkdir _site
+          cp -r index.html about.html privacy.html legal.html manifest.webmanifest sw.js robots.txt sitemap.xml CNAME .nojekyll css js icons _site/
+          # Chaque déploiement change le nom du cache du service worker : les téléphones récupèrent la nouvelle version.
+          sed -i "s/const VERSION = '[^']*';/const VERSION = 'aj-${GITHUB_SHA::7}';/" _site/sw.js
+          grep "const VERSION" _site/sw.js
+          find _site -type f | wc -l
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

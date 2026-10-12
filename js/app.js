@@ -89,7 +89,7 @@ function hubView() {
   const els = [
     h('section', { class: 'hero' },
       h('h1', { text: `Salut ${profile.name} !` }),
-      h('p', { text: 'Huit mini-jeux de réflexion, sans compte, qui marchent aussi hors ligne.' }),
+      h('p', { text: `${GAMES.length} mini-jeux de réflexion, sans compte, qui marchent aussi hors ligne.` }),
       h('button', { class: 'btn btn-primary btn-big', type: 'button', onclick: surprise, text: '🎲 Surprends-moi' })),
   ];
 

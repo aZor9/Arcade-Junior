@@ -52,10 +52,10 @@ if (q.get('auto')) {
     check('nombre : un essai enregistré', state.guesses.length === 1);
     check('nombre : indice affiché', $('.nb-history li').length === 1);
   } else if (id === 'lights') {
-    const on0 = state.cells.filter(Boolean).length;
+    const snap = JSON.stringify(state.cells);
     click($('.bulb')[4]);
     check('lumières : un coup joué', state.moves === 1);
-    check('lumières : le voisinage a basculé', state.cells.filter(Boolean).length !== on0);
+    check('lumières : le voisinage a basculé', JSON.stringify(state.cells) !== snap);
     click($('.bulb')[4]);
     check('lumières : 2 appuis annulent', JSON.stringify(state.cells) === JSON.stringify(g.create(createRng(Number(q.get('seed') || 5)), d).cells));
   } else if (id === 'taquin') {
@@ -133,6 +133,69 @@ if (q.get('auto')) {
     // Remplit tout avec la solution : doit terminer la partie.
     state.solution.forEach((v, i) => { if (!state.puzzle[i]) { click($('.sd-cell')[i]); click($('.sd-pad .key')[v - 1]); } });
     check('sudoku : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'untangle') {
+    const svg = stage.querySelector('.ud-svg');
+    const hits = $('.ud-node');
+    check('démêle : un point par sommet', hits.length === state.n);
+    check('démêle : des croisements au départ', Number($('.hud-item strong')[0].textContent) > 0);
+    // Glisser le point 0 : on simule pointerdown / pointermove / pointerup au-dessus du plan.
+    const r = svg.getBoundingClientRect();
+    const px = (p) => ({ clientX: r.left + (p[0] / 100) * r.width, clientY: r.top + (p[1] / 100) * r.height, pointerId: 1, bubbles: true });
+    const start = state.pts[0].slice();
+    hits[0].dispatchEvent(new PointerEvent('pointerdown', px(start)));
+    svg.dispatchEvent(new PointerEvent('pointermove', px([50, 50])));
+    svg.dispatchEvent(new PointerEvent('pointerup', px([50, 50])));
+    check('démêle : le point a bougé et le déplacement est compté', state.moves === 1 && JSON.stringify(state.pts[0]) !== JSON.stringify(start));
+    check('démêle : les traits suivent (x1/y1 mis à jour)', Math.abs(Number($('.ud-edge')[0].getAttribute('x1')) - Number($('.ud-edge')[0].getAttribute('x2'))) >= 0);
+    // On replace tous les points sur la disposition planaire, puis un petit coup de clavier termine.
+    state.layout.forEach((p, i) => { state.pts[i] = p.slice(); });
+    hits[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    if (!document.getElementById('err').textContent.includes('FINISH')) hits[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    check('démêle : sans croisement = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'pipes') {
+    const tiles = $('.pp-tile');
+    check('pipes : une tuile par case', tiles.length === state.rows * state.cols);
+    const before = state.rot[0];
+    click(tiles[0]);
+    check('pipes : un clic tourne la tuile', state.rot[0] === (before + 1) % 4 && state.moves === 1);
+    tiles[0].dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true }));
+    check('pipes : clic droit tourne dans l’autre sens', state.rot[0] === before && state.moves === 2);
+    check('pipes : la source est alimentée', tiles[state.source].classList.contains('lit'));
+    // Chaque tuile : on la ramène à sa position résolue (rotation 0).
+    tiles.forEach((t, i) => { const k = (4 - state.rot[i]) % 4; for (let j = 0; j < k; j++) click(t); });
+    check('pipes : tout aligné = victoire', document.getElementById('err').textContent.includes('FINISH'));
+    check('pipes : toutes les tuiles alimentées', $('.pp-tile.lit').length === tiles.length);
+  } else if (id === 'takuzu') {
+    const cells = $('.tk-cell');
+    check('takuzu : une case par cellule', cells.length === state.n * state.n);
+    check('takuzu : les indices sont verrouillés', $('.tk-cell.given').length === state.puzzle.filter(Boolean).length);
+    const g0 = state.puzzle.findIndex((v) => !v);
+    click(cells[g0]);
+    check('takuzu : un clic met 0, deux clics 1, trois vident', state.cur[g0] === 1);
+    click(cells[g0]); check('takuzu : deuxième clic', state.cur[g0] === 2);
+    click(cells[g0]); check('takuzu : troisième clic', state.cur[g0] === 0);
+    const locked = state.puzzle.findIndex((v) => v);
+    const keep = state.cur[locked]; click(cells[locked]);
+    check('takuzu : un indice ne change pas', state.cur[locked] === keep);
+    state.solution.forEach((v, i) => { if (!state.puzzle[i]) for (let j = 0; j < v; j++) click(cells[i]); });
+    check('takuzu : grille juste = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'hanoi') {
+    const pegs = $('.hn-peg');
+    check('hanoï : 3 piquets et les disques au départ', pegs.length === 3 && $('.hn-disk').length === state.disks);
+    // Coup interdit : poser le plus grand disque sur un plus petit.
+    const from = state.from; const other = [0, 1, 2].find((x) => x !== from && x !== state.to);
+    click(pegs[from]); click(pegs[other]);                      // petit disque -> piquet libre (légal)
+    click(pegs[from]); click(pegs[other]);                      // 2e disque sur le petit (interdit)
+    check('hanoï : coup interdit refusé avec un message', document.getElementById('err').textContent.includes('plus petit') && state.moves === 1);
+    click(pegs[other]); click(pegs[from]);                      // on annule : le petit revient
+    state.moves = 0;
+    const move = (k, a, b, via) => { if (!k) return; move(k - 1, a, via, b); click(pegs[a]); click(pegs[b]); move(k - 1, via, b, a); };
+    // État remis à plat pour la résolution : tous les disques sur `from`.
+    if (state.pegs[from].length === state.disks) {
+      const via = [0, 1, 2].find((x) => x !== from && x !== state.to);
+      move(state.disks, from, state.to, via);
+      check('hanoï : résolu au minimum de coups', state.moves === 2 ** state.disks - 1 && document.getElementById('err').textContent.includes('FINISH'));
+    } else check('hanoï : état de départ restauré', false);
   }
   const box = document.createElement('pre'); box.className = 'notice'; box.textContent = log.join(String.fromCharCode(10));
   document.querySelector('main').prepend(box);

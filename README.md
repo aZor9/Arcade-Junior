@@ -16,6 +16,10 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🧩 Taquin | Remets les tuiles dans l’ordre (mélange toujours résoluble) | 3×3, 4×4, 5×5 |
 | 🃏 Mémoire | Retrouve les paires | 6 à 15 paires |
 | 💣 Démineur | Premier coup toujours sûr, appui long = drapeau | 3 |
+| 🕸️ Démêle | Déplace les points d'un graphe pour qu'aucun trait n'en croise un autre (toujours possible) | 7 à 25 points |
+| 🔧 Pipes | Fais pivoter les tuyaux pour alimenter toute la grille en eau | 5×5 à 11×11 |
+| ⚫ Takuzu | Grille de 0 et de 1 : pas de triplé, autant de 0 que de 1, solution unique | 6×6 à 12×12 |
+| 🗼 Hanoï | Déplace la tour disque par disque (piquets de départ et d'arrivée au hasard) | 3 à 7 disques |
 
 Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
@@ -44,11 +48,23 @@ python -m http.server 8000
 # puis ouvre http://localhost:8000
 ```
 
-## Déployer sur GitHub Pages
+## Tests et déploiement automatiques (GitHub Actions)
 
-1. Pousse le code sur la branche `main`.
-2. Sur GitHub : **Settings → Pages → Build and deployment → Source : Deploy from a branch**, branche `main`, dossier `/ (root)`.
-3. Le site est en ligne quelques minutes plus tard. `.nojekyll` désactive Jekyll : les fichiers sont servis tels quels.
+Le workflow [`.github/workflows/site.yml`](.github/workflows/site.yml) se lance à chaque push et chaque pull request :
+
+1. **Tests** : logique (`tests/games.test.mjs`), puis navigateur (`tests/run-browser.sh` : chaque jeu, parcours complet, aucune page de jeu qui défile en 1280×720).
+2. **Publication** (branche `main` uniquement, si les tests passent) : seuls les fichiers du site sont déployés (pas `tests/`, ni le README) et le nom du cache du service worker est remplacé par le numéro du commit, pour que les téléphones récupèrent chaque nouvelle version.
+
+C'est gratuit : minutes illimitées pour un dépôt public (2000 min/mois pour un dépôt privé, un passage dure environ deux minutes).
+
+**Mise en place (une seule fois)** : *Settings → Pages → Build and deployment → Source : **GitHub Actions***. Ensuite, un `git push` sur `main` suffit ; l'avancement se suit dans l'onglet *Actions*. Le domaine personnalisé reste configuré dans le même écran.
+
+Lancer les tests chez soi (Chrome, Chromium ou Edge) :
+
+```bash
+node tests/games.test.mjs
+bash tests/run-browser.sh        # variable CHROME pour indiquer un navigateur précis
+```
 
 ### Nom de domaine personnalisé
 
@@ -81,7 +97,8 @@ js/ui.js              Aides DOM, toasts, boîtes de dialogue (aucun innerHTML)
 js/rng.js             PRNG à graine
 js/games/*.js         Un fichier par jeu + index.js
 sw.js, manifest.webmanifest, icons/
-tests/                Tests de logique et pages de test navigateur
+tests/                Tests de logique, pages de test navigateur, script run-browser.sh
+.github/workflows/    Tests et déploiement automatiques
 ```
 
 ### Données dans le `localStorage`
@@ -121,7 +138,7 @@ Puis ajoute-le dans `js/games/index.js`, ajoute son fichier à `ASSETS` dans `sw
 node tests/games.test.mjs        # génération, solvabilité, unicité du Sudoku, Mastermind…
 ```
 
-Avec le serveur local lancé, deux pages pilotent le vrai DOM dans le navigateur :
+`bash tests/run-browser.sh` lance tout ce qui suit (c'est ce que fait GitHub Actions). Avec le serveur local lancé, ces pages pilotent le vrai DOM dans le navigateur :
 
 - `tests/app-flow.html` : parcours complet (créer, reprendre, supprimer, limite de 20 parties, victoire, export).
 - `tests/harness.html?g=sudoku&auto=1` : monte un jeu seul (`g` = identifiant, `d` = niveau, `seed`) et joue des coups scriptés.
@@ -129,7 +146,7 @@ Avec le serveur local lancé, deux pages pilotent le vrai DOM dans le navigateur
 
 ## Idées pour la suite
 
-Wordle en français, Nonogram, Tours de Hanoï, Simon, Démineur avec indice, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
+Wordle en français, Nonogram, Numberlink (relier des paires sans croiser), Takuzu / Sudoku avec indices, Simon, Le compte est bon, annuler un coup, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
 
 ## Licence
 
