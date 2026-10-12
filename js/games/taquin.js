@@ -89,7 +89,6 @@ export default {
       state.moves++;
       paint();
       ctx.save(state);
-      ctx.vibrate(6);
       if (solved(state.tiles)) {
         over = true;
         ctx.finish({ won: true, score: state.moves });

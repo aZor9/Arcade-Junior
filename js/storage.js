@@ -61,7 +61,6 @@ export function getSettings() {
   const s = readJson(K_SETTINGS, {});
   return {
     theme: ['light', 'dark'].includes(s.theme) ? s.theme : 'auto',
-    vibrate: s.vibrate !== false,
   };
 }
 export function saveSettings(s) {
@@ -171,6 +170,7 @@ export function exportAll() {
 }
 
 const KEY_OK = /^aj:(profile|settings|s:[a-z0-9]+)$/;
+const MAX_ENTRY = 100000; // une partie réelle pèse quelques Ko : au-delà, l'entrée est ignorée
 
 // Retourne le nombre d'entrées importées, ou lève une Error au message lisible.
 export function importAll(text, knownGames) {
@@ -181,7 +181,7 @@ export function importAll(text, knownGames) {
   }
   const entries = [];
   for (const [k, v] of Object.entries(doc.data)) {
-    if (!KEY_OK.test(k) || typeof v !== 'string') continue;
+    if (!KEY_OK.test(k) || typeof v !== 'string' || v.length > MAX_ENTRY) continue;
     let parsed;
     try { parsed = JSON.parse(v); } catch (e) { continue; }
     if (!parsed || typeof parsed !== 'object') continue;

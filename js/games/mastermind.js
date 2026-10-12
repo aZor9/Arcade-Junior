@@ -131,7 +131,6 @@ export default {
       const lost = !won && state.guesses.length >= state.tries;
       if (won || lost) state.over = true;
       update();
-      ctx.vibrate(10);
       if (won) ctx.finish({ won: true, score: state.guesses.length });
       else if (lost) ctx.finish({ won: false });
     });

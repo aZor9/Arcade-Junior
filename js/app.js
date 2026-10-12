@@ -6,7 +6,7 @@ import { createRng, newSeed, newId } from './rng.js';
 const root = document.getElementById('app');
 let teardown = null;
 
-/* ---------- Réglages (thème, vibrations) ---------- */
+/* ---------- Réglages (thème) ---------- */
 
 function applyTheme() {
   const { theme } = store.getSettings();
@@ -152,7 +152,7 @@ function playView(gameId, sid) {
   document.body.classList.add('playing');
   document.title = `${game.name} – Arcade Junior`;
 
-  let base = session.elapsed || 0;
+  let base = Number.isFinite(session.elapsed) && session.elapsed >= 0 ? session.elapsed : 0;
   let t0 = performance.now();
   let running = true;
   let finished = false;
@@ -183,7 +183,6 @@ function playView(gameId, sid) {
     save(state) { session.state = state; persist(); },
     elapsed,
     toast,
-    vibrate(p) { if (store.getSettings().vibrate && navigator.vibrate) navigator.vibrate(p); },
     finish({ won, score }) {
       if (finished) return;
       base = elapsed();
@@ -210,6 +209,27 @@ function playView(gameId, sid) {
   };
 
   const stage = h('div', { class: 'stage', vars: gameStyle(game) });
+
+  // Colonne latérale, visible seulement sur grand écran : règles, raccourcis clavier, record, actions.
+  const record = (store.getProfile().stats[game.id] || { best: {} }).best[session.diff];
+  const fmtScore = game.score.fmt || String;
+  const side = h('aside', { class: 'side', vars: gameStyle(game), 'aria-label': 'Aide et actions' },
+    h('section', { class: 'side-card' }, h('h2', { text: 'Règles' }), howtoList(game.howto)),
+    game.keys ? h('section', { class: 'side-card' }, h('h2', { text: 'Clavier et souris' }), h('ul', { class: 'howto' }, game.keys.map((k) => h('li', { text: k })))) : null,
+    h('section', { class: 'side-card' },
+      h('h2', { text: 'Ton record' }),
+      h('p', { class: Number.isFinite(record) ? 'side-best' : 'side-best none', text: Number.isFinite(record) ? fmtScore(record) : 'Pas encore de record à ce niveau.' }),
+      h('div', { class: 'side-actions' },
+        h('button', { class: 'btn btn-primary', type: 'button', text: '↻ Nouvelle partie', onclick: () => startGame(game.id, session.diff) }),
+        h('button', {
+          class: 'btn btn-ghost', type: 'button', text: '🗑 Abandonner',
+          onclick: async () => {
+            if (finished || !(await confirmDialog('Abandonner la partie ?', 'Elle sera supprimée, sans effet sur tes statistiques.', 'Abandonner', true))) return;
+            store.deleteSession(sid);
+            finished = true;
+            location.hash = '#/';
+          },
+        }))));
   root.replaceChildren(
     h('div', { class: 'topbar', vars: gameStyle(game) },
       h('a', { class: 'icon-btn', href: '#/', 'aria-label': 'Retour à l’accueil', text: '←' }),
@@ -235,9 +255,22 @@ function playView(gameId, sid) {
           }
         },
       })),
-    stage);
+    h('div', { class: 'play' }, stage, side));
 
-  const destroy = game.mount(stage, session.state, ctx);
+  let destroy;
+  try {
+    destroy = game.mount(stage, session.state, ctx);
+  } catch (e) {
+    // État illisible (sauvegarde importée ou modifiée à la main) : on la supprime plutôt que de bloquer l'appli.
+    clearInterval(tick);
+    document.removeEventListener('visibilitychange', onVisibility);
+    document.body.classList.remove('playing');
+    finished = true;
+    store.deleteSession(sid);
+    toast('Cette partie est illisible, elle a été supprimée.');
+    location.replace('#/');
+    return;
+  }
 
   teardown = () => {
     persist();
@@ -317,6 +350,7 @@ function profileView() {
       h('div', { class: 'tile' }, h('strong', { text: played ? `${Math.round((won / played) * 100)} %` : '–' }), h('span', { text: 'de réussite' })),
       h('div', { class: 'tile' }, h('strong', { text: ms ? formatDuration(ms) : '–' }), h('span', { text: 'de jeu' }))),
 
+    h('div', { class: 'cols' }, h('div', { class: 'col' },
     h('section', null,
       h('div', { class: 'section-head' }, h('h2', { text: 'Par jeu' })),
       h('ul', { class: 'stats' }, GAMES.map((g) => {
@@ -329,6 +363,7 @@ function profileView() {
             h('span', { class: 'muted', text: s ? `${s.won}/${s.played} gagnées${s.bestStreak ? ` · série max ${s.bestStreak}` : ''}` : 'Pas encore joué' })),
           bests.length ? h('ul', { class: 'bests' }, bests.map((d) => h('li', null, h('span', { text: d.label }), h('strong', { text: fmt(s.best[d.id]) })))) : null);
       }))),
+    ), h('div', { class: 'col' },
 
     h('section', null,
       h('div', { class: 'section-head' }, h('h2', { text: 'Badges' })),
@@ -337,8 +372,7 @@ function profileView() {
 
     h('section', null,
       h('div', { class: 'section-head' }, h('h2', { text: 'Réglages' })),
-      seg('Thème', 'theme', [['auto', 'Auto'], ['light', 'Clair'], ['dark', 'Sombre']]),
-      seg('Vibrations', 'vibrate', [[true, 'Oui'], [false, 'Non']])),
+      seg('Thème', 'theme', [['auto', 'Auto'], ['light', 'Clair'], ['dark', 'Sombre']])),
 
     h('section', null,
       h('div', { class: 'section-head' }, h('h2', { text: 'Stockage' })),
@@ -362,7 +396,8 @@ function profileView() {
               route();
             }
           },
-        }))));
+        }))),
+    )));
 }
 
 function exportData() {

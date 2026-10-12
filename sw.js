@@ -2,7 +2,7 @@
 // Stratégie : on répond depuis le cache et on met à jour en arrière-plan.
 // Pense à changer VERSION et à tenir ASSETS à jour quand tu ajoutes un fichier.
 
-const VERSION = 'aj-v2';
+const VERSION = 'aj-v3';
 const ASSETS = [
   './', 'index.html', 'about.html', 'privacy.html', 'legal.html',
   'css/style.css',

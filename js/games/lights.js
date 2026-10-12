@@ -67,7 +67,6 @@ export default {
       state.moves++;
       paint();
       ctx.save(state);
-      ctx.vibrate(6);
       if (!state.cells.some(Boolean)) {
         over = true;
         ctx.finish({ won: true, score: state.moves });

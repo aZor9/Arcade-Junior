@@ -70,7 +70,6 @@ export default {
         if (state.cards[a] === state.cards[b]) {
           state.matched[a] = state.matched[b] = true;
           state.flipped = [];
-          ctx.vibrate(12);
           if (state.matched.every(Boolean)) {
             over = true;
             paint();

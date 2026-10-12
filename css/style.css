@@ -345,6 +345,68 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
   .sheet-inner { border-bottom: 2.5px solid var(--line); border-radius: 26px; }
 }
 
+
+/* ---------- Mise en page ordinateur ---------- */
+
+/* Sur téléphone : pas de colonne latérale, les conteneurs de colonnes sont transparents. */
+.side { display: none; }
+.play { display: contents; }
+.cols, .col { display: grid; gap: 28px; }
+.col { align-content: start; }
+
+@media (min-width: 960px) {
+  :root { --board: min(540px, max(300px, calc(100dvh - 240px))); }
+
+  /* Barre latérale (marque, navigation, liens) + zone de contenu */
+  body { display: grid; grid-template-columns: 272px minmax(0, 1fr); grid-template-rows: auto auto 1fr; grid-template-areas: "head main" "nav main" "foot main"; padding-bottom: 0; align-items: start; }
+  .site-header, .tabbar, .site-footer { background: var(--surface); border-right: 2.5px solid var(--line); }
+  body.playing .site-header { display: flex; }
+  body.playing .tabbar { display: flex; }
+  body.playing .site-footer { display: flex; }
+  .site-header { grid-area: head; width: auto; margin: 0; padding: 28px 24px 14px; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .brand { font-size: 1.3rem; }
+  .brand-mark { width: 44px; height: 44px; font-size: 1.3rem; }
+  .tabbar { grid-area: nav; position: static; flex-direction: column; justify-content: flex-start; gap: 12px; padding: 12px 20px 20px; border-top: 0; }
+  .tabbar a { flex: none; max-width: none; justify-content: flex-start; padding: 12px 16px; font-size: 1.05rem; }
+  .site-footer { grid-area: foot; width: auto; margin: 0; padding: 16px 24px 28px; flex-direction: column; justify-content: flex-end; align-self: stretch; }
+  .site-footer ul { flex-direction: column; gap: 0; }
+
+  main { grid-area: main; width: 100%; max-width: 1180px; margin: 0 auto; padding: 40px clamp(28px, 4vw, 64px) 56px; gap: 40px; }
+  main.prose { max-width: 780px; margin: 0; }
+  #toast { bottom: 32px; }
+
+  /* Accueil */
+  .hero { padding: 40px 44px 44px; border-radius: 28px; }
+  .hero h1 { font-size: 3rem; }
+  .hero p { max-width: 46ch; font-size: 1.15rem; }
+  .games { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 20px; }
+  .game-card { min-height: 176px; padding: 18px 18px 20px; }
+  .game-card strong { font-size: 1.2rem; }
+  .sessions { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+
+  /* Partie : plateau à gauche, panneau d'aide à droite */
+  body.playing main { padding-top: 40px; }
+  .topbar { position: static; margin: 0; padding: 0 0 20px; }
+  .topbar-title strong { font-size: 1.5rem; }
+  .topbar .icon-btn[aria-label^="Menu"] { display: none; }
+  .play { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start; }
+  .stage { padding-top: 0; }
+  .side { display: grid; gap: 18px; position: sticky; top: 28px; }
+  .side-card { padding: 16px 18px 18px; border: 2.5px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--c) 18%, var(--surface)); box-shadow: 0 4px 0 var(--line); }
+  .side-card h2 { margin-bottom: 8px; font-size: 1.05rem; }
+  .side-best { margin: 0; font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
+  .side-best.none { font-size: 0.95rem; font-weight: 600; color: var(--muted); }
+  .sd-pad { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px; }
+  .side-actions { display: grid; gap: 10px; margin-top: 14px; }
+  .mm { width: min(100%, 520px); }
+  .mm-board { max-height: max(260px, calc(100dvh - 380px)); }
+  .nb { width: min(100%, 420px); }
+
+  /* Profil sur deux colonnes */
+  .cols { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+  .col { gap: 36px; }
+}
+
 /* Survol : uniquement avec une souris, le tactile n'a pas de « hover ». */
 @media (hover: hover) {
   .btn:hover:not(:disabled), .icon-btn:hover, .tabbar a:hover, .key:hover, .choice:hover, .session-main:hover { transform: translateY(-2px); }

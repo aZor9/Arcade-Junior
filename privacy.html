@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Confidentialité et RGPD – Arcade Junior</title>
   <meta name="description" content="Politique de confidentialité d’Arcade Junior : aucune donnée collectée, aucun cookie, tout reste sur ton appareil.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; upgrade-insecure-requests">
   <meta name="theme-color" content="#efeaff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#15122a" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -32,7 +33,7 @@
       <tbody>
         <tr><td><code>aj:s:…</code></td><td>Une partie en cours (grille, coups, temps écoulé)</td><td>Pouvoir reprendre la partie plus tard</td></tr>
         <tr><td><code>aj:profile</code></td><td>Pseudo, avatar, statistiques et records</td><td>Afficher ta page profil</td></tr>
-        <tr><td><code>aj:settings</code></td><td>Thème et vibrations</td><td>Mémoriser tes préférences</td></tr>
+        <tr><td><code>aj:settings</code></td><td>Thème (clair, sombre ou automatique)</td><td>Mémoriser tes préférences</td></tr>
       </tbody>
     </table>
     <p>Le pseudo est facultatif et tu le choisis librement : il n’est jamais transmis. Le site met aussi en cache ses propres fichiers (service worker) pour fonctionner hors connexion.</p>
@@ -41,7 +42,7 @@
     <p>Ces données sont indispensables au service que tu demandes (jouer et reprendre une partie) et ne servent à aucun suivi. Elles entrent dans les exceptions au consentement prévues pour le stockage strictement nécessaire (article 82 de la loi Informatique et Libertés, transposant la directive ePrivacy). C’est pourquoi il n’y a pas de bandeau de cookies.</p>
 
     <h2>Hébergement et nom de domaine</h2>
-    <p>Le site est hébergé par GitHub Pages (GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis) et accessible via le nom de domaine <code>hugo-lembrez.fr</code>, enregistré chez OVH (OVH SAS, 2 rue Kellermann, 59100 Roubaix, France), qui en gère la zone DNS. Comme tout hébergeur, GitHub peut enregistrer des données techniques de connexion (adresse IP, date, fichier demandé) dans ses journaux. Le site lui-même n’y a pas accès. Voir la <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">politique de confidentialité de GitHub</a>.</p>
+    <p>Le site est hébergé par GitHub Pages (GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis) et accessible via le nom de domaine <code>hugo-lembrez.fr</code>, enregistré chez OVH (OVH SAS, 2 rue Kellermann, 59100 Roubaix, France), qui en gère la zone DNS. Comme tout hébergeur, GitHub peut enregistrer des données techniques de connexion (adresse IP, date, fichier demandé) dans ses journaux. Le site lui-même n’y a pas accès. Voir la <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener noreferrer">politique de confidentialité de GitHub</a>.</p>
     <p>Le site ne charge ni police, ni script, ni image depuis un autre domaine.</p>
 
     <h2>Tes droits</h2>
@@ -57,7 +58,7 @@
     <p>Le site ne demande aucune information et ne contient aucun contenu externe ni aucune communication avec d’autres joueurs.</p>
 
     <h2>Contact</h2>
-    <p>Une question sur tes données ? Écris-moi via <a href="https://hugo-lembrez.fr" rel="noopener">hugo-lembrez.fr</a>.</p>
+    <p>Une question sur tes données ? Écris-moi via <a href="https://hugo-lembrez.fr" rel="noopener noreferrer">hugo-lembrez.fr</a>.</p>
   </main>
 
   <footer class="site-footer">

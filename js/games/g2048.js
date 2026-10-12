@@ -82,6 +82,7 @@ export default {
   color: '#ff8a3d',
   tagline: 'Fusionne les tuiles identiques',
   howto: 'Glisse le doigt (ou utilise les flèches du clavier) pour déplacer toutes les tuiles.\nDeux tuiles identiques qui se touchent fusionnent et s’additionnent.\nAtteins la tuile cible avant que la grille soit pleine.',
+  keys: ['Flèches : déplacer les tuiles'],
   score: { label: 'Meilleur score', better: 'high', fmt: (v) => v.toLocaleString('fr-FR') },
   difficulties: [
     { id: 'mini', label: 'Mini 3×3', desc: 'Atteins 256' },
@@ -135,7 +136,6 @@ export default {
       fresh = spawn(state, rng);
       paint();
       ctx.save(state);
-      if (res.gained) ctx.vibrate(8);
       const max = Math.max(...state.grid.flat());
       if (max >= state.target) {
         over = true;

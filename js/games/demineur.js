@@ -23,6 +23,7 @@ export default {
   color: '#8a8fa8',
   tagline: 'Évite toutes les mines',
   howto: 'Touche une case pour la révéler.\nUn chiffre indique le nombre de mines dans les 8 cases voisines.\nAppui long (ou bouton Drapeau) pour poser un drapeau sur une case suspecte.\nToucher un chiffre déjà entouré du bon nombre de drapeaux révèle ses voisines.\nLe premier coup est toujours sans danger.',
+  keys: ['Clic : creuser', 'Clic droit : poser un drapeau', 'Clic sur un chiffre entouré de drapeaux : révéler ses voisines'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
     { id: 'easy', label: 'Facile', desc: '8×8, 8 mines' },
@@ -127,7 +128,6 @@ export default {
         over = true;
         exploded = hit;
         paint();
-        ctx.vibrate([40, 40, 80]);
         ctx.finish({ won: false });
         return;
       }
@@ -144,7 +144,6 @@ export default {
       state.flags[i] = !state.flags[i];
       paint();
       ctx.save(state);
-      ctx.vibrate(12);
     }
 
     // Appui long = drapeau ; le « click » qui suit un appui long est ignoré.
