@@ -350,16 +350,18 @@ body.playing main { padding-top: 0; }
 
 /* Nonogram */
 .ng { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; padding-bottom: 24px; }
-.ng-board { width: var(--board); aspect-ratio: 1; display: grid; grid-template-columns: repeat(var(--tot), minmax(0, 1fr)); grid-template-rows: repeat(var(--tot), minmax(0, 1fr)); touch-action: none; user-select: none; -webkit-user-select: none; border: 2.5px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; box-shadow: 0 5px 0 var(--line); }
-.ng-corner { grid-column: 1 / span var(--g); grid-row: 1 / span var(--g); }
-.ng-clue { display: flex; font-size: calc(var(--board) / var(--tot) * 0.46); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
-.ng-clue.by-col { grid-column: var(--col); grid-row: 1 / span var(--g); flex-direction: column; justify-content: flex-end; align-items: center; gap: 0.2em; padding-bottom: 3px; }
-.ng-clue.by-row { grid-row: var(--row); grid-column: 1 / span var(--g); justify-content: flex-end; align-items: center; gap: 0.4em; padding-right: 5px; }
+.ng-board { --w: calc(var(--board) * min(1, (var(--gr) + var(--n)) / (var(--gc) + var(--n)))); --unit: calc(var(--w) / (var(--gr) + var(--n))); width: var(--w); aspect-ratio: calc(var(--gr) + var(--n)) / calc(var(--gc) + var(--n)); display: grid; grid-template-columns: var(--gutw) repeat(var(--n), minmax(0, 1fr)); grid-template-rows: var(--guth) repeat(var(--n), minmax(0, 1fr)); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; border: 2.5px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; box-shadow: 0 5px 0 var(--line); }
+.ng-corner { grid-column: 1; grid-row: 1; }
+.ng-clue { display: flex; font-size: calc(var(--unit) * 0.52); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.ng-clue.by-col { grid-column: var(--col); grid-row: 1; flex-direction: column; justify-content: flex-end; align-items: center; gap: 0.2em; padding-bottom: 3px; }
+.ng-clue.by-row { grid-row: var(--row); grid-column: 1; justify-content: flex-end; align-items: center; gap: 0.4em; padding-right: 5px; }
 .ng-clue.ok { color: var(--muted); opacity: 0.5; }
-.ng-cell { grid-column: var(--col); grid-row: var(--row); padding: 0; border: 0; border-right: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); border-radius: 0; background: var(--surface); color: var(--muted); font-size: calc(var(--board) / var(--tot) * 0.6); font-weight: 800; line-height: 1; }
+.ng-cell { grid-column: var(--col); grid-row: var(--row); padding: 0; border: 0; border-right: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); border-radius: 0; background: var(--surface); color: var(--muted); font-size: calc(var(--unit) * 0.6); font-weight: 800; line-height: 1; }
 .ng-cell.k5c { border-right: 2px solid var(--line); }
 .ng-cell.k5r { border-bottom: 2px solid var(--line); }
 .ng-cell.on { background: var(--c); box-shadow: inset 0 0 0 2px var(--line); }
+.ng-cell:focus-visible { outline: 3px solid var(--grape); outline-offset: -3px; position: relative; z-index: 1; }
+.hud-item.over strong { color: var(--danger); }
 
 /* Puissance 4 */
 .c4g { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding-bottom: 24px; }

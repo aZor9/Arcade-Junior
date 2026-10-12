@@ -307,6 +307,48 @@ if (q.get('auto')) {
     check('nonogram : glisser peint plusieurs cases', state.cur[0] === 1 && state.cur[1] === 1 && state.cur[2] === 1);
     cells[3].dispatchEvent(new MouseEvent('contextmenu', { ...pt(cells[3]), cancelable: true, button: 2 }));
     check('nonogram : clic droit marque une case', state.cur[3] === 2);
+    // --- robustesse tactile (régressions signalées : appui long, balayage rapide, déviation en diagonale) ---
+    state.cur.fill(0);
+    click($('.mode-btn')[0]);                                    // s'assure d'être en mode « noircir »
+    if (state.markMode) click($('.mode-btn')[0]);
+    const touch = (el, type) => board.dispatchEvent(new PointerEvent(type, { ...pt(el), pointerType: 'touch' }));
+    // 1. appui long au doigt : le navigateur envoie un « contextmenu » ; il ne doit pas transformer le carré noir en croix
+    touch(cells[0], 'pointerdown');
+    cells[0].dispatchEvent(new MouseEvent('contextmenu', { ...pt(cells[0]), cancelable: true, button: 0 }));
+    touch(cells[0], 'pointerup');
+    check('nonogram (tactile) : un appui long ne pose pas de croix par erreur', state.cur[0] === 1);
+    touch(cells[0], 'pointerdown'); touch(cells[0], 'pointerup');
+    check('nonogram (tactile) : retoucher efface', state.cur[0] === 0);
+    // 2. balayage rapide : on saute de la case 0 à la case 4 en un seul événement, tout doit être peint
+    touch(cells[0], 'pointerdown');
+    board.dispatchEvent(new PointerEvent('pointermove', { ...pt(cells[Math.min(4, state.n - 1)]), pointerType: 'touch' }));
+    touch(cells[Math.min(4, state.n - 1)], 'pointerup');
+    const upto = Math.min(4, state.n - 1);
+    check('nonogram : un balayage rapide ne laisse aucune case sautée', Array.from({ length: upto + 1 }, (_, k) => state.cur[k]).every((v) => v === 1));
+    // 3. trajet en diagonale : on reste sur la ligne de départ (pas de cases de la ligne suivante)
+    state.cur.fill(0);
+    touch(cells[0], 'pointerdown');
+    board.dispatchEvent(new PointerEvent('pointermove', { ...pt(cells[state.n + 2]), pointerType: 'touch' })); // ligne 1, colonne 2
+    touch(cells[state.n + 2], 'pointerup');
+    check('nonogram : un trajet en diagonale reste sur la ligne de départ', state.cur[0] === 1 && state.cur[1] === 1 && state.cur[2] === 1 && state.cur[state.n] === 0 && state.cur[state.n + 1] === 0 && state.cur[state.n + 2] === 0);
+    // 4. clavier : Entrée sur une case la noircit, les flèches déplacent le focus
+    state.cur.fill(0);
+    cells[0].focus();
+    cells[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    check('nonogram (clavier) : flèche droite déplace le focus', document.activeElement === cells[1]);
+    cells[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    check('nonogram (clavier) : flèche bas déplace le focus', document.activeElement === cells[state.n + 1]);
+    document.activeElement.click();
+    check('nonogram (clavier) : Entrée / Espace noircit la case', state.cur[state.n + 1] === 1);
+    check('nonogram (lecteur d’écran) : l’état de la case est annoncé', /noircie/.test(cells[state.n + 1].getAttribute('aria-label')));
+    // 5. compteur : jamais négatif, signale l'excès
+    state.cur.fill(0);
+    state.cur.forEach((_, i) => { if (state.solution[i] !== 1 && i < 3) state.cur[i] = 1; });
+    click($('.mode-btn')[0]); click($('.mode-btn')[0]);          // force un repaint sans changer l'état
+    const label = $('.hud-item span')[0].textContent; const value = Number($('.hud-item strong')[0].textContent);
+    check('nonogram : le compteur n’est jamais négatif', value >= 0 && /noircir|trop/.test(label));
+    state.cur.fill(0);
+    click($('.mode-btn')[0]); click($('.mode-btn')[0]);
     for (let i = 0; i < state.n; i++) { if ((state.solution[i] === 1) !== (state.cur[i] === 1)) press(cells[i]); }
     check('nonogram : un indice correct devient clair', $('.ng-clue.by-row')[0].classList.contains('ok'));
     state.solution.forEach((need, i) => { if ((need === 1) !== (state.cur[i] === 1)) press(cells[i]); });

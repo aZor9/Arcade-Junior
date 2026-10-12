@@ -117,20 +117,27 @@ export default {
   mount(root, state, ctx) {
     const { n, rowClues, colClues } = state;
     let over = false;
-    const gutter = Math.max(1, ...rowClues.map((c) => c.length), ...colClues.map((c) => c.length));
-    const tot = n + gutter;
+    // Marges des indices dimensionnées séparément et au plus juste (en « cases » de la grille) :
+    // - à gauche, la largeur de l'indice de ligne le plus long (chaque nombre ≈ 0,31 case par chiffre + un espace) ;
+    // - en haut, la hauteur de l'indice de colonne le plus haut (un nombre par ligne de texte).
+    const r2 = (x) => Math.ceil(x * 20) / 20;
+    const digits = (v) => String(v).length;
+    const gr = r2(Math.max(1.2, ...rowClues.map((c) => (c.length ? c : [0]).reduce((a, v) => a + 0.31 * digits(v) + 0.21, 0.3))));
+    const gc = r2(Math.max(1.2, ...colClues.map((c) => (c.length || 1) * 0.62 + 0.25)));
 
     const modeBtn = h('button', { type: 'button', class: 'btn btn-ghost mode-btn', 'aria-pressed': 'false' });
     const leftEl = h('strong', { text: '' });
-    const board = h('div', { class: 'ng-board', vars: { '--n': n, '--tot': tot } });
-    board.append(h('div', { class: 'ng-corner', vars: { '--g': gutter } }));
+    const leftLabel = h('span', { text: 'Cases à noircir' });
+    const leftItem = h('div', { class: 'hud-item' }, leftLabel, leftEl);
+    const board = h('div', { class: 'ng-board', vars: { '--n': n, '--gr': gr, '--gc': gc, '--gutw': `${gr}fr`, '--guth': `${gc}fr` } });
+    board.append(h('div', { class: 'ng-corner' }));
     const colEls = colClues.map((clue, c) => {
-      const el = h('div', { class: 'ng-clue by-col', vars: { '--col': c + gutter + 1, '--g': gutter } }, (clue.length ? clue : [0]).map((v) => h('span', { text: String(v) })));
+      const el = h('div', { class: 'ng-clue by-col', vars: { '--col': c + 2 } }, (clue.length ? clue : [0]).map((v) => h('span', { text: String(v) })));
       board.append(el);
       return el;
     });
     const rowEls = rowClues.map((clue, r) => {
-      const el = h('div', { class: 'ng-clue by-row', vars: { '--row': r + gutter + 1, '--g': gutter } }, (clue.length ? clue : [0]).map((v) => h('span', { text: String(v) })));
+      const el = h('div', { class: 'ng-clue by-row', vars: { '--row': r + 2 } }, (clue.length ? clue : [0]).map((v) => h('span', { text: String(v) })));
       board.append(el);
       return el;
     });
@@ -140,16 +147,17 @@ export default {
       const cls = ['ng-cell'];
       if (c % 5 === 4 && c < n - 1) cls.push('k5c');
       if (r % 5 === 4 && r < n - 1) cls.push('k5r');
-      const b = h('button', { type: 'button', class: cls.join(' '), 'data-i': String(i), 'aria-label': `Ligne ${r + 1}, colonne ${c + 1}`, vars: { '--col': c + gutter + 1, '--row': r + gutter + 1 } });
+      const b = h('button', { type: 'button', class: cls.join(' '), 'data-i': String(i), 'aria-label': `Ligne ${r + 1}, colonne ${c + 1}`, vars: { '--col': c + 2, '--row': r + 2 } });
       board.append(b);
       return b;
     });
     root.append(h('div', { class: 'ng' },
-      h('div', { class: 'hud' }, h('div', { class: 'hud-item' }, h('span', { text: 'Cases à noircir' }), leftEl), modeBtn),
+      h('div', { class: 'hud' }, leftItem, modeBtn),
       board));
 
     const lineOf = (r, c, k) => (k === 'row' ? Array.from({ length: n }, (_, j) => state.cur[r * n + j]) : Array.from({ length: n }, (_, j) => state.cur[j * n + c]));
     const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+    const need = state.solution.reduce((a, v) => a + v, 0);
 
     function paint() {
       cells.forEach((b, i) => {
@@ -157,70 +165,119 @@ export default {
         b.classList.toggle('on', v === 1);
         b.classList.toggle('x', v === 2);
         b.textContent = v === 2 ? '×' : '';
+        // L'état est annoncé aux lecteurs d'écran (sinon une case noircie ressemble à une case vide).
+        b.setAttribute('aria-label', `Ligne ${Math.floor(i / n) + 1}, colonne ${(i % n) + 1}, ${v === 1 ? 'noircie' : v === 2 ? 'marquée vide' : 'vide'}`);
       });
       rowEls.forEach((el, r) => el.classList.toggle('ok', same(cluesOf(lineOf(r, 0, 'row').map((v) => (v === 1 ? 1 : 0))), rowClues[r])));
       colEls.forEach((el, c) => el.classList.toggle('ok', same(cluesOf(lineOf(0, c, 'col').map((v) => (v === 1 ? 1 : 0))), colClues[c])));
-      const need = state.solution.reduce((a, v) => a + v, 0);
-      leftEl.textContent = need - state.cur.filter((v) => v === 1).length;
+      // Compteur : cases restant à noircir, ou cases en trop (jamais de valeur négative).
+      const diff = need - state.cur.filter((v) => v === 1).length;
+      leftLabel.textContent = diff >= 0 ? 'Cases à noircir' : 'Cases en trop';
+      leftEl.textContent = Math.abs(diff);
+      leftItem.classList.toggle('over', diff < 0);
       modeBtn.textContent = state.markMode ? '✖ Marquer' : '⬛ Noircir';
       modeBtn.setAttribute('aria-pressed', String(state.markMode));
     }
 
-    function solved() {
-      return state.cur.every((v, i) => (v === 1) === (state.solution[i] === 1));
-    }
-
-    // Peinture : la valeur appliquée est décidée sur la première case touchée, puis étendue en glissant.
-    let paintValue = null;
-    let dragging = false;
-    const apply = (i) => {
-      if (state.cur[i] === paintValue) return;
-      state.cur[i] = paintValue;
-      paint();
-    };
-    const cellFrom = (e) => {
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      const c = el && el.closest ? el.closest('.ng-cell') : null;
-      return c && board.contains(c) ? Number(c.dataset.i) : -1;
-    };
-    board.addEventListener('pointerdown', (e) => {
-      if (over || e.button === 2) return;
-      const i = cellFrom(e);
-      if (i < 0) return;
-      const target = state.markMode ? 2 : 1;
-      paintValue = state.cur[i] === target ? 0 : target;
-      dragging = true;
-      board.setPointerCapture(e.pointerId);
-      e.preventDefault();
-      apply(i);
-    });
-    board.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      const i = cellFrom(e);
-      if (i >= 0) apply(i);
-    });
-    const end = () => {
-      if (!dragging) return;
-      dragging = false;
+    const solved = () => state.cur.every((v, i) => (v === 1) === (state.solution[i] === 1));
+    function settle() {
       ctx.save(state);
-      if (solved()) {
+      if (!over && solved()) {
         over = true;
         ctx.finish({ won: true, score: Math.max(1, Math.round(ctx.elapsed() / 1000)) });
       }
+    }
+
+    // Position d'un point de l'écran dans la grille. Avec `clamp`, un doigt qui dérive dans la marge ou hors
+    // de la grille reste rattaché à la case la plus proche (le glisser ne « décroche » pas).
+    const coords = (x, y, clamp) => {
+      const a = cells[0].getBoundingClientRect();
+      const z = cells[n * n - 1].getBoundingClientRect();
+      const c = Math.floor((x - a.left) / ((z.right - a.left) / n));
+      const r = Math.floor((y - a.top) / ((z.bottom - a.top) / n));
+      if (!clamp && (c < 0 || c >= n || r < 0 || r >= n)) return null;
+      return { r: Math.min(n - 1, Math.max(0, r)), c: Math.min(n - 1, Math.max(0, c)) };
     };
-    board.addEventListener('pointerup', end);
-    board.addEventListener('pointercancel', end);
-    // Clic droit : marquer / démarquer une case vide.
+    // Toutes les cases d'une même ligne (ou colonne) entre `from` et `to`, incluses : aucun saut possible.
+    const paintLine = (from, to, value) => {
+      const step = from === to ? 0 : Math.floor(from / n) === Math.floor(to / n) ? (to > from ? 1 : -1) : to > from ? n : -n;
+      for (let i = from; ; i += step) {
+        state.cur[i] = value;
+        if (i === to || step === 0) break;
+      }
+    };
+
+    // Peinture : la valeur est décidée sur la première case touchée. Le trajet est ensuite verrouillé sur la
+    // ligne ou la colonne de départ (comme dans les applis de Picross), ce qui évite les dérapages en diagonale.
+    let drag = null;
+    let lastType = '';
+    board.addEventListener('pointerdown', (e) => {
+      lastType = e.pointerType;
+      if (over || e.button === 2 || drag) return;
+      const p = coords(e.clientX, e.clientY, false);
+      if (!p) return;
+      const i = p.r * n + p.c;
+      const target = state.markMode ? 2 : 1;
+      drag = { id: e.pointerId, value: state.cur[i] === target ? 0 : target, r0: p.r, c0: p.c, axis: null, last: i };
+      board.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      state.cur[i] = drag.value;
+      paint();
+    });
+    board.addEventListener('pointermove', (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const p = coords(e.clientX, e.clientY, true);
+      if (!drag.axis) {
+        if (p.r === drag.r0 && p.c === drag.c0) return;
+        drag.axis = Math.abs(p.r - drag.r0) >= Math.abs(p.c - drag.c0) ? 'col' : 'row';
+      }
+      const to = drag.axis === 'col' ? p.r * n + drag.c0 : drag.r0 * n + p.c;
+      if (to === drag.last) return;
+      paintLine(drag.last, to, drag.value);
+      drag.last = to;
+      paint();
+    });
+    const release = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      drag = null;
+      settle();
+    };
+    board.addEventListener('pointerup', release);
+    board.addEventListener('pointercancel', release);
+
+    // Clic droit à la souris : marquer / démarquer une case vide. Au doigt, un appui long déclenche aussi
+    // « contextmenu » : on l'ignore, sinon il transformerait le carré noir qu'on vient de poser en croix.
     board.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      if (over) return;
-      const i = cellFrom(e);
-      if (i < 0) return;
+      if (over || lastType === 'touch') return;
+      const p = coords(e.clientX, e.clientY, false);
+      if (!p) return;
+      const i = p.r * n + p.c;
       state.cur[i] = state.cur[i] === 2 ? 0 : 2;
       paint();
-      ctx.save(state);
-      if (solved()) { over = true; ctx.finish({ won: true, score: Math.max(1, Math.round(ctx.elapsed() / 1000)) }); }
+      settle();
     });
+
+    // Clavier : un « click » sans pointeur (Entrée ou Espace sur une case) bascule la case selon le mode ; les
+    // flèches déplacent le focus.
+    cells.forEach((b, i) => b.addEventListener('click', (e) => {
+      if (e.detail !== 0 || over) return;
+      const target = state.markMode ? 2 : 1;
+      state.cur[i] = state.cur[i] === target ? 0 : target;
+      paint();
+      settle();
+    }));
+    board.addEventListener('keydown', (e) => {
+      const b = e.target.closest ? e.target.closest('.ng-cell') : null;
+      const d = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }[e.key];
+      if (!b || !d) return;
+      e.preventDefault();
+      const i = Number(b.dataset.i);
+      const r = Math.min(n - 1, Math.max(0, Math.floor(i / n) + d[0]));
+      const c = Math.min(n - 1, Math.max(0, (i % n) + d[1]));
+      cells[r * n + c].focus();
+    });
+
     modeBtn.addEventListener('click', () => { state.markMode = !state.markMode; paint(); ctx.save(state); });
     const onKey = (e) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
