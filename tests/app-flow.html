@@ -112,6 +112,29 @@ f.addEventListener('load', async () => {
     // Export / import
     const exported = JSON.parse((await import('../js/storage.js')).exportAll());
     check('export : format attendu', exported.app === 'arcade-junior' && !!exported.data['aj:profile']);
+
+    // Régression mobile : ouvrir une partie depuis un accueil défilé ne doit pas laisser la page défilée
+    // (les infos du haut passaient sous la barre collante).
+    for (const [index, name] of [[1, 'mastermind'], [2, 'sudoku'], [4, 'lights']]) {
+      d.querySelectorAll('dialog').forEach((x) => x.close());
+      w.localStorage.clear();
+      w.location.hash = '#/profil';
+      await until(() => $('.tile').length === 4);
+      w.location.hash = '#/';
+      await until(() => $('.game-card').length === NB);
+      w.scrollTo(0, 500);
+      await sleep(50);
+      const hubScroll = w.scrollY;
+      $('.game-card')[index].click();
+      await until(sheet);
+      d.querySelector('dialog[open] .choice').click();
+      await until(() => w.location.hash.startsWith('#/jeu/' + name + '/'));
+      await sleep(250);
+      const bar = d.querySelector('.topbar').getBoundingClientRect();
+      const first = d.querySelector('.stage > *').getBoundingClientRect();
+      check(`départ ${name} : page en haut (accueil défilé de ${hubScroll}px)`, hubScroll > 100 && w.scrollY === 0);
+      check(`départ ${name} : le contenu n'est pas sous la barre du haut`, first.top >= bar.bottom - 1);
+    }
   } catch (e) { log.push('FAIL exception: ' + e.message); }
   out.textContent = log.concat(dbg.slice(0, 6)).join(String.fromCharCode(10));
 });

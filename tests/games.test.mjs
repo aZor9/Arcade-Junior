@@ -8,6 +8,10 @@ import { buildGraph, crossingEdges, generate as genUntangle } from '../js/games/
 import { analyse, rotated, makeTree } from '../js/games/pipes.js';
 import { solve as solveTakuzu, errors as takuzuErrors, propagate } from '../js/games/takuzu.js';
 import { canMove, minMoves } from '../js/games/hanoi.js';
+import { adjacent as flowAdjacent, summary as flowSummary } from '../js/games/flow.js';
+import { applyOp } from '../js/games/compte.js';
+import { solveGrid as solveNonogram, cluesOf as nonoClues } from '../js/games/nonogram.js';
+import { dropIn as c4Drop, lineAt as c4Line, bestMove as c4Best, W as c4W, H as c4H } from '../js/games/connect4.js';
 
 let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log('ok -', name); };
@@ -132,6 +136,120 @@ ok('hanoï : règles de déplacement et minimum', () => {
   assert.ok(!canMove([[3, 2], [1], []], 0, 1));
   assert.ok(!canMove([[], [1], []], 0, 1));
   assert.ok(canMove([[3], [1], []], 1, 0));
+});
+
+ok('liaisons : chemin passant par toutes les cases, tronçons valides, grille à résoudre vide au départ', () => {
+  const fl = GAMES.find((g) => g.id === 'flow');
+  for (const d of fl.difficulties) {
+    for (let seed = 1; seed <= 10; seed++) {
+      const st = fl.create(createRng(seed * 17), d.id);
+      assert.equal(st.solution.flat().length, st.rows * st.cols);
+      assert.equal(new Set(st.solution.flat()).size, st.rows * st.cols, `${d.id}: chaque case une seule fois`);
+      st.solution.forEach((p) => {
+        assert.ok(p.length >= 3);
+        for (let i = 1; i < p.length; i++) assert.ok(flowAdjacent(p[i - 1], p[i], st.cols), 'cases voisines');
+      });
+      assert.ok(st.paths.every((p) => p.length === 0));
+      assert.equal(flowSummary(st).solved, false);
+      // la solution, posée sur la grille, vérifie les règles
+      const solved = { ...st, paths: st.solution.map((p) => p.slice()) };
+      assert.equal(flowSummary(solved).solved, true, `${d.id}/${seed} la solution résout la grille`);
+    }
+  }
+});
+
+ok('le compte est bon : opérations permises et cible atteignable', () => {
+  assert.equal(applyOp(10, 4, '−'), 6);
+  assert.equal(applyOp(4, 10, '−'), null);
+  assert.equal(applyOp(10, 4, '÷'), null);
+  assert.equal(applyOp(12, 4, '÷'), 3);
+  assert.equal(applyOp(6, 7, '×'), 42);
+  const reachable = (vals, target) => {
+    if (vals.includes(target)) return true;
+    for (let i = 0; i < vals.length; i++) {
+      for (let j = 0; j < vals.length; j++) {
+        if (i === j) continue;
+        for (const op of ['+', '−', '×', '÷']) {
+          const r = applyOp(vals[i], vals[j], op);
+          if (r === null) continue;
+          if (reachable([...vals.filter((_, k) => k !== i && k !== j), r], target)) return true;
+        }
+      }
+    }
+    return false;
+  };
+  const cp = GAMES.find((g) => g.id === 'compte');
+  for (const d of cp.difficulties) {
+    for (let seed = 1; seed <= 4; seed++) {
+      const st = cp.create(createRng(seed * 71), d.id);
+      assert.ok(st.target > 0 && !st.numbers.includes(st.target), `${d.id}: la cible n'est pas déjà donnée`);
+      assert.ok(reachable(st.numbers, st.target), `${d.id}/${seed}: ${st.numbers} -> ${st.target}`);
+    }
+  }
+});
+
+ok('nonogram : solution unique (vérifiée par force brute en 5×5) et résolue par logique', () => {
+  const ng = GAMES.find((g) => g.id === 'nonogram');
+  for (const d of ng.difficulties) {
+    const st = ng.create(createRng(99), d.id);
+    const again = solveNonogram(st.n, st.rowClues, st.colClues);
+    assert.deepEqual(again, st.solution, `${d.id}: le solveur retrouve la solution`);
+    st.rowClues.forEach((c, r) => assert.deepEqual(nonoClues(st.solution.slice(r * st.n, r * st.n + st.n)), c));
+  }
+  // 5×5 : on énumère toutes les images possibles ligne par ligne et on compte celles qui respectent les indices.
+  for (const seed of [1, 2, 3]) {
+    const st = ng.create(createRng(seed), 'easy');
+    const n = st.n;
+    const rowsOpts = Array.from({ length: n }, (_, r) => {
+      const opts = [];
+      for (let m = 0; m < 1 << n; m++) {
+        const line = Array.from({ length: n }, (_, k) => (m >> k) & 1);
+        if (JSON.stringify(nonoClues(line)) === JSON.stringify(st.rowClues[r])) opts.push(line);
+      }
+      return opts;
+    });
+    let count = 0;
+    const rec = (r, grid) => {
+      if (r === n) {
+        for (let c = 0; c < n; c++) if (JSON.stringify(nonoClues(grid.map((row) => row[c]))) !== JSON.stringify(st.colClues[c])) return;
+        count++;
+        return;
+      }
+      for (const line of rowsOpts[r]) rec(r + 1, [...grid, line]);
+    };
+    rec(0, []);
+    assert.equal(count, 1, `5×5 seed ${seed} : une seule image possible`);
+  }
+});
+
+ok('puissance 4 : alignements, victoire immédiate, blocage, force de l’IA', () => {
+  const b = Array(c4W * c4H).fill(0);
+  [0, 1, 2].forEach((c) => c4Drop(b, c, 1));
+  const r = c4Drop(b, 3, 1);
+  assert.ok(c4Line(b, r, 3, 1), 'quatre en ligne détectés');
+  const v = Array(c4W * c4H).fill(0);
+  [0, 0, 0].forEach((c) => c4Drop(v, c, 2));
+  assert.equal(c4Best(v, 2, 3, createRng(1)), 0, 'gagne tout de suite');
+  const t = Array(c4W * c4H).fill(0);
+  [0, 0, 0].forEach((c) => c4Drop(t, c, 1));
+  assert.equal(c4Best(t, 2, 3, createRng(1)), 0, 'bloque la colonne');
+  // L'IA (profondeur 4) doit battre un joueur qui joue au hasard.
+  let wins = 0;
+  for (let g = 0; g < 20; g++) {
+    const rng = createRng(g * 7 + 1);
+    const bd = Array(c4W * c4H).fill(0);
+    let who = g % 2 ? 2 : 1;
+    let res = 0;
+    for (let k = 0; k < 42; k++) {
+      const legal = [0, 1, 2, 3, 4, 5, 6].filter((c) => !bd[(c4H - 1) * c4W + c]);
+      const col = who === 2 ? c4Best(bd, 2, 4, rng) : rng.pick(legal);
+      const row = c4Drop(bd, col, who);
+      if (c4Line(bd, row, col, who)) { res = who; break; }
+      who = 3 - who;
+    }
+    if (res === 2) wins++;
+  }
+  assert.ok(wins >= 18, `l'IA gagne ${wins}/20`);
 });
 
 console.log(`\n${n} groupes de tests réussis`);

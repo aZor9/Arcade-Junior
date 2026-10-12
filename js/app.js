@@ -431,6 +431,9 @@ function importData() {
 
 /* ---------- Routeur ---------- */
 
+// Dernière page affichée : on ne remonte en haut que lorsqu'on change vraiment de page (pas lors d'un simple rafraîchissement).
+let lastHash = null;
+
 function route() {
   if (teardown) { teardown(); teardown = null; }
   document.title = 'Arcade Junior – mini-jeux de réflexion';
@@ -443,7 +446,9 @@ function route() {
   if (page === 'jeu' && a && b) playView(a, b);
   else if (page === 'profil') { document.title = 'Profil – Arcade Junior'; profileView(); }
   else hubView();
-  if (page !== 'jeu') window.scrollTo(0, 0);
+  // Sans cela, une partie ouverte depuis un accueil défilé gardait ce défilement et ses infos du haut passaient sous la barre collante.
+  if (location.hash !== lastHash) window.scrollTo(0, 0);
+  lastHash = location.hash;
 }
 
 applyTheme();

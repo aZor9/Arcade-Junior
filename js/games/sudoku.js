@@ -173,11 +173,21 @@ export default {
       noteBtn.classList.toggle('on', state.noteMode);
       noteBtn.setAttribute('aria-pressed', String(state.noteMode));
       const mask = sel !== null && !state.cur[sel] ? state.notes[sel] : 0;
+      const done = doneDigits(bad);
       padKeys.forEach((k, idx) => {
         const on = state.noteMode && (mask & (1 << idx)) !== 0;
         k.classList.toggle('on', on);
+        k.classList.toggle('done', done[idx + 1]);
+        k.disabled = done[idx + 1];
         k.setAttribute('aria-pressed', String(on));
       });
+    }
+
+    // Un chiffre est « terminé » quand toutes ses cases sont posées sans aucune faute : on le grise.
+    function doneDigits(bad) {
+      const count = Array(n + 1).fill(0);
+      state.cur.forEach((v, i) => { if (v && !bad.has(i)) count[v]++; });
+      return count.map((c) => c >= n);
     }
 
     // Petite grille des chiffres notés : chaque chiffre garde toujours la même place dans la case.
@@ -200,6 +210,7 @@ export default {
     function put(v) {
       const i = state.sel;
       if (over || i === null || state.puzzle[i]) return;
+      if (v && state.cur[i] !== v && doneDigits(conflicts())[v]) return; // chiffre déjà terminé
       if (v === 0) {
         // Effacer : d'abord le chiffre, puis, s'il n'y en a pas, les notes de la case.
         if (state.cur[i]) state.cur[i] = 0; else state.notes[i] = 0;

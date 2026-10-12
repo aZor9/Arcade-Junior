@@ -94,8 +94,13 @@ export default {
       }
       okBtn.disabled = state.over || state.current.includes(null);
       delBtn.disabled = state.over || state.current.every((v) => v === null);
+      // On fait défiler la liste elle-même, jamais la page (scrollIntoView remontait ou descendait toute la page).
       const cur = board.querySelector('.current');
-      if (cur) cur.scrollIntoView({ block: 'nearest' });
+      if (cur) {
+        const bottom = cur.offsetTop + cur.offsetHeight;
+        if (bottom > board.scrollTop + board.clientHeight) board.scrollTop = bottom - board.clientHeight + 8;
+        else if (cur.offsetTop < board.scrollTop) board.scrollTop = Math.max(0, cur.offsetTop - 8);
+      }
     }
 
     function update() {

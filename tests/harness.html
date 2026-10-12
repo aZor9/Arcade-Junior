@@ -6,6 +6,7 @@
 <script type="module">
 // Usage : tests/harness.html?g=sudoku&d=normal&seed=3  (monte un jeu avec un faux contexte)
 import { GAMES, getGame } from '../js/games/index.js';
+import { applyOp } from '../js/games/compte.js';
 import { createRng } from '../js/rng.js';
 const q = new URLSearchParams(location.search);
 const err = document.getElementById('err');
@@ -20,6 +21,10 @@ stage.style.setProperty('--c', g.color);
 const ctx = { save() {}, elapsed: () => 0, toast: show, finish: (r) => show('FINISH ' + JSON.stringify(r)) };
 if (q.get('big') && state.grid) state.grid = state.grid.map((r, i) => r.map((_, j) => 2 ** (1 + ((i * state.size + j) % 17))));
 if (q.get('fill') && g.id === 'mastermind') { for (let k = 0; k < 3; k++) { state.guesses.push({ g: state.secret.map((_, i) => (i + k) % state.colors), black: k, white: 1 }); } state.current = state.current.map((_, i) => i % state.colors); }
+if (q.get('demo') === 'done' && g.id === 'sudoku') { state.solution.forEach((v, i) => { if (v === 1 || v === 2) state.cur[i] = v; }); state.sel = state.cur.findIndex((v) => !v); }
+if (q.get('demo') === 'paths' && g.id === 'flow') { state.paths = state.solution.map((p, k) => (k < 3 ? p.slice() : k === 3 ? p.slice(0, 2) : [])); }
+if (q.get('demo') === 'ng' && g.id === 'nonogram') { let k = 0; state.solution.forEach((v, i) => { if (v === 1 && k++ % 2 === 0) state.cur[i] = 1; else if (v === 0 && i % 7 === 0) state.cur[i] = 2; }); }
+if (q.get('demo') === 'c4' && g.id === 'connect4') { [3, 3, 2, 4, 4, 3, 2].forEach((c, k) => { const r = [0, 1, 2, 3, 4, 5].find((rr) => !state.board[rr * 7 + c]); state.board[r * 7 + c] = k % 2 ? 2 : 1; }); state.turn = 1; state.moves = 4; }
 if (q.get('legacy')) { delete state.notes; delete state.noteMode; }
 if (q.get('demo') === 'notes' && g.id === 'sudoku') {
   const emp = state.cur.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0);
@@ -92,20 +97,24 @@ if (q.get('auto')) {
     const btnNote = () => $('.sd-tools .key')[0];
     const keyOf = (v) => $('.sd-pad .key')[v - 1];
     const empties = state.cur.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0);
-    const D = Math.min(5, n);
+    // Chiffres encore utilisables (un chiffre dont toutes les cases sont posées est grisé).
+    const avail = Array.from({ length: n }, (_, k) => k + 1).filter((v) => !keyOf(v).disabled);
+    const [A, B, C] = avail;
+    const D = avail[3];
     const e0 = empties[0];
     click($('.sd-cell')[e0]);
     click(btnNote());
     check('notes : le mode s’active', state.noteMode === true && btnNote().classList.contains('on'));
-    click(keyOf(1)); click(keyOf(2)); click(keyOf(3));
-    check('notes : 3 chiffres notés', state.notes[e0] === 0b111 && state.cur[e0] === 0);
-    check('notes : affichées dans la case', $('.sd-cell')[e0].querySelectorAll('.sd-notes span').length === n && $('.sd-cell')[e0].textContent === '123');
-    click(keyOf(2));
-    check('notes : un chiffre se retire en le retouchant', state.notes[e0] === 0b101);
+    const bit = (v) => 1 << (v - 1);
+    click(keyOf(A)); click(keyOf(B)); click(keyOf(C));
+    check('notes : 3 chiffres notés', state.notes[e0] === (bit(A) | bit(B) | bit(C)) && state.cur[e0] === 0);
+    check('notes : affichées dans la case', $('.sd-cell')[e0].querySelectorAll('.sd-notes span').length === n && $('.sd-cell')[e0].textContent === [A, B, C].sort().join(''));
+    click(keyOf(B));
+    check('notes : un chiffre se retire en le retouchant', state.notes[e0] === (bit(A) | bit(C)));
     // un voisin (même ligne) reçoit la note 5 ; poser 5 dans e0 doit la lui retirer
     const row = Math.floor(e0 / n);
     const peer = empties.find((i) => i !== e0 && Math.floor(i / n) === row);
-    if (peer !== undefined) {
+    if (peer !== undefined && D !== undefined) {
       click($('.sd-cell')[peer]); click(keyOf(D));
       check('notes : voisin noté', (state.notes[peer] & (1 << (D - 1))) !== 0);
       click($('.sd-cell')[e0]); click(btnNote());
@@ -118,8 +127,8 @@ if (q.get('auto')) {
     check('notes : mode normal rétabli', state.noteMode === false);
     // effacer : sans chiffre -> efface les notes
     const e1 = empties.find((i) => i !== e0 && !state.cur[i]);
-    click($('.sd-cell')[e1]); click(btnNote()); click(keyOf(4)); click(btnNote());
-    check('notes : posées dans une 2e case', state.notes[e1] === 0b1000);
+    click($('.sd-cell')[e1]); click(btnNote()); click(keyOf(A)); click(btnNote());
+    check('notes : posées dans une 2e case', state.notes[e1] === bit(A));
     click($('.sd-tools .key')[1]);
     check('notes : « Effacer » vide les notes', state.notes[e1] === 0);
     // touche N
@@ -130,6 +139,23 @@ if (q.get('auto')) {
     // sérialisation
     check('notes : état sérialisable', JSON.stringify(JSON.parse(JSON.stringify(state))) === JSON.stringify(state));
     // les notes ne doivent jamais bloquer la victoire
+    // --- chiffre terminé : grisé et non sélectionnable ---
+    const D2 = 1;
+    state.solution.forEach((v, i) => { if (v === D2 && !state.puzzle[i]) { click($('.sd-cell')[i]); click(keyOf(D2)); } });
+    check('chiffre terminé : bouton grisé', keyOf(D2).disabled === true && keyOf(D2).classList.contains('done'));
+    const other = state.cur.findIndex((v, i) => !v && !state.puzzle[i]);
+    if (other >= 0) {
+      click($('.sd-cell')[other]); click(keyOf(D2));
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: String(D2), bubbles: true }));
+      check('chiffre terminé : impossible de le re-poser (bouton ou clavier)', state.cur[other] === 0);
+    }
+    check('chiffre terminé : les autres chiffres restent actifs', $('.sd-pad .key').some((k, idx) => idx + 1 !== D2 && !k.disabled));
+    const some = state.solution.findIndex((v, i) => v === D2 && !state.puzzle[i]);
+    if (some >= 0) {
+      click($('.sd-cell')[some]); click($('.sd-tools .key')[1]);
+      check('chiffre terminé : effacer une de ses cases le réactive', keyOf(D2).disabled === false);
+      click(keyOf(D2));
+    }
     // Remplit tout avec la solution : doit terminer la partie.
     state.solution.forEach((v, i) => { if (!state.puzzle[i]) { click($('.sd-cell')[i]); click($('.sd-pad .key')[v - 1]); } });
     check('sudoku : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));
@@ -196,6 +222,111 @@ if (q.get('auto')) {
       move(state.disks, from, state.to, via);
       check('hanoï : résolu au minimum de coups', state.moves === 2 ** state.disks - 1 && document.getElementById('err').textContent.includes('FINISH'));
     } else check('hanoï : état de départ restauré', false);
+  } else if (id === 'flow') {
+    const svg = stage.querySelector('.fl-svg');
+    const R = svg.getBoundingClientRect();
+    const at = (cell) => ({ clientX: R.left + (((cell % state.cols) + 0.5) / state.cols) * R.width, clientY: R.top + ((Math.floor(cell / state.cols) + 0.5) / state.rows) * R.height, pointerId: 1, bubbles: true });
+    const drag = (cells) => {
+      svg.dispatchEvent(new PointerEvent('pointerdown', at(cells[0])));
+      for (const c of cells.slice(1)) svg.dispatchEvent(new PointerEvent('pointermove', at(c)));
+      svg.dispatchEvent(new PointerEvent('pointerup', at(cells[cells.length - 1])));
+    };
+    check('liaisons : deux points par paire', $('.fl-dot').length === state.dots.length * 2);
+    drag(state.solution[0]);
+    check('liaisons : un glisser trace le chemin', state.paths[0].join() === state.solution[0].join() && $('.fl-line')[0].getAttribute('points').length > 0);
+    drag([state.solution[0][2]]);
+    check('liaisons : toucher le milieu du chemin le raccourcit', state.paths[0].length === 3);
+    state.dots.forEach((_, k) => drag(state.solution[k]));
+    check('liaisons : tous les chemins tracés = victoire', document.getElementById('err').textContent.includes('FINISH'));
+    check('liaisons : toutes les cases remplies', new Set(state.paths.flat()).size === state.rows * state.cols);
+  } else if (id === 'compte') {
+    const OPS = ['+', '−', '×', '÷'];
+    const seen = new Set();
+    const search = (vals) => {
+      if (vals.includes(state.target)) return [];
+      if (vals.length < 2) return null;
+      const key = vals.slice().sort((a, b) => a - b).join(',');
+      if (seen.has(key)) return null;
+      seen.add(key);
+      for (let ai = 0; ai < vals.length; ai++) {
+        for (let bi = 0; bi < vals.length; bi++) {
+          if (ai === bi) continue;
+          for (const op of OPS) {
+            const r = applyOp(vals[ai], vals[bi], op);
+            if (r === null) continue;
+            const next = vals.filter((_, k) => k !== ai && k !== bi);
+            next.splice(Math.min(ai, next.length), 0, r);
+            const rest = search(next);
+            if (rest) return [[ai, bi, op], ...rest];
+          }
+        }
+      }
+      return null;
+    };
+    const tiles = () => $('.cb-tile');
+    const op = (o) => $('.cb-op')[OPS.indexOf(o)];
+    const doStep = ([ai, bi, o]) => { click(tiles()[ai]); click(op(o)); click(tiles()[bi]); };
+    check('compte : la cible est affichée', $('.cb-target strong')[0].textContent === String(state.target));
+    const vals = state.tiles.map((t) => t.v);
+    let small = -1; let big = -1;
+    vals.forEach((v, i) => vals.forEach((w, j) => { if (i !== j && v < w && small < 0) { small = i; big = j; } }));
+    if (small >= 0) {
+      click(tiles()[small]); click(op('−')); click(tiles()[big]);
+      check('compte : une soustraction négative est refusée avec un message', document.getElementById('err').textContent.includes('Impossible') && tiles().length === vals.length);
+      click(tiles()[small]);
+    }
+    const steps = search(vals);
+    check('compte : une solution existe (recherche du test)', Array.isArray(steps));
+    if (steps && steps.length) {
+      doStep(steps[0]);
+      check('compte : une opération fusionne deux nombres', tiles().length === vals.length - 1 && state.history.length === 1);
+      click($('.cb-actions .btn')[0]);
+      check('compte : annuler restaure les nombres', tiles().length === vals.length && state.history.length === 0);
+      steps.forEach(doStep);
+      check('compte : cible atteinte = victoire', document.getElementById('err').textContent.includes('FINISH'));
+    }
+  } else if (id === 'nonogram') {
+    const board = stage.querySelector('.ng-board');
+    const cells = $('.ng-cell');
+    const pt = (el) => { const r = el.getBoundingClientRect(); return { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2, pointerId: 1, bubbles: true, button: 0 }; };
+    const press = (el) => { board.dispatchEvent(new PointerEvent('pointerdown', pt(el))); board.dispatchEvent(new PointerEvent('pointerup', pt(el))); };
+    check('nonogram : un indice par ligne et par colonne', $('.ng-clue').length === 2 * state.n && cells.length === state.n * state.n);
+    const first = state.solution.findIndex((v) => v === 1);
+    press(cells[first]);
+    check('nonogram : un toucher noircit', state.cur[first] === 1 && cells[first].classList.contains('on'));
+    press(cells[first]);
+    check('nonogram : un second toucher efface', state.cur[first] === 0);
+    click($('.mode-btn')[0]);
+    press(cells[first]);
+    check('nonogram : le mode marquer pose une croix', state.cur[first] === 2 && cells[first].classList.contains('x'));
+    click($('.mode-btn')[0]);
+    board.dispatchEvent(new PointerEvent('pointerdown', pt(cells[0])));
+    board.dispatchEvent(new PointerEvent('pointermove', pt(cells[1])));
+    board.dispatchEvent(new PointerEvent('pointermove', pt(cells[2])));
+    board.dispatchEvent(new PointerEvent('pointerup', pt(cells[2])));
+    check('nonogram : glisser peint plusieurs cases', state.cur[0] === 1 && state.cur[1] === 1 && state.cur[2] === 1);
+    cells[3].dispatchEvent(new MouseEvent('contextmenu', { ...pt(cells[3]), cancelable: true, button: 2 }));
+    check('nonogram : clic droit marque une case', state.cur[3] === 2);
+    for (let i = 0; i < state.n; i++) { if ((state.solution[i] === 1) !== (state.cur[i] === 1)) press(cells[i]); }
+    check('nonogram : un indice correct devient clair', $('.ng-clue.by-row')[0].classList.contains('ok'));
+    state.solution.forEach((need, i) => { if ((need === 1) !== (state.cur[i] === 1)) press(cells[i]); });
+    check('nonogram : image juste = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'connect4') {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const colEls = $('.c4-col');
+    check('puissance 4 : 7 colonnes de 6 cases', colEls.length === 7 && $('.c4-slot').length === 42);
+    if (state.turn === 2) await sleep(900);
+    check('puissance 4 : c’est au joueur de jouer', state.turn === 1 && !colEls[3].disabled);
+    click(colEls[3]);
+    check('puissance 4 : le jeton tombe en bas de la colonne', state.board[3] === 1 && state.moves === 1);
+    check('puissance 4 : pendant le tour adverse, les colonnes sont bloquées', colEls.every((c) => c.disabled));
+    await sleep(900);
+    check('puissance 4 : l’ordinateur répond', state.board.filter((v) => v === 2).length >= 1 && state.turn === 1);
+    state.board.fill(0);
+    state.board[6] = state.board[13] = state.board[20] = 1;
+    state.turn = 1; state.winner = 0; state.line = [];
+    click(colEls[6]);
+    check('puissance 4 : quatre alignés = victoire du joueur', state.winner === 1 && state.line.length >= 4 && document.getElementById('err').textContent.includes('FINISH'));
   }
   const box = document.createElement('pre'); box.className = 'notice'; box.textContent = log.join(String.fromCharCode(10));
   document.querySelector('main').prepend(box);

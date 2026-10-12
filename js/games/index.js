@@ -10,7 +10,11 @@ import untangle from './untangle.js';
 import pipes from './pipes.js';
 import takuzu from './takuzu.js';
 import hanoi from './hanoi.js';
+import flow from './flow.js';
+import compte from './compte.js';
+import nonogram from './nonogram.js';
+import connect4 from './connect4.js';
 
-export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi];
+export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4];
 
 export const getGame = (id) => GAMES.find((g) => g.id === id) || null;

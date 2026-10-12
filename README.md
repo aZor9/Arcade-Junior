@@ -10,7 +10,7 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | --- | --- | --- |
 | 🔢 2048 | Fusionne les tuiles identiques | 3×3, 4×4, 5×5 |
 | 🎯 Mastermind | Devine un code de couleurs (symboles inclus, accessible au daltonisme) | 3 |
-| 🔟 Sudoku | Grilles à solution unique générées sur l’appareil, avec mode notes au crayon | 4×4, 6×6, 9×9 (3 niveaux) |
+| 🔟 Sudoku | Grilles à solution unique générées sur l’appareil, avec mode notes au crayon ; un chiffre terminé est grisé | 4×4, 6×6, 9×9 (3 niveaux) |
 | 🔮 Nombre mystère | « Plus grand / plus petit » en nombre d’essais limité | 3 |
 | 💡 Lumières | Éteins toutes les ampoules (grille toujours résoluble) | 3×3, 5×5, 7×7 |
 | 🧩 Taquin | Remets les tuiles dans l’ordre (mélange toujours résoluble) | 3×3, 4×4, 5×5 |
@@ -20,6 +20,10 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🔧 Pipes | Fais pivoter les tuyaux pour alimenter toute la grille en eau | 5×5 à 11×11 |
 | ⚫ Takuzu | Grille de 0 et de 1 : pas de triplé, autant de 0 que de 1, solution unique | 6×6 à 12×12 |
 | 🗼 Hanoï | Déplace la tour disque par disque (piquets de départ et d'arrivée au hasard) | 3 à 7 disques |
+| 🔗 Liaisons | Relie les paires de même couleur sans croiser, en remplissant toute la grille | 5×5 à 11×11 |
+| 🧮 Le compte est bon | Atteins la cible avec + − × ÷ (cible toujours atteignable) | 4 à 6 nombres |
+| 🖼️ Nonogram | Dessine d'après les indices ; chaque grille se résout par logique, sans deviner | 5×5 à 10×10 |
+| 🔴 Puissance 4 | Affronte l'ordinateur (IA à recherche alpha-bêta) | 4 niveaux |
 
 Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
@@ -146,7 +150,7 @@ node tests/games.test.mjs        # génération, solvabilité, unicité du Sudok
 
 ## Idées pour la suite
 
-Wordle en français, Nonogram, Numberlink (relier des paires sans croiser), Takuzu / Sudoku avec indices, Simon, Le compte est bon, annuler un coup, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
+Wordle en français, Simon, Hashi (ponts entre îles), Slitherlink, indices et annulation dans tous les jeux, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
 
 ## Licence
 
