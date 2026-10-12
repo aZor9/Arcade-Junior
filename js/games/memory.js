@@ -35,7 +35,7 @@ export default {
     const attemptsEl = h('strong', { text: '0' });
     const pairsEl = h('strong', { text: '' });
     const total = state.cards.length / 2;
-    const board = h('div', { class: 'mem-board', vars: { '--cols': state.cols, '--rows': state.rows } });
+    const board = h('div', { class: 'mem-board', vars: { '--cols': state.cols, '--rows': state.rows, '--ratio': state.rows / state.cols } });
     const btns = state.cards.map((emoji, i) => {
       const b = h('button', { type: 'button', class: 'mem-card' },
         h('span', { class: 'face front', text: '?' }),

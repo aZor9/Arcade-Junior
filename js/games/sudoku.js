@@ -71,8 +71,8 @@ export default {
   emoji: '🔟',
   color: '#2f7bff',
   tagline: 'Chaque chiffre une seule fois',
-  howto: 'Remplis la grille pour que chaque ligne, chaque colonne et chaque bloc contienne une seule fois chaque chiffre.\nTouche une case vide puis un chiffre. Les doublons s’affichent en rouge.\nChaque grille a une solution unique.',
-  keys: ['Chiffres : remplir la case choisie', 'Flèches : changer de case', 'Retour arrière ou 0 : effacer'],
+  howto: 'Remplis la grille pour que chaque ligne, chaque colonne et chaque bloc contienne une seule fois chaque chiffre.\nTouche une case vide puis un chiffre. Les doublons s’affichent en rouge.\nMode notes ✏️ : note au crayon les chiffres possibles. Un chiffre posé s’efface des notes voisines.\nChaque grille a une solution unique.',
+  keys: ['Chiffres : remplir ou noter', 'N : mode notes', 'Flèches : changer de case', 'Retour arrière : effacer'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
     { id: 'mini', label: 'Mini 4×4', desc: 'Pour découvrir' },
@@ -95,13 +95,16 @@ export default {
       if (solve(puzzle, n, bw, bh, 2).count !== 1) puzzle[i] = keep;
       else left--;
     }
-    return { n, bw, bh, puzzle, solution, cur: puzzle.slice(), sel: null };
+    return { n, bw, bh, puzzle, solution, cur: puzzle.slice(), sel: null, notes: Array(n * n).fill(0), noteMode: false };
   },
 
   mount(root, state, ctx) {
     const { n, bw, bh } = state;
     let over = false;
-    const board = h('div', { class: 'sd-board', vars: { '--n': n } });
+    // Parties enregistrées avant l'ajout des notes : on les initialise.
+    if (!Array.isArray(state.notes) || state.notes.length !== n * n) state.notes = Array(n * n).fill(0);
+    state.noteMode = state.noteMode === true;
+    const board = h('div', { class: 'sd-board', vars: { '--n': n, '--bw': bw } });
     const cells = state.cur.map((_, i) => {
       const r = Math.floor(i / n);
       const c = i % n;
@@ -114,9 +117,15 @@ export default {
       return b;
     });
     const pad = h('div', { class: 'sd-pad', vars: { '--n': n } });
-    for (let v = 1; v <= n; v++) pad.append(h('button', { type: 'button', class: 'key', text: String(v), onclick: () => put(v) }));
-    pad.append(h('button', { type: 'button', class: 'key', 'aria-label': 'Effacer', text: '⌫', onclick: () => put(0) }));
-    root.append(h('div', { class: 'sd' }, board, pad));
+    const padKeys = [];
+    for (let v = 1; v <= n; v++) {
+      const k = h('button', { type: 'button', class: 'key', text: String(v), onclick: () => put(v) });
+      padKeys.push(k);
+      pad.append(k);
+    }
+    const noteBtn = h('button', { type: 'button', class: 'key key-tool', 'aria-label': 'Mode notes (touche N)', onclick: () => { state.noteMode = !state.noteMode; paint(); ctx.save(state); } }, '✏️ Notes');
+    const eraseBtn = h('button', { type: 'button', class: 'key key-tool', 'aria-label': 'Effacer', onclick: () => put(0) }, '⌫ Effacer');
+    root.append(h('div', { class: 'sd' }, board, pad, h('div', { class: 'sd-tools' }, noteBtn, eraseBtn)));
 
     function conflicts() {
       const bad = new Set();
@@ -157,13 +166,52 @@ export default {
         else if (sel !== null && (Math.floor(i / n) === Math.floor(sel / n) || i % n === sel % n)) cls.push('peer');
         if (selV && v === selV && i !== sel) cls.push('same');
         b.className = cls.join(' ');
-        b.textContent = v || '';
+        if (v) b.textContent = v;
+        else if (state.notes[i]) b.replaceChildren(notesView(state.notes[i]));
+        else b.textContent = '';
+      });
+      noteBtn.classList.toggle('on', state.noteMode);
+      noteBtn.setAttribute('aria-pressed', String(state.noteMode));
+      const mask = sel !== null && !state.cur[sel] ? state.notes[sel] : 0;
+      padKeys.forEach((k, idx) => {
+        const on = state.noteMode && (mask & (1 << idx)) !== 0;
+        k.classList.toggle('on', on);
+        k.setAttribute('aria-pressed', String(on));
       });
     }
 
+    // Petite grille des chiffres notés : chaque chiffre garde toujours la même place dans la case.
+    function notesView(mask) {
+      return h('span', { class: 'sd-notes' }, Array.from({ length: n }, (_, k) => h('span', { text: mask & (1 << k) ? String(k + 1) : '' })));
+    }
+
+    const peers = (i) => {
+      const r = Math.floor(i / n);
+      const c = i % n;
+      const out = [];
+      for (let j = 0; j < n * n; j++) {
+        const rr = Math.floor(j / n);
+        const cc = j % n;
+        if (j !== i && (rr === r || cc === c || (Math.floor(rr / bh) === Math.floor(r / bh) && Math.floor(cc / bw) === Math.floor(c / bw)))) out.push(j);
+      }
+      return out;
+    };
+
     function put(v) {
-      if (over || state.sel === null || state.puzzle[state.sel]) return;
-      state.cur[state.sel] = v;
+      const i = state.sel;
+      if (over || i === null || state.puzzle[i]) return;
+      if (v === 0) {
+        // Effacer : d'abord le chiffre, puis, s'il n'y en a pas, les notes de la case.
+        if (state.cur[i]) state.cur[i] = 0; else state.notes[i] = 0;
+      } else if (state.noteMode) {
+        if (state.cur[i]) return; // les notes se posent dans les cases vides
+        state.notes[i] ^= 1 << (v - 1);
+      } else {
+        state.cur[i] = v;
+        state.notes[i] = 0;
+        // Le chiffre posé n'est plus possible chez les voisines : on le retire de leurs notes.
+        for (const j of peers(i)) state.notes[j] &= ~(1 << (v - 1));
+      }
       paint();
       ctx.save(state);
       if (state.cur.every((x, i) => x === state.solution[i])) {
@@ -173,7 +221,9 @@ export default {
     }
 
     const onKey = (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (/^[1-9]$/.test(e.key) && Number(e.key) <= n) put(Number(e.key));
+      else if (e.key === 'n' || e.key === 'N') { state.noteMode = !state.noteMode; paint(); ctx.save(state); }
       else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') put(0);
       else if (state.sel !== null && e.key.startsWith('Arrow')) {
         e.preventDefault();

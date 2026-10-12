@@ -24,30 +24,34 @@
   <script src="js/theme.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#/" aria-label="Arcade Junior, accueil">
-      <span class="brand-mark" aria-hidden="true">🕹️</span>
-      <span>Arcade Junior</span>
-    </a>
-  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <header class="site-header">
+        <a class="brand" href="#/" aria-label="Arcade Junior, accueil">
+          <span class="brand-mark" aria-hidden="true">🕹️</span>
+          <span>Arcade Junior</span>
+        </a>
+      </header>
 
-  <main id="app" tabindex="-1">
+      <nav class="tabbar" aria-label="Navigation principale">
+        <a href="#/" data-tab="jeux"><span aria-hidden="true">🎮</span> Jeux</a>
+        <a href="#/profil" data-tab="profil"><span aria-hidden="true">🏆</span> Profil</a>
+      </nav>
+
+      <footer class="site-footer">
+        <ul>
+        <li><a href="about.html">À propos</a></li>
+        <li><a href="privacy.html">Confidentialité</a></li>
+        <li><a href="legal.html">Mentions légales</a></li>
+        </ul>
+        <p>Sans compte, sans pub, sans suivi. Licence MIT.</p>
+      </footer>
+    </aside>
+
+    <main id="app" tabindex="-1">
     <noscript><p class="noscript">Arcade Junior a besoin de JavaScript pour fonctionner.</p></noscript>
   </main>
-
-  <footer class="site-footer">
-    <ul>
-      <li><a href="about.html">À propos</a></li>
-      <li><a href="privacy.html">Confidentialité</a></li>
-      <li><a href="legal.html">Mentions légales</a></li>
-    </ul>
-    <p>Sans compte, sans pub, sans suivi. Licence MIT.</p>
-  </footer>
-
-  <nav class="tabbar" aria-label="Navigation principale">
-    <a href="#/" data-tab="jeux"><span aria-hidden="true">🎮</span> Jeux</a>
-    <a href="#/profil" data-tab="profil"><span aria-hidden="true">🏆</span> Profil</a>
-  </nav>
+  </div>
 
   <script type="module" src="js/app.js"></script>
 </body>

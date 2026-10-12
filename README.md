@@ -10,7 +10,7 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | --- | --- | --- |
 | 🔢 2048 | Fusionne les tuiles identiques | 3×3, 4×4, 5×5 |
 | 🎯 Mastermind | Devine un code de couleurs (symboles inclus, accessible au daltonisme) | 3 |
-| 🔟 Sudoku | Grilles à solution unique générées sur l’appareil | 4×4, 6×6, 9×9 (3 niveaux) |
+| 🔟 Sudoku | Grilles à solution unique générées sur l’appareil, avec mode notes au crayon | 4×4, 6×6, 9×9 (3 niveaux) |
 | 🔮 Nombre mystère | « Plus grand / plus petit » en nombre d’essais limité | 3 |
 | 💡 Lumières | Éteins toutes les ampoules (grille toujours résoluble) | 3×3, 5×5, 7×7 |
 | 🧩 Taquin | Remets les tuiles dans l’ordre (mélange toujours résoluble) | 3×3, 4×4, 5×5 |
@@ -125,10 +125,11 @@ Avec le serveur local lancé, deux pages pilotent le vrai DOM dans le navigateur
 
 - `tests/app-flow.html` : parcours complet (créer, reprendre, supprimer, limite de 20 parties, victoire, export).
 - `tests/harness.html?g=sudoku&auto=1` : monte un jeu seul (`g` = identifiant, `d` = niveau, `seed`) et joue des coups scriptés.
+- `tests/scroll-check.html?w=1280&h=720` : charge chaque page et chaque jeu dans une fenêtre de cette taille et signale ceux qui obligent à faire défiler (ajouter `&nosess=1` pour tester l'accueil sans parties en cours).
 
 ## Idées pour la suite
 
-Wordle en français, Nonogram, Tours de Hanoï, Simon, Sudoku avec annotations, Démineur avec indice, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
+Wordle en français, Nonogram, Tours de Hanoï, Simon, Démineur avec indice, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
 
 ## Licence
 

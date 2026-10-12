@@ -14,12 +14,31 @@
   <script src="js/theme.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">🕹️</span><span>Arcade Junior</span></a>
-    <a class="back-link" href="index.html">← Jouer</a>
-  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <header class="site-header">
+        <a class="brand" href="index.html" aria-label="Arcade Junior, accueil">
+          <span class="brand-mark" aria-hidden="true">🕹️</span>
+          <span>Arcade Junior</span>
+        </a>
+      </header>
 
-  <main class="prose">
+      <nav class="tabbar" aria-label="Navigation principale">
+        <a href="index.html"><span aria-hidden="true">🎮</span> Jeux</a>
+        <a href="index.html#/profil"><span aria-hidden="true">🏆</span> Profil</a>
+      </nav>
+
+      <footer class="site-footer">
+        <ul>
+        <li><a href="about.html">À propos</a></li>
+        <li><a href="privacy.html" aria-current="page">Confidentialité</a></li>
+        <li><a href="legal.html">Mentions légales</a></li>
+        </ul>
+        <p>Sans compte, sans pub, sans suivi. Licence MIT.</p>
+      </footer>
+    </aside>
+
+    <main class="prose">
     <h1>Confidentialité et RGPD</h1>
     <p class="updated">Dernière mise à jour : octobre 2026</p>
 
@@ -60,13 +79,7 @@
     <h2>Contact</h2>
     <p>Une question sur tes données ? Écris-moi via <a href="https://hugo-lembrez.fr" rel="noopener noreferrer">hugo-lembrez.fr</a>.</p>
   </main>
+  </div>
 
-  <footer class="site-footer">
-    <ul>
-      <li><a href="about.html">À propos</a></li>
-      <li><a href="privacy.html">Confidentialité</a></li>
-      <li><a href="legal.html">Mentions légales</a></li>
-    </ul>
-  </footer>
 </body>
 </html>

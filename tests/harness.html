@@ -20,6 +20,12 @@ stage.style.setProperty('--c', g.color);
 const ctx = { save() {}, elapsed: () => 0, toast: show, finish: (r) => show('FINISH ' + JSON.stringify(r)) };
 if (q.get('big') && state.grid) state.grid = state.grid.map((r, i) => r.map((_, j) => 2 ** (1 + ((i * state.size + j) % 17))));
 if (q.get('fill') && g.id === 'mastermind') { for (let k = 0; k < 3; k++) { state.guesses.push({ g: state.secret.map((_, i) => (i + k) % state.colors), black: k, white: 1 }); } state.current = state.current.map((_, i) => i % state.colors); }
+if (q.get('legacy')) { delete state.notes; delete state.noteMode; }
+if (q.get('demo') === 'notes' && g.id === 'sudoku') {
+  const emp = state.cur.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0);
+  emp.slice(0, 14).forEach((i, k) => { let m = 0; for (let d = 0; d < state.n; d++) if ((i * 7 + d * 3 + k) % 3 === 0) m |= 1 << d; state.notes = state.notes || Array(state.n * state.n).fill(0); state.notes[i] = m || 1; });
+  state.sel = emp[3]; state.noteMode = true;
+}
 g.mount(stage, state, ctx);
 window.__state = state;
 
@@ -81,6 +87,49 @@ if (q.get('auto')) {
     check('sudoku : case sélectionnée', state.sel === empty);
     click($('.sd-pad .key')[state.solution[empty] - 1]);
     check('sudoku : chiffre posé', state.cur[empty] === state.solution[empty]);
+    // --- notes ---
+    const n = state.n;
+    const btnNote = () => $('.sd-tools .key')[0];
+    const keyOf = (v) => $('.sd-pad .key')[v - 1];
+    const empties = state.cur.map((v, i) => (v ? -1 : i)).filter((i) => i >= 0);
+    const D = Math.min(5, n);
+    const e0 = empties[0];
+    click($('.sd-cell')[e0]);
+    click(btnNote());
+    check('notes : le mode s’active', state.noteMode === true && btnNote().classList.contains('on'));
+    click(keyOf(1)); click(keyOf(2)); click(keyOf(3));
+    check('notes : 3 chiffres notés', state.notes[e0] === 0b111 && state.cur[e0] === 0);
+    check('notes : affichées dans la case', $('.sd-cell')[e0].querySelectorAll('.sd-notes span').length === n && $('.sd-cell')[e0].textContent === '123');
+    click(keyOf(2));
+    check('notes : un chiffre se retire en le retouchant', state.notes[e0] === 0b101);
+    // un voisin (même ligne) reçoit la note 5 ; poser 5 dans e0 doit la lui retirer
+    const row = Math.floor(e0 / n);
+    const peer = empties.find((i) => i !== e0 && Math.floor(i / n) === row);
+    if (peer !== undefined) {
+      click($('.sd-cell')[peer]); click(keyOf(D));
+      check('notes : voisin noté', (state.notes[peer] & (1 << (D - 1))) !== 0);
+      click($('.sd-cell')[e0]); click(btnNote());
+      click(keyOf(D));
+      check('valeur posée : notes de la case effacées', state.cur[e0] === D && state.notes[e0] === 0);
+      check('valeur posée : retirée des notes des voisines', (state.notes[peer] & (1 << (D - 1))) === 0);
+      click(btnNote()); // retour mode notes
+      click(btnNote()); // et on ressort
+    } else { click(btnNote()); }
+    check('notes : mode normal rétabli', state.noteMode === false);
+    // effacer : sans chiffre -> efface les notes
+    const e1 = empties.find((i) => i !== e0 && !state.cur[i]);
+    click($('.sd-cell')[e1]); click(btnNote()); click(keyOf(4)); click(btnNote());
+    check('notes : posées dans une 2e case', state.notes[e1] === 0b1000);
+    click($('.sd-tools .key')[1]);
+    check('notes : « Effacer » vide les notes', state.notes[e1] === 0);
+    // touche N
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'n', bubbles: true }));
+    check('notes : touche N active le mode', state.noteMode === true);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'N', bubbles: true }));
+    check('notes : touche N le désactive', state.noteMode === false);
+    // sérialisation
+    check('notes : état sérialisable', JSON.stringify(JSON.parse(JSON.stringify(state))) === JSON.stringify(state));
+    // les notes ne doivent jamais bloquer la victoire
     // Remplit tout avec la solution : doit terminer la partie.
     state.solution.forEach((v, i) => { if (!state.puzzle[i]) { click($('.sd-cell')[i]); click($('.sd-pad .key')[v - 1]); } });
     check('sudoku : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));

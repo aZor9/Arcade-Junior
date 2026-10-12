@@ -22,8 +22,8 @@ export default {
   emoji: '💣',
   color: '#8a8fa8',
   tagline: 'Évite toutes les mines',
-  howto: 'Touche une case pour la révéler.\nUn chiffre indique le nombre de mines dans les 8 cases voisines.\nAppui long (ou bouton Drapeau) pour poser un drapeau sur une case suspecte.\nToucher un chiffre déjà entouré du bon nombre de drapeaux révèle ses voisines.\nLe premier coup est toujours sans danger.',
-  keys: ['Clic : creuser', 'Clic droit : poser un drapeau', 'Clic sur un chiffre entouré de drapeaux : révéler ses voisines'],
+  howto: 'Touche une case pour la révéler : un chiffre compte les mines voisines (8 cases).\nAppui long, ou mode Drapeau, pour marquer une mine supposée.\nToucher un chiffre entouré d’assez de drapeaux révèle ses voisines.\nLe premier coup est toujours sans danger.',
+  keys: ['Clic : creuser', 'Clic droit : drapeau'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
     { id: 'easy', label: 'Facile', desc: '8×8, 8 mines' },
@@ -48,7 +48,7 @@ export default {
 
     const flagsEl = h('strong', { text: '' });
     const modeBtn = h('button', { type: 'button', class: 'btn btn-ghost mode-btn', 'aria-pressed': 'false' });
-    const board = h('div', { class: 'ms-board', vars: { '--cols': cols } });
+    const board = h('div', { class: 'ms-board', vars: { '--cols': cols, '--ratio': rows / cols } });
     const cells = Array.from({ length: total }, (_, i) => {
       const b = h('button', { type: 'button', class: 'ms-cell', 'data-i': String(i) });
       board.append(b);

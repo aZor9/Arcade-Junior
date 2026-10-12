@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><body><pre id="out"></pre><script type="module">
+import { GAMES } from '../js/games/index.js';
+import { createRng } from '../js/rng.js';
+const q = new URLSearchParams(location.search);
+const W = Number(q.get('w') || 1280), H = Number(q.get('h') || 720);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+localStorage.clear();
+const routes = [['accueil', 'index.html'], ['profil', 'index.html#/profil'], ['à propos', 'about.html'], ['confidentialité', 'privacy.html'], ['légal', 'legal.html']];
+for (const g of (q.get('nosess') ? [] : GAMES)) for (const d of g.difficulties) {
+  const id = (g.id + d.id).replace(/[^a-z0-9]/g, '');
+  const s = { id, game: g.id, diff: d.id, seed: 1, createdAt: Date.now(), updatedAt: Date.now(), elapsed: 0, state: g.create(createRng(7), d.id) };
+  localStorage.setItem('aj:s:' + id, JSON.stringify(s));
+  routes.push([g.id + '/' + d.id, `index.html#/jeu/${g.id}/${id}`]);
+}
+const out = [];
+const f = document.createElement('iframe'); f.style.cssText = `width:${W}px;height:${H}px;border:0`; document.body.append(f);
+let n = 0;
+for (const [name, url] of routes) {
+  const u = url.replace(/^([^#]*)/, '$1?t=' + (++n));
+  f.src = '../' + u; await new Promise((r) => { f.onload = r; });
+  await sleep(250);
+  const de = f.contentDocument.documentElement;
+  const over = de.scrollHeight - f.contentWindow.innerHeight;
+  const side = f.contentDocument.querySelector('.sidebar');
+  out.push((over > 1 ? 'SCROLL +' + over : 'ok       ') + '  ' + name + (side && side.scrollHeight > side.clientHeight + 1 ? '  (menu déborde +' + (side.scrollHeight - side.clientHeight) + ')' : ''));
+}
+document.getElementById('out').textContent = out.join(String.fromCharCode(10));
+</script>
