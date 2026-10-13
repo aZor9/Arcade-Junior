@@ -217,7 +217,7 @@ function playView(gameId, sid) {
         const choice = await dialog({
           title: won ? '🎉 Victoire !' : 'Partie terminée',
           body: h('div', null, lines),
-          actions: [{ label: 'Accueil', value: 'home', kind: 'ghost' }, { label: 'Rejouer', value: 'again', kind: 'primary' }],
+          actions: [{ label: 'Accueil', value: 'home', kind: 'ghost' }, { label: 'Nouvelle partie', value: 'again', kind: 'primary' }],
         });
         if (choice === 'again') startGame(game.id, session.diff);
         else if (choice === 'home') location.hash = '#/';

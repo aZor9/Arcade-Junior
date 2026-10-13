@@ -35,6 +35,9 @@ jobs:
       - name: Tests du stockage (sauvegarde, records, import / export, quota)
         run: node tests/storage.test.mjs
 
+      - name: Tests de cohérence du site (pages, liens, plan du site, cache, déploiement)
+        run: node tests/site.test.mjs
+
       - name: Tests dans le navigateur (jeux, parcours complet, défilement)
         run: bash tests/run-browser.sh
         env:
@@ -60,7 +63,7 @@ jobs:
       - name: Assembler le site
         run: |
           mkdir _site
-          cp -r index.html about.html privacy.html legal.html manifest.webmanifest sw.js robots.txt sitemap.xml CNAME .nojekyll css js icons _site/
+          cp -r index.html about.html plan.html privacy.html legal.html manifest.webmanifest sw.js robots.txt sitemap.xml CNAME .nojekyll css js icons _site/
           # Chaque déploiement change le nom du cache du service worker : les téléphones récupèrent la nouvelle version.
           sed -i "s/const VERSION = '[^']*';/const VERSION = 'aj-${GITHUB_SHA::7}';/" _site/sw.js
           grep "const VERSION" _site/sw.js

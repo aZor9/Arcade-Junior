@@ -38,7 +38,7 @@ Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 - **PWA** : installable sur l’écran d’accueil, utilisable hors ligne (service worker).
 - **Thème** clair / sombre / automatique.
 - **Mobile d'abord, mais aussi pensé pour ordinateur** : à partir de 960 px de large, barre latérale, grille de jeux élargie, et écran de partie en deux colonnes (plateau, puis règles, raccourcis clavier, record et actions). Clavier et clic droit pris en charge là où c'est utile.
-- **Vie privée** : aucune requête externe (polices système), CSP stricte, pas de cookie. Pages [confidentialité / RGPD](privacy.html), [mentions légales](legal.html) et [à propos](about.html).
+- **Vie privée** : aucune requête externe (polices système), CSP stricte, pas de cookie. Pages [confidentialité / RGPD](privacy.html), [mentions légales](legal.html), [à propos](about.html) et [plan du site](plan.html).
 
 ## Une base de données est-elle possible ?
 
@@ -94,7 +94,7 @@ Tous les chemins étant relatifs, le site fonctionnerait aussi dans un sous-doss
 
 ```
 index.html            Accueil, parties et profil (une seule page, routage par #/)
-about.html, privacy.html, legal.html
+about.html, plan.html, privacy.html, legal.html
 css/style.css
 js/app.js             Routeur, accueil, écran de partie, profil
 js/storage.js         localStorage : parties, profil, quota, export/import
@@ -142,6 +142,7 @@ Puis ajoute-le dans `js/games/index.js`, ajoute son fichier à `ASSETS` dans `sw
 ```bash
 node tests/games.test.mjs        # génération, solvabilité, unicité du Sudoku, Mastermind…
 node tests/storage.test.mjs      # sauvegardes, records, import / export, quota
+node tests/site.test.mjs         # pages, liens, plan du site, service worker, déploiement
 ```
 
 `bash tests/run-browser.sh` lance tout ce qui suit (c'est ce que fait GitHub Actions). Avec le serveur local lancé, ces pages pilotent le vrai DOM dans le navigateur :
