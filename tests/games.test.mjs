@@ -12,6 +12,7 @@ import { adjacent as flowAdjacent, summary as flowSummary } from '../js/games/fl
 import { applyOp } from '../js/games/compte.js';
 import { solveGrid as solveNonogram, cluesOf as nonoClues } from '../js/games/nonogram.js';
 import { dropIn as c4Drop, lineAt as c4Line, bestMove as c4Best, W as c4W, H as c4H } from '../js/games/connect4.js';
+import { validPair as nmValid, normalize as nmNormalize, addNumbers as nmAdd, findSolution as nmFind } from '../js/games/numbermatch.js';
 
 let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log('ok -', name); };
@@ -250,6 +251,33 @@ ok('puissance 4 : alignements, victoire immédiate, blocage, force de l’IA', (
     if (res === 2) wins++;
   }
   assert.ok(wins >= 18, `l'IA gagne ${wins}/20`);
+});
+
+ok('number match : visibilité des paires, lignes vides, ajout, grilles gagnables', () => {
+  const pad = (a, len = 27) => a.concat(Array(len - a.length).fill(0));
+  assert.ok(nmValid(pad([1, 9]), 0, 1), 'voisins qui font 10');
+  assert.ok(nmValid(pad([3, 3]), 0, 1), 'voisins identiques');
+  assert.ok(!nmValid(pad([1, 3]), 0, 1), 'ni identiques ni complémentaires');
+  assert.ok(!nmValid(pad([3, 5, 3]), 0, 2), 'un chiffre entre eux bloque');
+  assert.ok(nmValid(pad([3, 0, 0, 3]), 0, 3), 'des cases vides entre eux ne bloquent pas');
+  assert.ok(nmValid(pad([4, 0, 0, 0, 0, 0, 0, 0, 0, 6]), 0, 9), 'même colonne');
+  assert.ok(!nmValid(pad([4, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 6]), 0, 18), 'même colonne bloquée');
+  assert.ok(nmValid(pad([3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7]), 0, 10), 'diagonale bas-droite');
+  assert.ok(nmValid(pad([0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 8]), 8, 15), 'diagonale bas-gauche');
+  assert.ok(nmValid(pad([0, 0, 0, 0, 0, 0, 0, 0, 5, 5]), 8, 9), 'fin de ligne et début de la suivante');
+  assert.ok(!nmValid(pad([5]), 0, 0), 'pas avec soi-même');
+  const rows = pad([1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 6]);
+  nmNormalize(rows);
+  assert.equal(rows.length, 18, 'une ligne entièrement vide disparaît');
+  assert.equal(nmAdd([1, 2, 0, 3]).join(''), '12031' + '23', 'ajout : recopie des chiffres restants');
+  for (const d of ['easy', 'normal', 'hard', 'expert']) {
+    for (let seed = 1; seed <= 15; seed++) {
+      const st = GAMES.find((g) => g.id === 'nummatch').create(createRng(seed * 131), d);
+      assert.ok(st.cells.every((v) => v >= 1 && v <= 9));
+      assert.equal(st.cells.length % 2, 0);
+      assert.ok(nmFind(st.cells, st.adds, createRng(seed), 200), `${d}/${seed} : une victoire existe`);
+    }
+  }
 });
 
 console.log(`\n${n} groupes de tests réussis`);

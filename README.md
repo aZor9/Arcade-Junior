@@ -24,6 +24,7 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🧮 Le compte est bon | Atteins la cible avec + − × ÷ (cible toujours atteignable) | 4 à 6 nombres |
 | 🖼️ Nonogram | Dessine d'après les indices ; chaque grille se résout par logique, sans deviner | 5×5 à 10×10 |
 | 🔴 Puissance 4 | Affronte l'ordinateur (IA à recherche alpha-bêta) | 4 niveaux |
+| 🧠 Number Match | Efface les paires de chiffres identiques ou de somme 10 (ligne, colonne, diagonale) ; grilles garanties gagnables | 4 niveaux |
 
 Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 

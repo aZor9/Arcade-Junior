@@ -14,7 +14,8 @@ import flow from './flow.js';
 import compte from './compte.js';
 import nonogram from './nonogram.js';
 import connect4 from './connect4.js';
+import nummatch from './numbermatch.js';
 
-export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4];
+export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch];
 
 export const getGame = (id) => GAMES.find((g) => g.id === id) || null;
