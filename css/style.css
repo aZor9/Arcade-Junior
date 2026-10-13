@@ -345,8 +345,9 @@ body.playing main { padding-top: 0; }
 .cb-op.on { background: var(--grape); color: var(--on-grape); }
 .cb-actions { display: flex; gap: 10px; width: 100%; }
 .cb-actions .btn { flex: 1; }
-.cb-log { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 4px; max-height: 120px; overflow-y: auto; font-variant-numeric: tabular-nums; }
-.cb-log li { padding: 3px 12px; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-weight: 700; }
+/* Historique : au plus 5 opérations, en pastilles qui passent à la ligne (jamais de défilement interne). */
+.cb-log { list-style: none; margin: 0; padding: 0; width: 100%; display: flex; flex-wrap: wrap; gap: 6px; font-variant-numeric: tabular-nums; }
+.cb-log li { padding: 2px 10px; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 0.88rem; font-weight: 700; }
 
 /* Nonogram */
 .ng { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; padding-bottom: 24px; }
@@ -536,7 +537,6 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
   .nb-pad .key { min-height: 44px; }
   .mem-board, .ms-board { --w: min(var(--board), max(200px, calc((var(--avail) - 90px) / var(--ratio)))); }
   .g2048, .lo, .tq, .mem, .ms, .sd, .ud, .pp, .tk, .hn, .fl, .cb, .ng, .c4g, .nm { gap: 12px; padding-bottom: 0; }
-  .cb-log { max-height: 84px; }
   .nm { --w: min(var(--board), 460px); }
   .nm-wrap { max-height: max(200px, calc(var(--avail) - 70px)); }
   .cb-tile { min-height: 54px; }
