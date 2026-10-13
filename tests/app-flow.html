@@ -135,6 +135,42 @@ f.addEventListener('load', async () => {
       check(`départ ${name} : page en haut (accueil défilé de ${hubScroll}px)`, hubScroll > 100 && w.scrollY === 0);
       check(`départ ${name} : le contenu n'est pas sous la barre du haut`, first.top >= bar.bottom - 1);
     }
+
+    // « Tout supprimer » : depuis l'accueil puis depuis le profil, sans toucher aux statistiques
+    d.querySelectorAll('dialog').forEach((x) => x.close());
+    w.location.hash = '#/profil';                                  // on quitte la partie ouverte (elle se ré-enregistre en partant)
+    await until(() => $('.tile').length === 4);
+    w.localStorage.clear();
+    const made = [await newGame(0), await newGame(1), await newGame(2)];
+    check('tout supprimer : trois parties créées pour le test', made.every(Boolean) && keys().length === 3);
+    w.localStorage.setItem('aj:profile', JSON.stringify({ name: 'Test', avatar: '🐼', createdAt: 1, stats: { '2048': { played: 2, won: 1, streak: 1, bestStreak: 1, ms: 10, best: { classic: 99 } } } }));
+    w.location.hash = '#/';
+    await until(() => $('.head-actions .btn').length === 1);
+    $('.head-actions .btn')[0].click();
+    await until(sheet);
+    d.querySelector('dialog[open] .btn-ghost').click();            // « Annuler »
+    await sleep(120);
+    check('tout supprimer : annuler ne supprime rien', keys().length === 3);
+    $('.head-actions .btn')[0].click();
+    await until(sheet);
+    check('tout supprimer : la confirmation annonce le nombre de parties', sheet().textContent.includes('3 parties'));
+    d.querySelector('dialog[open] .btn-danger').click();
+    await until(() => keys().length === 0);
+    await until(() => $('.session').length === 0);
+    check('tout supprimer : toutes les parties disparaissent de la liste et du stockage', keys().length === 0 && $('.session').length === 0 && $('.head-actions').length === 0);
+    check('tout supprimer : profil et records conservés', JSON.parse(w.localStorage.getItem('aj:profile')).stats['2048'].best.classic === 99);
+    check('nouvelle partie possible juste après', await newGame(3));
+    w.location.hash = '#/profil';
+    await until(() => $('.tile').length === 4);
+    const findBtn = () => $('.btn-row .btn').find((b) => b.textContent.includes('Supprimer les parties'));
+    check('profil : le bouton est actif quand il y a une partie', !!findBtn() && !findBtn().disabled);
+    findBtn().click();
+    await until(sheet);
+    check('profil : confirmation au singulier', sheet().textContent.includes('la partie en cours'));
+    d.querySelector('dialog[open] .btn-danger').click();
+    await until(() => keys().length === 0);
+    await until(() => findBtn() && findBtn().disabled);
+    check('profil : parties supprimées et bouton grisé ensuite', keys().length === 0 && findBtn().disabled === true);
   } catch (e) { log.push('FAIL exception: ' + e.message); }
   out.textContent = log.concat(dbg.slice(0, 6)).join(String.fromCharCode(10));
 });

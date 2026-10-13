@@ -30,7 +30,7 @@ Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
 ## Fonctionnalités
 
-- **Parties en cours** : lance plusieurs parties, quitte-les, reprends-les plus tard (jusqu’à 20). Une partie est sauvegardée à chaque coup, avec son temps écoulé.
+- **Parties en cours** : lance plusieurs parties, quitte-les, reprends-les plus tard (jusqu’à 20), ou supprime-les toutes d'un coup (statistiques conservées). Une partie est sauvegardée à chaque coup, avec son temps écoulé.
 - **Génération aléatoire reproductible** : chaque partie vient d’une graine (PRNG `mulberry32`) dont l’état est sauvegardé, donc une reprise continue exactement la même suite.
 - **Profil** : pseudo, avatar, parties jouées et gagnées, séries, records par jeu et par niveau, badges.
 - **Stockage visible** : jauge d’utilisation du `localStorage` (limite typique ≈ 5 Mo par site), limite de 20 parties, gestion du quota dépassé et du stockage bloqué (navigation privée).
@@ -141,6 +141,7 @@ Puis ajoute-le dans `js/games/index.js`, ajoute son fichier à `ASSETS` dans `sw
 
 ```bash
 node tests/games.test.mjs        # génération, solvabilité, unicité du Sudoku, Mastermind…
+node tests/storage.test.mjs      # sauvegardes, records, import / export, quota
 ```
 
 `bash tests/run-browser.sh` lance tout ce qui suit (c'est ce que fait GitHub Actions). Avec le serveur local lancé, ces pages pilotent le vrai DOM dans le navigateur :

@@ -79,6 +79,21 @@ function surprise() {
   startGame(game.id, h2random(game));
 }
 
+/* ---------- Supprimer toutes les parties en cours ---------- */
+
+async function clearSessions() {
+  const n = store.usage().sessions;
+  if (!n) { toast('Aucune partie en cours.'); return; }
+  const ok = await confirmDialog(
+    n === 1 ? 'Supprimer la partie en cours ?' : `Supprimer les ${n} parties en cours ?`,
+    'Elles seront perdues. Tes statistiques et tes records sont conservés.',
+    'Tout supprimer', true);
+  if (!ok) return;
+  store.deleteAllSessions();
+  toast(n === 1 ? 'Partie supprimée.' : `${n} parties supprimées.`);
+  route();
+}
+
 /* ---------- Vue : accueil ---------- */
 
 function hubView() {
@@ -103,7 +118,9 @@ function hubView() {
     els.push(h('section', null,
       h('div', { class: 'section-head' },
         h('h2', { text: 'Parties en cours' }),
-        h('span', { class: 'muted', text: `${sessions.length}/${store.MAX_SESSIONS}` })),
+        h('div', { class: 'head-actions' },
+          h('span', { class: 'muted', text: `${sessions.length}/${store.MAX_SESSIONS}` }),
+          h('button', { class: 'btn btn-ghost btn-small', type: 'button', text: '🗑 Tout supprimer', onclick: clearSessions }))),
       h('ul', { class: 'sessions' }, sessions.map((s) => {
         const g = getGame(s.game);
         return h('li', { class: 'session', vars: gameStyle(g) },
@@ -386,6 +403,7 @@ function profileView() {
       h('div', { class: 'btn-row' },
         h('button', { class: 'btn btn-ghost', type: 'button', text: 'Exporter', onclick: exportData }),
         h('button', { class: 'btn btn-ghost', type: 'button', text: 'Importer', onclick: importData }),
+        h('button', { class: 'btn btn-ghost', type: 'button', text: 'Supprimer les parties en cours', disabled: u.sessions === 0, onclick: clearSessions }),
         h('button', {
           class: 'btn btn-danger', type: 'button', text: 'Tout effacer',
           onclick: async () => {

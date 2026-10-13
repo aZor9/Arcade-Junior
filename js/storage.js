@@ -145,6 +145,13 @@ export function saveSession(s) {
 export function deleteSession(id) {
   rawRemove(K_SESSION + id);
 }
+// Supprime toutes les parties en cours (y compris celles que l'interface ne sait plus afficher). Le profil et les
+// statistiques ne sont pas touchés. Retourne le nombre de parties supprimées.
+export function deleteAllSessions() {
+  let n = 0;
+  for (const k of rawKeys()) if (k.startsWith(K_SESSION)) { rawRemove(k); n++; }
+  return n;
+}
 
 /* ---------- Utilisation du stockage ---------- */
 

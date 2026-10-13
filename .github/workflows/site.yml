@@ -32,6 +32,9 @@ jobs:
       - name: Tests de logique (génération, solutions uniques, règles)
         run: node tests/games.test.mjs
 
+      - name: Tests du stockage (sauvegarde, records, import / export, quota)
+        run: node tests/storage.test.mjs
+
       - name: Tests dans le navigateur (jeux, parcours complet, défilement)
         run: bash tests/run-browser.sh
         env:
