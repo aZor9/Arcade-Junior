@@ -2,7 +2,7 @@
 // Stratégie : on répond depuis le cache et on met à jour en arrière-plan.
 // Pense à changer VERSION et à tenir ASSETS à jour quand tu ajoutes un fichier.
 
-const VERSION = 'aj-v12';
+const VERSION = 'aj-v13';
 const ASSETS = [
   './', 'index.html', 'about.html', 'plan.html', 'privacy.html', 'legal.html',
   'css/style.css',
@@ -11,6 +11,7 @@ const ASSETS = [
   'js/games/lights.js', 'js/games/taquin.js', 'js/games/memory.js', 'js/games/demineur.js', 'js/games/sudoku.js',
   'js/games/untangle.js', 'js/games/pipes.js', 'js/games/takuzu.js', 'js/games/hanoi.js',
   'js/games/flow.js', 'js/games/compte.js', 'js/games/nonogram.js', 'js/games/connect4.js', 'js/games/numbermatch.js',
+  'js/games/shapes.js', 'js/games/watersort.js', 'js/games/rushhour.js', 'js/games/rushhour-levels.js', 'js/games/helix.js', 'js/games/stack.js', 'js/games/loop.js',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
 ];
 

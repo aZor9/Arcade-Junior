@@ -130,7 +130,14 @@ body.playing main { padding-top: 0; }
 .game-emoji { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 6px; border: 2.5px solid var(--line); border-radius: 15px; background: var(--c); font-size: 1.7rem; transform: rotate(-4deg); }
 .game-card strong { font-size: 1.1rem; font-weight: 800; }
 .game-tag { font-size: 0.88rem; line-height: 1.3; color: var(--muted); }
-.game-badge { position: absolute; top: 10px; right: 10px; padding: 2px 9px; border: 2px solid var(--line); border-radius: 99px; background: var(--surface); font-size: 0.75rem; font-weight: 800; }
+.game-tile { position: relative; display: grid; }
+.game-tile > .game-card { padding-right: 44px; }
+.game-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; padding-top: 4px; }
+.game-badge { padding: 1px 8px; border: 2px solid var(--line); border-radius: 99px; background: var(--surface); font-size: 0.72rem; font-weight: 800; }
+.game-badge.lab { background: var(--sun); color: #1c1740; }
+.fav-btn { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink); font-size: 1.35rem; line-height: 1; }
+.fav-btn.on { color: #ffb800; text-shadow: 0 1px 0 var(--line); }
+.fav-btn:focus-visible { outline: 3px solid var(--grape); outline-offset: 0; }
 
 .sessions { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .session { display: flex; align-items: stretch; gap: 10px; }
@@ -391,6 +398,36 @@ body.playing main { padding-top: 0; }
 .nm-actions { display: flex; gap: 10px; width: var(--w); }
 .nm-actions .btn { flex: 1; }
 
+/* Tri de liquides */
+.ws { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding-bottom: 24px; }
+.ws-tubes { --u: clamp(26px, calc(var(--board) / 9.5), 46px); width: var(--board); display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 8px; padding-top: 14px; }
+.ws-tube { width: calc(var(--u) + 14px); height: calc(var(--u) * var(--cap) + 18px); display: flex; flex-direction: column-reverse; align-items: stretch; gap: 2px; padding: 5px; border: 3px solid var(--line); border-top-color: transparent; border-radius: 4px 4px 22px 22px; background: color-mix(in srgb, var(--surface) 75%, transparent); box-shadow: 0 4px 0 var(--line); transition: transform 0.12s; }
+.ws-tube.sel { transform: translateY(-14px); outline: 3px solid var(--grape); outline-offset: 2px; }
+.ws-tube.full { box-shadow: 0 0 14px 2px rgba(255, 207, 63, 0.55), 0 4px 0 var(--line); }
+.ws-unit { flex: none; height: var(--u); display: grid; place-items: center; border-radius: 6px; background: var(--k); color: rgba(28, 23, 64, 0.72); }
+.ws-unit:first-child { border-radius: 6px 6px 16px 16px; }
+.ws-unit svg { width: 52%; height: 52%; fill: currentColor; }
+.ws-actions, .rh-actions { display: flex; gap: 10px; width: var(--board); }
+.ws-actions .btn, .rh-actions .btn { flex: 1; }
+
+/* Embouteillage */
+.rh { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding-bottom: 24px; }
+.rh-board { position: relative; width: var(--board); aspect-ratio: 1; border: 3px solid var(--line); border-radius: 14px; background-color: var(--surface-2); background-image: linear-gradient(color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1px); background-size: calc(100% / 6) calc(100% / 6); box-shadow: 0 5px 0 var(--line); touch-action: none; user-select: none; -webkit-user-select: none; }
+.rh-exit { position: absolute; right: -12px; top: calc(100% / 6 * 2 + 4px); width: 9px; height: calc(100% / 6 - 8px); border-radius: 0 6px 6px 0; background: var(--good); }
+.rh-car { position: absolute; left: calc(var(--c) * 100% / 6); top: calc(var(--r) * 100% / 6); width: calc(var(--w) * 100% / 6); height: calc(var(--hgt) * 100% / 6); display: grid; place-items: center; padding: 0; border: 0; background: transparent; transition: left 0.15s, top 0.15s, transform 0.15s; touch-action: none; }
+.rh-car::before { content: ""; position: absolute; inset: 4px; border: 2.5px solid var(--line); border-radius: 10px; background: var(--k); box-shadow: 0 3px 0 var(--line); }
+.rh-car.hz { transform: translateX(var(--shift, 0px)); }
+.rh-car.vt { transform: translateY(var(--shift, 0px)); }
+.rh-car.drag { transition: none; z-index: 2; }
+.rh-car.leave { transition: transform 0.6s ease-in; transform: translateX(280%); }
+.rh-car:focus-visible::before { outline: 3px solid var(--grape); outline-offset: 2px; }
+.rh-arrow { position: relative; z-index: 1; color: #fff; font-size: calc(var(--board) / 6 * 0.4); font-weight: 800; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); pointer-events: none; }
+
+/* Jeux d'arcade (Hélice, Pile) */
+.arc { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; padding-bottom: 24px; }
+.arc-canvas { display: block; width: var(--board); height: min(calc(var(--board) * 1.35), calc(100dvh - 240px)); min-height: 320px; border: 2.5px solid var(--line); border-radius: 18px; background: #1b1640; box-shadow: 0 5px 0 var(--line); touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
+.arc-canvas:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; }
+
 /* ---------- Boîtes de dialogue ---------- */
 
 dialog.sheet { width: min(100%, 520px); max-width: 100%; margin: auto auto 0; padding: 0; border: 0; background: transparent; color: var(--ink); overflow: visible; }
@@ -538,8 +575,11 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
   .nb-pad { gap: 8px; }
   .nb-pad .key { min-height: 44px; }
   .mem-board, .ms-board { --w: min(var(--board), max(200px, calc((var(--avail) - 90px) / var(--ratio)))); }
-  .g2048, .lo, .tq, .mem, .ms, .sd, .ud, .pp, .tk, .hn, .fl, .cb, .ng, .c4g, .nm { gap: 12px; padding-bottom: 0; }
+  .g2048, .lo, .tq, .mem, .ms, .sd, .ud, .pp, .tk, .hn, .fl, .cb, .ng, .c4g, .nm, .ws, .rh, .arc { gap: 12px; padding-bottom: 0; }
   .nm { --w: min(var(--board), 460px); }
+  .ws-tubes { width: min(var(--board), 560px); }
+  .rh-board, .rh-actions { width: min(var(--board), calc(var(--avail) - 64px)); } /* place pour la rangée Annuler / Recommencer */
+  .arc-canvas { width: min(var(--board), 440px); height: max(300px, calc(var(--avail) - 6px)); min-height: 0; }
   .nm-wrap { max-height: max(200px, calc(var(--avail) - 70px)); }
   .cb-tile { min-height: 54px; }
   .c4-col:not(:disabled):hover { background: rgba(255, 255, 255, 0.1); }
@@ -556,11 +596,12 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
   .games { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
   /* Cartes en format compact (icône à gauche, texte à droite) : 16 jeux tiennent sans défiler */
   .games { gap: 12px; }
-  .game-card { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "e n" "e t"; column-gap: 12px; row-gap: 0; align-items: center; min-height: 0; padding: 10px 12px; }
+  .game-card { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "e n" "e t" "e m"; column-gap: 12px; row-gap: 0; align-items: center; min-height: 0; padding: 10px 12px; }
+  .game-tile > .game-card { padding-right: 40px; }
+  .game-card .game-meta { grid-area: m; margin: 0; padding-top: 3px; }
   .game-card .game-emoji { grid-area: e; width: 42px; height: 42px; margin: 0; font-size: 1.4rem; }
   .game-card strong { grid-area: n; align-self: end; font-size: 1rem; }
   .game-card .game-tag { grid-area: t; align-self: start; font-size: 0.78rem; line-height: 1.25; }
-  .game-badge { top: 6px; right: 8px; }
   main { gap: 28px; }
 
   /* Profil plus compact */

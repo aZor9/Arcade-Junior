@@ -59,8 +59,11 @@ const writeJson = (k, v) => rawSet(k, JSON.stringify(v));
 
 export function getSettings() {
   const s = readJson(K_SETTINGS, {});
+  const favorites = Array.isArray(s.favorites) ? [...new Set(s.favorites.filter((id) => typeof id === 'string' && /^[a-z0-9-]{1,30}$/.test(id)))].slice(0, 50) : [];
   return {
     theme: ['light', 'dark'].includes(s.theme) ? s.theme : 'auto',
+    labs: s.labs === true, // « Laboratoire » : jeux en test, débloqués par 6 appuis sur Profil
+    favorites,
   };
 }
 export function saveSettings(s) {
@@ -97,7 +100,8 @@ export function saveProfile(p) {
 }
 
 // Enregistre le résultat d'une partie terminée. `better` vaut 'high' ou 'low'.
-export function recordResult(gameId, diff, { won, score, ms }, better) {
+// Avec `always`, le record est mis à jour même sur une défaite (jeux d'arcade : le score compte toujours).
+export function recordResult(gameId, diff, { won, score, ms }, better, always = false) {
   const p = getProfile();
   const s = p.stats[gameId] || emptyStats();
   s.played++;
@@ -108,15 +112,15 @@ export function recordResult(gameId, diff, { won, score, ms }, better) {
     s.won++;
     s.streak++;
     s.bestStreak = Math.max(s.bestStreak, s.streak);
-    if (Number.isFinite(score)) {
-      previous = s.best[diff] ?? null;
-      if (previous === null || (better === 'high' ? score > previous : score < previous)) {
-        s.best[diff] = score;
-        isBest = true;
-      }
-    }
   } else {
     s.streak = 0;
+  }
+  if ((won || always) && Number.isFinite(score)) {
+    previous = s.best[diff] ?? null;
+    if (previous === null || (better === 'high' ? score > previous : score < previous)) {
+      s.best[diff] = score;
+      isBest = true;
+    }
   }
   p.stats[gameId] = s;
   saveProfile(p);

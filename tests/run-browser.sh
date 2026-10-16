@@ -65,11 +65,11 @@ report() { # nom sortie
 }
 
 echo "== Navigateur : $CHROME"
-echo "== Jeux (premier et dernier niveau de chacun)"
+echo "== Jeux, laboratoire compris (premier et dernier niveau de chacun)"
 while read -r id diff; do
   out=$(run_page "http://localhost:$PORT/tests/harness.html?g=$id&d=$diff&auto=1&seed=9" 500,900 8000 '<pre class="notice">(.*?)</pre>')
   report "$id / $diff" "$out"
-done < <(node -e "import('./js/games/index.js').then(({ GAMES }) => { for (const g of GAMES) { const d = g.difficulties; console.log(g.id, d[0].id); if (d.length > 1) console.log(g.id, d[d.length - 1].id); } })")
+done < <(node -e "import('./js/games/index.js').then(({ ALL_GAMES }) => { for (const g of ALL_GAMES) { const d = g.difficulties; console.log(g.id, d[0].id); if (d.length > 1) console.log(g.id, d[d.length - 1].id); } })")
 
 echo "== Parcours complet de l'appli (390 px : créer, reprendre, supprimer, limite, victoire, export)"
 out=$(run_page "http://localhost:$PORT/tests/app-flow.html" 700,900 90000 '<pre id="out">(.*?)</pre>')

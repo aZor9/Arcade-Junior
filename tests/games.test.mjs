@@ -1,6 +1,11 @@
 // Tests de logique pure (sans navigateur) : node tests/games.test.mjs
 import assert from 'node:assert/strict';
-import { GAMES } from '../js/games/index.js';
+import { GAMES, LAB_GAMES, ALL_GAMES } from '../js/games/index.js';
+import { canPour as canPourWS, pour as pourWS, solve as solveWS, isSolved as isSolvedWS } from '../js/games/watersort.js';
+import { solve as solveRH } from '../js/games/rushhour.js';
+import { LEVELS as RH_LEVELS } from '../js/games/rushhour-levels.js';
+import { step as helixStep, phiUnderBall as helixPhi, segmentAt as helixSeg } from '../js/games/helix.js';
+import { drop as stackDrop, move as stackMove, place as stackPlace } from '../js/games/stack.js';
 import { createRng } from '../js/rng.js';
 import { solve } from '../js/games/sudoku.js';
 import { evaluate } from '../js/games/mastermind.js';
@@ -278,6 +283,107 @@ ok('number match : visibilité des paires, lignes vides, ajout, grilles gagnable
       assert.ok(nmFind(st.cells, st.adds, createRng(seed), 200), `${d}/${seed} : une victoire existe`);
     }
   }
+});
+
+ok('laboratoire : chaque jeu en test se crée dans chaque niveau et survit à un aller-retour JSON', () => {
+  for (const g of LAB_GAMES) {
+    assert.ok(g.lab, `${g.id} marqué comme jeu du laboratoire`);
+    assert.ok(!GAMES.includes(g), `${g.id} absent des jeux publiés`);
+    for (const d of g.difficulties) {
+      const st = g.create(createRng(7), d.id);
+      assert.deepEqual(JSON.parse(JSON.stringify(st)), st, `${g.id}/${d.id}`);
+    }
+  }
+  assert.equal(new Set(ALL_GAMES.map((g) => g.id)).size, ALL_GAMES.length, 'identifiants uniques');
+});
+
+ok('tri de liquides : règles de versement et grilles toujours résolubles', () => {
+  const t = [[0, 1], [1], [], [0, 0, 0, 0]];
+  assert.ok(canPourWS(t, 0, 1), 'même couleur au sommet');
+  assert.ok(canPourWS(t, 0, 2), 'tube vide');
+  assert.ok(!canPourWS(t, 1, 3), 'couleur différente');
+  assert.ok(!canPourWS(t, 0, 3), 'tube plein');
+  const t2 = [[2, 1, 1], [1], []];
+  assert.equal(pourWS(t2, 0, 1), 2, 'les couches identiques du dessus partent ensemble');
+  assert.deepEqual(t2, [[2], [1, 1, 1], []]);
+  const ws = LAB_GAMES.find((g) => g.id === 'watersort');
+  for (const d of ws.difficulties) {
+    for (let seed = 1; seed <= 8; seed++) {
+      const st = ws.create(createRng(seed * 41), d.id);
+      const tubes = st.tubes.map((x) => x.slice());
+      const sol = solveWS(tubes);
+      assert.ok(sol, `${d.id}/${seed} : résoluble`);
+      for (const [a, b] of sol) { assert.ok(canPourWS(tubes, a, b)); pourWS(tubes, a, b); }
+      assert.ok(isSolvedWS(tubes));
+      assert.ok(!isSolvedWS(st.tubes), 'pas déjà résolue');
+    }
+  }
+});
+
+ok('embouteillage : bibliothèque valide, minimum de coups exact et conforme au niveau', () => {
+  const ranges = { easy: [3, 6], normal: [7, 11], hard: [12, 17], expert: [18, 99] };
+  for (const [diff, list] of Object.entries(RH_LEVELS)) {
+    assert.ok(list.length >= 20, `${diff} : assez de grilles`);
+    for (const lvl of list) {
+      const cars = lvl.cars.map(([r, c, len, hz]) => ({ r, c, len, h: hz === 1 }));
+      assert.deepEqual([cars[0].r, cars[0].len, cars[0].h], [2, 2, true], 'voiture rouge sur la ligne de sortie');
+      const cells = new Set();
+      for (const car of cars) for (let k = 0; k < car.len; k++) {
+        const r = car.h ? car.r : car.r + k; const c = car.h ? car.c + k : car.c;
+        assert.ok(r >= 0 && r < 6 && c >= 0 && c < 6, 'dans le parking');
+        assert.ok(!cells.has(r * 6 + c), 'pas de chevauchement');
+        cells.add(r * 6 + c);
+      }
+      assert.ok(lvl.par >= ranges[diff][0] && lvl.par <= ranges[diff][1], `${diff} : minimum ${lvl.par}`);
+    }
+    // vérification complète du minimum sur un échantillon (le générateur l'a vérifié pour toutes)
+    for (const lvl of list.slice(0, 3)) {
+      const cars = lvl.cars.map(([r, c, len, hz]) => ({ r, c, len, h: hz === 1 }));
+      assert.equal(solveRH(cars).length, lvl.par, `${diff} : minimum exact`);
+    }
+  }
+});
+
+ok('hélice : traverser, rebondir, perdre sur le rouge, boule de feu, gagner en bas', () => {
+  const run = (floors, rot = 0, secs = 20) => {
+    const s = { floors, floor: 0, y: 0.4, vy: 0, rot, streak: 0, score: 0 };
+    const ev = [];
+    for (let t = 0; t < secs; t += 1 / 60) { ev.push(...helixStep(s, 1 / 60)); if (ev.includes('win') || ev.includes('lose')) break; }
+    return { s, ev };
+  };
+  const front = helixPhi(0);
+  const open = () => ({ gap: [front - 0.3, 0.6], reds: [] });
+  const shut = () => ({ gap: [front + 2, 0.4], reds: [] });
+  assert.ok(run([open(), open()]).ev.includes('win'), 'trous alignés : la balle atteint le bas');
+  const b = run([shut()], 0, 4);
+  assert.ok(b.ev.filter((e) => e === 'bounce').length >= 3 && b.s.floor === 0, 'étage plein : rebonds');
+  assert.ok(run([{ gap: [front + 2, 0.4], reds: [[front - 0.4, 0.8]] }], 0, 4).ev.includes('lose'), 'zone rouge : défaite');
+  const fire = run([open(), open(), open(), { gap: [front + 2, 0.3], reds: [[front - 0.4, 0.8]] }, shut()], 0, 4);
+  assert.ok(fire.ev.includes('smash') && !fire.ev.includes('lose'), 'boule de feu : l’étage rouge est brisé');
+  assert.equal(helixSeg({ gap: [1, 1], reds: [[3, 0.5]] }, 1.5), 'gap');
+  assert.equal(helixSeg({ gap: [1, 1], reds: [[3, 0.5]] }, 3.2), 'red');
+  assert.equal(helixSeg({ gap: [1, 1], reds: [[3, 0.5]] }, 5), 'solid');
+  assert.equal(helixSeg({ gap: [6, 1], reds: [] }, 0.2), 'gap', 'arc qui passe par 0');
+  const frozen = { floors: [shut()], floor: 0, y: 0.4, vy: 1, rot: 0, streak: 0, score: 0 };
+  helixStep(frozen, -0.5); helixStep(frozen, 0);
+  assert.ok(frozen.y === 0.4 && frozen.vy === 1, 'un pas de temps nul ou négatif ne fait rien (sinon la balle traversait les étages)');
+  const fast = { floors: Array.from({ length: 40 }, open), floor: 0, y: 0.4, vy: 0, rot: 0, streak: 0, score: 0 };
+  for (let k = 0; k < 600; k++) helixStep(fast, 1 / 30);
+  assert.ok(fast.vy <= 14 && fast.floor === 40, 'chute plafonnée et aucun étage sauté');
+});
+
+ok('pile : coupe, parfait, raté, rebond sur les bords, agrandissement après trois parfaits', () => {
+  assert.deepEqual(stackDrop({ x: 0.2, w: 0.6 }, { x: 0.205, w: 0.6 }), { block: { x: 0.2, w: 0.6 }, perfect: true, cut: null });
+  const cut = stackDrop({ x: 0.2, w: 0.6 }, { x: 0.3, w: 0.6 });
+  assert.ok(Math.abs(cut.block.w - 0.5) < 1e-9 && Math.abs(cut.cut.w - 0.1) < 1e-9 && !cut.perfect);
+  assert.ok(stackDrop({ x: 0.2, w: 0.3 }, { x: 0.6, w: 0.3 }).miss);
+  const m = stackMove({ x: 0.5, w: 0.4, dir: 1 }, 1, 0.2);
+  assert.ok(Math.abs(m.x - 0.5) < 1e-9 && m.dir === -1, 'rebond au bord droit');
+  const st = LAB_GAMES.find((g) => g.id === 'stack').create(createRng(1), 'normal');
+  st.cur.x = 0.3; stackPlace(st);                     // coupe : largeur 0,5
+  for (let k = 0; k < 3; k++) { st.cur.x = st.blocks.at(-1).x; stackPlace(st); }
+  assert.ok(st.blocks.at(-1).w > 0.5 + 1e-9, 'trois parfaits : le bloc s’élargit');
+  assert.equal(st.score, 4);
 });
 
 console.log(`\n${n} groupes de tests réussis`);

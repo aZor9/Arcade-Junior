@@ -171,6 +171,60 @@ f.addEventListener('load', async () => {
     await until(() => keys().length === 0);
     await until(() => findBtn() && findBtn().disabled);
     check('profil : parties supprimées et bouton grisé ensuite', keys().length === 0 && findBtn().disabled === true);
+
+    // Laboratoire : 6 appuis rapides sur l'onglet Profil
+    d.querySelectorAll('dialog').forEach((x) => x.close());
+    w.location.hash = '#/profil';
+    await until(() => $('.tile').length === 4);
+    w.localStorage.clear();
+    w.location.hash = '#/';
+    await until(() => $('.game-card').length >= NB);
+    check('laboratoire : caché par défaut', $('.game-card').length === NB && $('.game-badge.lab').length === 0);
+    const tab = d.querySelector('.tabbar a[data-tab="profil"]');
+    for (let k = 0; k < 6; k++) tab.click();
+    await until(() => $('.labs').length === 1);
+    check('laboratoire : 6 appuis sur Profil l’activent', JSON.parse(w.localStorage.getItem('aj:settings')).labs === true && $('.labs').length === 1);
+    w.location.hash = '#/';
+    await until(() => $('.game-card').length > NB);
+    check('laboratoire : les 4 jeux en test apparaissent avec un badge', $('.game-card').length === NB + 4 && $('.game-badge.lab').length === 4);
+    $('.game-card').find((c) => c.textContent.includes('Tri de liquides')).click();
+    await until(sheet);
+    d.querySelector('dialog[open] .choice').click();
+    await until(() => w.location.hash.startsWith('#/jeu/watersort/'));
+    await until(() => $('.ws-tube').length > 0);
+    check('laboratoire : un jeu en test se lance', $('.ws-tube').length > 0);
+    w.location.hash = '#/profil';
+    await until(() => $('.labs').length === 1);
+    $('.labs .btn')[0].click();
+    await until(() => $('.labs').length === 0);
+    w.location.hash = '#/';
+    await until(() => $('.game-card').length >= NB);
+    check('laboratoire : désactivé, les jeux en test disparaissent', $('.game-card').length === NB);
+    check('laboratoire : la partie commencée reste jouable dans « en cours »', $('.session').some((s) => s.textContent.includes('Tri de liquides')));
+
+    // Favoris
+    const tileOf = (section, name) => [...section.querySelectorAll('.game-tile')].find((t) => t.querySelector('.game-card strong').textContent === name);
+    const sectionOf = (title) => { const h2 = $('.section-head h2').find((x) => x.textContent.includes(title)); return h2 ? h2.closest('section') : null; };
+    check('favoris : pas de section tant qu’il n’y a pas de favori', !sectionOf('Favoris'));
+    tileOf(sectionOf('Tous les jeux'), 'Sudoku').querySelector('.fav-btn').click();
+    await until(() => sectionOf('Favoris'));
+    check('favoris : une section en tête avec le jeu', sectionOf('Favoris').querySelectorAll('.game-card').length === 1 && !!tileOf(sectionOf('Favoris'), 'Sudoku'));
+    check('favoris : « Tous les jeux » les affiche toujours tous', sectionOf('Tous les jeux').querySelectorAll('.game-card').length === NB);
+    check('favoris : la section est avant « Tous les jeux »', Boolean(sectionOf('Favoris').compareDocumentPosition(sectionOf('Tous les jeux')) & Node.DOCUMENT_POSITION_FOLLOWING));
+    check('favoris : étoile pleine et état annoncé', tileOf(sectionOf('Tous les jeux'), 'Sudoku').querySelector('.fav-btn').getAttribute('aria-pressed') === 'true');
+    tileOf(sectionOf('Tous les jeux'), '2048').querySelector('.fav-btn').click();
+    await until(() => sectionOf('Favoris') && sectionOf('Favoris').querySelectorAll('.game-card').length === 2);
+    check('favoris : ordre d’ajout conservé', [...sectionOf('Favoris').querySelectorAll('.game-card strong')].map((s) => s.textContent).join(',') === 'Sudoku,2048');
+    check('favoris : enregistrés dans les réglages', JSON.stringify(JSON.parse(w.localStorage.getItem('aj:settings')).favorites) === '["sudoku","2048"]');
+    tileOf(sectionOf('Favoris'), 'Sudoku').querySelector('.fav-btn').click();
+    await until(() => sectionOf('Favoris') && sectionOf('Favoris').querySelectorAll('.game-card').length === 1);
+    tileOf(sectionOf('Favoris'), '2048').querySelector('.fav-btn').click();
+    await until(() => !sectionOf('Favoris'));
+    check('favoris : retirer le dernier fait disparaître la section', !sectionOf('Favoris'));
+    $('.game-tile .game-card')[0].click();
+    await until(sheet);
+    check('favoris : la carte lance toujours une partie (l’étoile est un bouton séparé)', !!sheet());
+    d.querySelectorAll('dialog').forEach((x) => x.close());
   } catch (e) { log.push('FAIL exception: ' + e.message); }
   out.textContent = log.concat(dbg.slice(0, 6)).join(String.fromCharCode(10));
 });

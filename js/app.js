@@ -1,6 +1,6 @@
 import * as store from './storage.js';
 import { h, toast, dialog, confirmDialog, formatDuration, howtoList } from './ui.js';
-import { GAMES, getGame } from './games/index.js';
+import { GAMES, ALL_GAMES, LAB_GAMES, getGame } from './games/index.js';
 import { createRng, newSeed, newId } from './rng.js';
 
 const root = document.getElementById('app');
@@ -74,8 +74,41 @@ async function chooseDifficulty(game) {
 }
 const h2random = (game) => game.difficulties[Math.floor(Math.random() * game.difficulties.length)].id;
 
+// Jeux proposés : les jeux publiés, plus ceux du laboratoire s'il est activé.
+const visibleGames = () => (store.getSettings().labs ? ALL_GAMES : GAMES);
+
+function toggleFavorite(id) {
+  const s = store.getSettings();
+  const favs = new Set(s.favorites);
+  if (favs.has(id)) favs.delete(id); else favs.add(id);
+  s.favorites = [...favs];
+  store.saveSettings(s);
+  toast(favs.has(id) ? '⭐ Ajouté aux favoris.' : 'Retiré des favoris.');
+  route();
+}
+
+// Carte d'un jeu : la carte lance une partie, l'étoile (bouton séparé) ajoute ou retire des favoris.
+function gameCard(g, sessions, favs) {
+  const running = sessions.filter((s) => s.game === g.id).length;
+  const fav = favs.includes(g.id);
+  return h('div', { class: 'game-tile', vars: gameStyle(g) },
+    h('button', { class: 'game-card', type: 'button', onclick: () => chooseDifficulty(g) },
+      h('span', { class: 'game-emoji', 'aria-hidden': 'true', text: g.emoji }),
+      h('strong', { text: g.name }),
+      h('span', { class: 'game-tag', text: g.tagline }),
+      running || g.lab ? h('span', { class: 'game-meta' },
+        g.lab ? h('span', { class: 'game-badge lab', text: '🧪 Labo' }) : null,
+        running ? h('span', { class: 'game-badge', text: `${running} en cours` }) : null) : null),
+    h('button', {
+      class: `fav-btn${fav ? ' on' : ''}`, type: 'button', 'aria-pressed': String(fav),
+      'aria-label': fav ? `Retirer ${g.name} des favoris` : `Ajouter ${g.name} aux favoris`,
+      text: fav ? '★' : '☆', onclick: () => toggleFavorite(g.id),
+    }));
+}
+
 function surprise() {
-  const game = GAMES[Math.floor(Math.random() * GAMES.length)];
+  const games = visibleGames();
+  const game = games[Math.floor(Math.random() * games.length)];
   startGame(game.id, h2random(game));
 }
 
@@ -104,7 +137,7 @@ function hubView() {
   const els = [
     h('section', { class: 'hero' },
       h('h1', { text: `Salut ${profile.name} !` }),
-      h('p', { text: `${GAMES.length} mini-jeux de réflexion, sans compte, qui marchent aussi hors ligne.` }),
+      h('p', { text: `${visibleGames().length} mini-jeux de réflexion, sans compte, qui marchent aussi hors ligne.` }),
       h('button', { class: 'btn btn-primary btn-big', type: 'button', onclick: surprise, text: '🎲 Surprends-moi' })),
   ];
 
@@ -142,16 +175,18 @@ function hubView() {
       }))));
   }
 
+  // Favoris en tête (dans l'ordre où ils ont été ajoutés), puis tous les jeux, favoris compris.
+  const games = visibleGames();
+  const favs = store.getSettings().favorites;
+  const favGames = favs.map((id) => games.find((g) => g.id === id)).filter(Boolean);
+  if (favGames.length) {
+    els.push(h('section', null,
+      h('div', { class: 'section-head' }, h('h2', { text: '⭐ Favoris' })),
+      h('div', { class: 'games' }, favGames.map((g) => gameCard(g, sessions, favs)))));
+  }
   els.push(h('section', null,
     h('div', { class: 'section-head' }, h('h2', { text: 'Tous les jeux' })),
-    h('div', { class: 'games' }, GAMES.map((g) => {
-      const running = sessions.filter((s) => s.game === g.id).length;
-      return h('button', { class: 'game-card', type: 'button', vars: gameStyle(g), onclick: () => chooseDifficulty(g) },
-        h('span', { class: 'game-emoji', 'aria-hidden': 'true', text: g.emoji }),
-        h('strong', { text: g.name }),
-        h('span', { class: 'game-tag', text: g.tagline }),
-        running ? h('span', { class: 'game-badge', text: `${running} en cours` }) : null);
-    }))));
+    h('div', { class: 'games' }, games.map((g) => gameCard(g, sessions, favs)))));
 
   root.replaceChildren(...els);
 }
@@ -207,15 +242,15 @@ function playView(gameId, sid) {
       finished = true;
       const ms = base;
       store.deleteSession(sid);
-      const { isBest } = store.recordResult(game.id, session.diff, { won, score, ms }, game.score.better);
+      const { isBest } = store.recordResult(game.id, session.diff, { won, score, ms }, game.score.better, Boolean(game.score.always));
       const fmt = game.score.fmt || String;
       resultTimer = setTimeout(async () => {
-        const lines = [h('p', { class: 'result-line', text: won ? 'Bien joué, tu as réussi !' : 'Raté cette fois… une autre partie ?' })];
+        const lines = [h('p', { class: 'result-line', text: game.endless ? 'Belle partie !' : won ? 'Bien joué, tu as réussi !' : 'Raté cette fois… une autre partie ?' })];
         if (Number.isFinite(score)) lines.push(h('p', { class: 'result-score', text: fmt(score) }));
         if (isBest) lines.push(h('p', { class: 'result-best', text: '🏆 Nouveau record pour ce niveau !' }));
         lines.push(h('p', { class: 'muted', text: `Temps : ${formatDuration(ms)}` }));
         const choice = await dialog({
-          title: won ? '🎉 Victoire !' : 'Partie terminée',
+          title: won && !game.endless ? '🎉 Victoire !' : 'Partie terminée',
           body: h('div', null, lines),
           actions: [{ label: 'Accueil', value: 'home', kind: 'ghost' }, { label: 'Nouvelle partie', value: 'again', kind: 'primary' }],
         });
@@ -370,7 +405,7 @@ function profileView() {
     h('div', { class: 'cols' }, h('div', { class: 'col' },
     h('section', null,
       h('div', { class: 'section-head' }, h('h2', { text: 'Par jeu' })),
-      h('ul', { class: 'stats' }, GAMES.map((g) => {
+      h('ul', { class: 'stats' }, visibleGames().map((g) => {
         const s = profile.stats[g.id];
         const fmt = g.score.fmt || String;
         const bests = s ? g.difficulties.filter((d) => s.best[d.id] !== undefined) : [];
@@ -390,6 +425,13 @@ function profileView() {
     h('section', null,
       h('div', { class: 'section-head' }, h('h2', { text: 'Réglages' })),
       seg('Thème', 'theme', [['auto', 'Auto'], ['light', 'Clair'], ['dark', 'Sombre']])),
+
+    settings.labs ? h('section', { class: 'labs' },
+      h('div', { class: 'section-head' }, h('h2', { text: '🧪 Laboratoire' })),
+      h('p', { class: 'muted', text: 'Ces jeux sont en test : ils peuvent changer ou disparaître. Ils sont visibles sur l’accueil tant que le laboratoire est activé.' }),
+      h('ul', { class: 'bests' }, LAB_GAMES.map((g) => h('li', null, h('span', { text: `${g.emoji} ${g.name}` })))),
+      h('div', { class: 'btn-row' },
+        h('button', { class: 'btn btn-ghost', type: 'button', text: 'Désactiver le laboratoire', onclick: () => setLabs(false) }))) : null,
 
     h('section', null,
       h('div', { class: 'section-head' }, h('h2', { text: 'Stockage' })),
@@ -436,7 +478,7 @@ function importData() {
     if (file.size > 2 * 1024 * 1024) { toast('Fichier trop volumineux.'); return; }
     if (!(await confirmDialog('Importer cette sauvegarde ?', 'Elle remplacera toutes les données actuelles de cet appareil.', 'Importer', true))) return;
     try {
-      const n = store.importAll(await file.text(), GAMES.map((g) => g.id));
+      const n = store.importAll(await file.text(), ALL_GAMES.map((g) => g.id));
       applyTheme();
       toast(`${n} élément${n > 1 ? 's' : ''} importé${n > 1 ? 's' : ''}.`);
       route();
@@ -468,6 +510,26 @@ function route() {
   if (location.hash !== lastHash) window.scrollTo(0, 0);
   lastHash = location.hash;
 }
+
+// Fonctions cachées : 6 appuis rapides (en moins de 4 secondes) sur l'onglet Profil activent ou désactivent
+// le laboratoire (jeux en test).
+function setLabs(on) {
+  const s = store.getSettings();
+  s.labs = on;
+  store.saveSettings(s);
+  toast(on ? `🧪 Laboratoire activé : ${LAB_GAMES.length} jeux en test sont visibles sur l’accueil.` : 'Laboratoire désactivé.');
+  route();
+}
+let profileTaps = [];
+document.querySelectorAll('.tabbar a[data-tab="profil"]').forEach((a) => a.addEventListener('click', () => {
+  const now = Date.now();
+  profileTaps = profileTaps.filter((t) => now - t < 4000);
+  profileTaps.push(now);
+  if (profileTaps.length >= 6) {
+    profileTaps = [];
+    setLabs(!store.getSettings().labs);
+  }
+}));
 
 applyTheme();
 window.addEventListener('hashchange', route);

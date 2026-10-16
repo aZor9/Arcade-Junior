@@ -28,10 +28,17 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 
 Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
+### Laboratoire (jeux en test)
+
+Quatre jeux sont en test et cachés par défaut : **🧪 Tri de liquides**, **🚗 Embouteillage**, **🌀 Hélice** (type Helix Jump) et **🧱 Pile** (type Stack). Pour les afficher : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
+
+Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l’ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
+
 ## Fonctionnalités
 
 - **Parties en cours** : lance plusieurs parties, quitte-les, reprends-les plus tard (jusqu’à 20), ou supprime-les toutes d'un coup (statistiques conservées). Une partie est sauvegardée à chaque coup, avec son temps écoulé.
 - **Génération aléatoire reproductible** : chaque partie vient d’une graine (PRNG `mulberry32`) dont l’état est sauvegardé, donc une reprise continue exactement la même suite.
+- **Favoris** : une étoile sur chaque carte ; les favoris s’affichent en tête de l’accueil (et restent dans « Tous les jeux »).
 - **Profil** : pseudo, avatar, parties jouées et gagnées, séries, records par jeu et par niveau, badges.
 - **Stockage visible** : jauge d’utilisation du `localStorage` (limite typique ≈ 5 Mo par site), limite de 20 parties, gestion du quota dépassé et du stockage bloqué (navigation privée).
 - **Export / import** de toutes les données en JSON (pour changer de téléphone).
@@ -100,7 +107,11 @@ js/app.js             Routeur, accueil, écran de partie, profil
 js/storage.js         localStorage : parties, profil, quota, export/import
 js/ui.js              Aides DOM, toasts, boîtes de dialogue (aucun innerHTML)
 js/rng.js             PRNG à graine
-js/games/*.js         Un fichier par jeu + index.js
+js/games/*.js         Un fichier par jeu + index.js (jeux publiés et laboratoire)
+js/games/shapes.js    Formes associées aux couleurs (jeux jouables en cas de daltonisme)
+js/games/loop.js      Boucle d’animation des jeux d’arcade (pause quand la page est cachée)
+js/games/rushhour-levels.js  Grilles de l’Embouteillage, générées par tools/gen-rushhour.mjs
+tools/                Outils de développement (non publiés)
 sw.js, manifest.webmanifest, icons/
 tests/                Tests de logique, pages de test navigateur, script run-browser.sh
 .github/workflows/    Tests et déploiement automatiques
@@ -154,6 +165,14 @@ node tests/site.test.mjs         # pages, liens, plan du site, service worker, d
 ## Idées pour la suite
 
 Wordle en français, Simon, Hashi (ponts entre îles), Slitherlink, indices et annulation dans tous les jeux, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
+
+## Grilles de l’Embouteillage
+
+Générer une grille difficile prendrait plusieurs secondes sur un téléphone : les grilles sont donc produites à l’avance par `node tools/gen-rushhour.mjs` (environ 4 minutes), qui vérifie chacune avec le solveur (nombre minimum de coups exact) et écrit `js/games/rushhour-levels.js`.
+
+## À faire
+
+Voir [TODO.md](TODO.md) : jeux du laboratoire à valider, idées de jeux, fonctionnalités, accessibilité.
 
 ## Licence
 

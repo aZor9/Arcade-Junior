@@ -8,6 +8,8 @@
 import { GAMES, getGame } from '../js/games/index.js';
 import { applyOp } from '../js/games/compte.js';
 import { findSolution } from '../js/games/numbermatch.js';
+import { solve as solveWS } from '../js/games/watersort.js';
+import { solve as solveRH, range as rangeRH } from '../js/games/rushhour.js';
 import { createRng } from '../js/rng.js';
 const q = new URLSearchParams(location.search);
 const err = document.getElementById('err');
@@ -417,6 +419,87 @@ if (q.get('auto')) {
     const b3 = m3.box.querySelectorAll('.nm-cell');
     b3[0].click(); b3[18].click();
     check('number match : deux 5 voisins en diagonale/colonne vides entre eux, effacés', m3.st.cells.length === 0 && m3.log.some((l) => l.startsWith('FINISH {"won":true')));
+  } else if (id === 'watersort') {
+    const tubes = () => $('.ws-tube');
+    check('tri : un bouton par tube', tubes().length === state.tubes.length);
+    let bad = null;
+    state.tubes.forEach((A, a) => state.tubes.forEach((B, b) => { if (!bad && a !== b && A.length && B.length && B.length < state.cap && A[A.length - 1] !== B[B.length - 1]) bad = [a, b]; }));
+    if (bad) {
+      const snap = JSON.stringify(state.tubes);
+      click(tubes()[bad[0]]); click(tubes()[bad[1]]);
+      check('tri : un versement interdit ne change rien et le dit', JSON.stringify(state.tubes) === snap && document.getElementById('err').textContent.includes('Impossible'));
+      click(tubes()[bad[1]]);                                    // désélectionne
+    }
+    const sol = solveWS(state.tubes);
+    click(tubes()[sol[0][0]]); click(tubes()[sol[0][1]]);
+    check('tri : un versement compte un coup', state.moves === 1 && state.history.length === 1);
+    click($('.ws-actions .btn')[0]);
+    check('tri : annuler restaure les tubes', state.history.length === 0 && JSON.stringify(state.tubes) === JSON.stringify(state.start));
+    for (const [a, b] of sol) { click(tubes()[a]); click(tubes()[b]); }
+    check('tri : tout trié = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'rushhour') {
+    const board = stage.querySelector('.rh-board');
+    const carEls = () => $('.rh-car');
+    check('embouteillage : un bouton par véhicule et une sortie', carEls().length === state.cars.length && !!stage.querySelector('.rh-exit'));
+    const cell = board.getBoundingClientRect().width / 6;
+    const dragCar = (i, p) => {
+      const el = carEls()[i];
+      const r = el.getBoundingClientRect();
+      const car = state.cars[i];
+      const x = r.left + r.width / 2;
+      const y = r.top + r.height / 2;
+      const d = (p - (car.h ? car.c : car.r)) * cell;
+      const to = { clientX: x + (car.h ? d : 0), clientY: y + (car.h ? 0 : d), pointerId: 1, bubbles: true };
+      el.dispatchEvent(new PointerEvent('pointerdown', { clientX: x, clientY: y, pointerId: 1, bubbles: true }));
+      board.dispatchEvent(new PointerEvent('pointermove', to));
+      board.dispatchEvent(new PointerEvent('pointerup', to));
+    };
+    // on pousse la voiture rouge vers la sortie : elle s'arrête au premier obstacle
+    const limit = rangeRH(state.cars, 0).hi;
+    const before = JSON.stringify(state.cars);
+    dragCar(0, 4);
+    check('embouteillage : un véhicule ne traverse pas les autres', state.cars[0].c === Math.min(4, limit));
+    if (JSON.stringify(state.cars) !== before) {
+      click($('.rh-actions .btn')[0]);
+      check('embouteillage : annuler remet le véhicule', JSON.stringify(state.cars) === before);
+    }
+    const sol = solveRH(state.cars.map((c) => ({ ...c })));
+    check('embouteillage : le minimum affiché correspond au solveur', sol.length === state.par);
+    for (const [i, p] of sol) dragCar(i, p);
+    check('embouteillage : sortie libérée = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'helix') {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    check('hélice : un canvas de jeu', !!stage.querySelector('canvas.arc-canvas'));
+    const r0 = state.rot;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    check('hélice : la flèche fait tourner la tour', Math.abs(state.rot - r0) > 0.1);
+    const y0 = state.y;
+    await sleep(500);
+    check('hélice : la balle bouge toute seule (animation)', state.y !== y0 || state.floor > 0);
+    const front = Math.PI / 2;
+    const mini = (floors) => {
+      const box = document.createElement('div'); box.className = 'stage'; document.body.append(box);
+      const log = [];
+      g.mount(box, { floors, floor: 0, y: 0.4, vy: 0, rot: 0, streak: 0, score: 0 }, { save() {}, elapsed: () => 0, toast: (m) => log.push(m), finish: (r) => log.push('FINISH ' + JSON.stringify(r)) });
+      return log;
+    };
+    const win = mini([{ gap: [front - 0.3, 0.6], reds: [] }, { gap: [front - 0.3, 0.6], reds: [] }]);
+    const lose = mini([{ gap: [front + 2, 0.3], reds: [[front - 0.4, 0.8]] }]);
+    await sleep(3000);
+    check('hélice : trous alignés = victoire', win.some((l) => l.startsWith('FINISH {"won":true')));
+    check('hélice : zone rouge = défaite, score gardé', lose.some((l) => l.startsWith('FINISH {"won":false')));
+  } else if (id === 'stack') {
+    const canvas = stage.querySelector('canvas.arc-canvas');
+    check('pile : un canvas de jeu', !!canvas);
+    state.cur.x = state.blocks[0].x;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    check('pile : Espace pose un bloc', state.blocks.length === 2 && state.score === 1);
+    canvas.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerId: 1 }));
+    check('pile : un appui pose aussi un bloc', state.blocks.length === 3);
+    const topBlock = state.blocks[state.blocks.length - 1];
+    state.cur = topBlock.x > 0.2 ? { x: 0, w: 0.05, dir: 1 } : { x: 0.95, w: 0.05, dir: 1 };
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    check('pile : rater la tour termine la partie avec le score', document.getElementById('err').textContent.includes('FINISH {"won":true,"score":2}'));
   }
   const box = document.createElement('pre'); box.className = 'notice'; box.textContent = log.join(String.fromCharCode(10));
   document.querySelector('main').prepend(box);
