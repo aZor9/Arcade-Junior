@@ -1,12 +1,13 @@
 import { h } from '../ui.js';
-import { shape } from './shapes.js';
 
 // Tri de liquides : verser d'un tube à l'autre jusqu'à ce que chaque tube ne contienne qu'une seule couleur.
 // On ne verse que sur la même couleur (ou dans un tube vide), et seulement s'il reste de la place ; toutes les
 // couches identiques du dessus partent ensemble. Chaque grille proposée a été résolue par le solveur avant.
 
 export const CAP = 4;
-const COLORS = ['#ff5a5a', '#ffb938', '#3ad67c', '#3aa4ff', '#b66bff', '#ff7fc0', '#2fdbdb', '#b8916a', '#f2e24d', '#8fa3ff', '#ff8a3d', '#9be15d'];
+// Teintes franches et bien séparées (le jeu n'affiche que des blocs de couleur). Les noms servent aux lecteurs d'écran.
+const COLORS = ['#ff3b3b', '#ff9f1a', '#ffd60a', '#34c759', '#1e90ff', '#a259ff', '#ff6fb1', '#00c2c7', '#8d5524', '#7d8597', '#1d3557', '#b9f18c'];
+const NAMES = ['rouge', 'orange', 'jaune', 'vert', 'bleu', 'violet', 'rose', 'turquoise', 'marron', 'gris', 'bleu nuit', 'vert clair'];
 
 const top = (t) => t[t.length - 1];
 const uniform = (t) => t.every((v) => v === t[0]);
@@ -85,7 +86,7 @@ export default {
   emoji: '🧪',
   color: '#4fc3f7',
   tagline: 'Une seule couleur par tube',
-  howto: 'Touche un tube, puis un autre pour y verser le liquide du dessus.\nOn ne verse que sur la même couleur ou dans un tube vide, et seulement s’il reste de la place.\nGagne quand chaque tube ne contient plus qu’une couleur. Chaque couleur a aussi sa forme.',
+  howto: 'Touche un tube, puis un autre pour y verser le liquide du dessus.\nOn ne verse que sur la même couleur ou dans un tube vide, et seulement s’il reste de la place.\nGagne quand chaque tube ne contient plus qu’une couleur : il reçoit alors son bouchon.',
   keys: ['Tab puis Entrée : choisir un tube', 'U : annuler'],
   score: { label: 'Moins de versements', better: 'low', fmt: (v) => `${v} versement${v > 1 ? 's' : ''}` },
   difficulties: [
@@ -120,10 +121,13 @@ export default {
     function paint() {
       board.replaceChildren(...state.tubes.map((t, i) => {
         const full = t.length === cap && uniform(t);
+        // Tube en verre : un bouchon (tube terminé), puis le verre qui contient les couches, du fond vers le haut.
         const b = h('button', {
           type: 'button', class: `ws-tube${sel === i ? ' sel' : ''}${full ? ' full' : ''}`, vars: { '--cap': cap },
-          'aria-label': `Tube ${i + 1} : ${t.length ? `${t.length} couche${t.length > 1 ? 's' : ''}` : 'vide'}${full ? ', terminé' : ''}`,
-        }, t.map((c) => h('span', { class: 'ws-unit', vars: { '--k': COLORS[c % COLORS.length] } }, shape(c))));
+          'aria-label': `Tube ${i + 1}${t.length ? `, du bas vers le haut : ${t.map((c) => NAMES[c % NAMES.length]).join(', ')}` : ', vide'}${full ? ', terminé' : ''}${sel === i ? ', sélectionné' : ''}`,
+        },
+        h('span', { class: 'ws-cork', 'aria-hidden': 'true' }),
+        h('span', { class: 'ws-glass', 'aria-hidden': 'true' }, t.map((c) => h('span', { class: 'ws-unit', vars: { '--k': COLORS[c % COLORS.length] } }))));
         b.addEventListener('click', () => tap(i));
         return b;
       }));

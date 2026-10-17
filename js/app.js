@@ -244,6 +244,13 @@ function playView(gameId, sid) {
       store.deleteSession(sid);
       const { isBest } = store.recordResult(game.id, session.diff, { won, score, ms }, game.score.better, Boolean(game.score.always));
       const fmt = game.score.fmt || String;
+      // Bandeau de fin, en haut de l'écran de jeu : reste accessible si la boîte de résultat est fermée
+      // (sur mobile, le panneau latéral « Nouvelle partie » n'existe pas).
+      stage.prepend(h('div', { class: 'end-bar', role: 'group', 'aria-label': 'Partie terminée' },
+        h('p', { class: 'end-title', text: won && !game.endless ? '🎉 Partie gagnée !' : 'Partie terminée' }),
+        h('div', { class: 'end-actions' },
+          h('button', { class: 'btn btn-primary', type: 'button', text: 'Nouvelle partie', onclick: () => startGame(game.id, session.diff) }),
+          h('a', { class: 'btn btn-ghost', href: '#/', text: 'Accueil' }))));
       resultTimer = setTimeout(async () => {
         const lines = [h('p', { class: 'result-line', text: game.endless ? 'Belle partie !' : won ? 'Bien joué, tu as réussi !' : 'Raté cette fois… une autre partie ?' })];
         if (Number.isFinite(score)) lines.push(h('p', { class: 'result-score', text: fmt(score) }));

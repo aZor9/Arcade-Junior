@@ -21,11 +21,11 @@ import helix from './helix.js';
 import stack from './stack.js';
 
 // Jeux publiés : visibles par tout le monde.
-export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch];
+export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch, helix, stack];
 
 // Jeux en test (« Laboratoire ») : visibles seulement quand le laboratoire est activé
 // (6 appuis rapides sur l'onglet Profil). Une partie déjà commencée reste jouable même s'il est désactivé.
-export const LAB_GAMES = [watersort, rushhour, helix, stack];
+export const LAB_GAMES = [watersort, rushhour];
 LAB_GAMES.forEach((g) => { g.lab = true; });
 
 export const ALL_GAMES = [...GAMES, ...LAB_GAMES];

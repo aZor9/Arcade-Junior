@@ -398,15 +398,21 @@ body.playing main { padding-top: 0; }
 .nm-actions { display: flex; gap: 10px; width: var(--w); }
 .nm-actions .btn { flex: 1; }
 
-/* Tri de liquides */
-.ws { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding-bottom: 24px; }
-.ws-tubes { --u: clamp(26px, calc(var(--board) / 9.5), 46px); width: var(--board); display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 8px; padding-top: 14px; }
-.ws-tube { width: calc(var(--u) + 14px); height: calc(var(--u) * var(--cap) + 18px); display: flex; flex-direction: column-reverse; align-items: stretch; gap: 2px; padding: 5px; border: 3px solid var(--line); border-top-color: transparent; border-radius: 4px 4px 22px 22px; background: color-mix(in srgb, var(--surface) 75%, transparent); box-shadow: 0 4px 0 var(--line); transition: transform 0.12s; }
-.ws-tube.sel { transform: translateY(-14px); outline: 3px solid var(--grape); outline-offset: 2px; }
-.ws-tube.full { box-shadow: 0 0 14px 2px rgba(255, 207, 63, 0.55), 0 4px 0 var(--line); }
-.ws-unit { flex: none; height: var(--u); display: grid; place-items: center; border-radius: 6px; background: var(--k); color: rgba(28, 23, 64, 0.72); }
-.ws-unit:first-child { border-radius: 6px 6px 16px 16px; }
-.ws-unit svg { width: 52%; height: 52%; fill: currentColor; }
+/* Tri de liquides : tubes en verre (contour clair, fond arrondi, reflet), liquides en blocs de couleur pleins.
+   Les blocs n'ont aucun arrondi : seul le fond du tube l'est, et le verre (overflow: hidden) arrondit le bloc du bas. */
+.ws { --glass: color-mix(in srgb, var(--ink) 62%, transparent); display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding-bottom: 24px; }
+.ws-tubes { --u: clamp(24px, calc(var(--board) / 10.5), 42px); width: var(--board); display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 12px; padding-top: 22px; }
+.ws-tube { position: relative; display: flex; flex-direction: column; align-items: center; width: calc(var(--u) + 12px); padding: 0; border: 0; background: transparent; transition: transform 0.15s ease-out; }
+.ws-tube::before { content: ""; width: calc(100% + 8px); height: 5px; border-radius: 3px; background: var(--glass); }
+.ws-glass { position: relative; display: flex; flex-direction: column-reverse; width: 100%; height: calc(var(--u) * (var(--cap) + 0.6)); border: 3px solid var(--glass); border-top: 0; border-radius: 0 0 999px 999px; background: color-mix(in srgb, var(--ink) 7%, transparent); overflow: hidden; }
+.ws-glass::after { content: ""; position: absolute; top: 8px; bottom: calc(var(--u) * 0.45); left: 16%; width: 14%; border-radius: 99px; background: rgba(255, 255, 255, 0.3); pointer-events: none; }
+.ws-unit { flex: none; height: var(--u); background: var(--k); }
+.ws-cork { position: absolute; top: -9px; left: 50%; width: 72%; height: calc(var(--u) * 0.55); translate: -50% 0; border-radius: 4px 4px 2px 2px; background: #c9935a; box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18); opacity: 0; transform: translateY(-10px); transition: opacity 0.2s, transform 0.2s; }
+.ws-tube.full .ws-cork { opacity: 1; transform: none; }
+.ws-tube.sel { transform: translateY(-16px); }
+.ws-tube.sel::before, .ws-tube.sel .ws-glass { border-color: var(--sun); }
+.ws-tube.sel::before { background: var(--sun); }
+.ws-tube:focus-visible { outline: 3px solid var(--grape); outline-offset: 4px; border-radius: 8px; }
 .ws-actions, .rh-actions { display: flex; gap: 10px; width: var(--board); }
 .ws-actions .btn, .rh-actions .btn { flex: 1; }
 
@@ -419,7 +425,8 @@ body.playing main { padding-top: 0; }
 .rh-car.hz { transform: translateX(var(--shift, 0px)); }
 .rh-car.vt { transform: translateY(var(--shift, 0px)); }
 .rh-car.drag { transition: none; z-index: 2; }
-.rh-car.leave { transition: transform 0.6s ease-in; transform: translateX(280%); }
+.rh { overflow-x: clip; }
+.rh-car.leave { transition: transform 0.5s ease-in, opacity 0.5s ease-in; transform: translateX(120%); opacity: 0; }
 .rh-car:focus-visible::before { outline: 3px solid var(--grape); outline-offset: 2px; }
 .rh-arrow { position: relative; z-index: 1; color: #fff; font-size: calc(var(--board) / 6 * 0.4); font-weight: 800; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4); pointer-events: none; }
 
@@ -427,6 +434,12 @@ body.playing main { padding-top: 0; }
 .arc { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; padding-bottom: 24px; }
 .arc-canvas { display: block; width: var(--board); height: min(calc(var(--board) * 1.35), calc(100dvh - 240px)); min-height: 320px; border: 2.5px solid var(--line); border-radius: 18px; background: #1b1640; box-shadow: 0 5px 0 var(--line); touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
 .arc-canvas:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; }
+
+/* Bandeau de fin de partie (mobile) */
+.end-bar { width: var(--board); display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border: 2.5px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--c) 25%, var(--surface)); box-shadow: 0 4px 0 var(--line); }
+.end-title { margin: 0; font-weight: 800; }
+.end-actions { display: flex; gap: 10px; }
+.end-actions .btn { flex: 1; }
 
 /* ---------- Boîtes de dialogue ---------- */
 
@@ -578,7 +591,8 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
   .g2048, .lo, .tq, .mem, .ms, .sd, .ud, .pp, .tk, .hn, .fl, .cb, .ng, .c4g, .nm, .ws, .rh, .arc { gap: 12px; padding-bottom: 0; }
   .nm { --w: min(var(--board), 460px); }
   .ws-tubes { width: min(var(--board), 560px); }
-  .rh-board, .rh-actions { width: min(var(--board), calc(var(--avail) - 64px)); } /* place pour la rangée Annuler / Recommencer */
+  .rh-board, .rh-actions { width: min(var(--board), calc(var(--avail) - 64px)); }
+  .end-bar { display: none; } /* sur ordinateur, le panneau latéral propose déjà « Nouvelle partie » */ /* place pour la rangée Annuler / Recommencer */
   .arc-canvas { width: min(var(--board), 440px); height: max(300px, calc(var(--avail) - 6px)); min-height: 0; }
   .nm-wrap { max-height: max(200px, calc(var(--avail) - 70px)); }
   .cb-tile { min-height: 54px; }

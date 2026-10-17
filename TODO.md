@@ -6,8 +6,6 @@ Ces jeux sont en ligne mais cachés derrière le laboratoire (6 appuis rapides s
 
 - [ ] 🧪 **Tri de liquides**
 - [ ] 🚗 **Embouteillage**
-- [ ] 🌀 **Hélice** : à essayer sur un vrai téléphone (sensibilité de la rotation, vitesse de la balle).
-- [ ] 🧱 **Pile** : à essayer sur un vrai téléphone (vitesse, taille des blocs).
 
 Pour publier un jeu du laboratoire : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l'ajouter au plan du site (`plan.html`) et à la page « À propos ». Le test `tests/site.test.mjs` rappelle ce qui manque.
 
@@ -29,6 +27,9 @@ Pour publier un jeu du laboratoire : le déplacer de `LAB_GAMES` vers `GAMES` da
 - Sokoban : niveaux générés « à l'envers » depuis une position résolue.
 
 ## Fonctionnalités
+
+- [ ] Hélice et Pile (publiés) : affiner la prise en main sur téléphone (sensibilité de la rotation, vitesses).
+- [ ] Icône d'étoile des favoris plus soignée (choix de l'icône en cours).
 
 - [ ] **Défi du jour** : même grille pour tout le monde (graine = date), série de jours, résultat à partager.
 - [ ] Annuler et indices dans tous les jeux (Sudoku : vérifier une case, donner un chiffre).

@@ -379,7 +379,7 @@ ok('pile : coupe, parfait, raté, rebond sur les bords, agrandissement après tr
   assert.ok(stackDrop({ x: 0.2, w: 0.3 }, { x: 0.6, w: 0.3 }).miss);
   const m = stackMove({ x: 0.5, w: 0.4, dir: 1 }, 1, 0.2);
   assert.ok(Math.abs(m.x - 0.5) < 1e-9 && m.dir === -1, 'rebond au bord droit');
-  const st = LAB_GAMES.find((g) => g.id === 'stack').create(createRng(1), 'normal');
+  const st = ALL_GAMES.find((g) => g.id === 'stack').create(createRng(1), 'normal');
   st.cur.x = 0.3; stackPlace(st);                     // coupe : largeur 0,5
   for (let k = 0; k < 3; k++) { st.cur.x = st.blocks.at(-1).x; stackPlace(st); }
   assert.ok(st.blocks.at(-1).w > 0.5 + 1e-9, 'trois parfaits : le bloc s’élargit');

@@ -31,11 +31,13 @@ async function newGame(index) {
 }
 
 let NB = 0;
+let NLAB = 0;
 let started = false;
 f.addEventListener('load', async () => {
   if (started) return; started = true;
   try {
     NB = (await import('../js/games/index.js')).GAMES.length;
+    NLAB = (await import('../js/games/index.js')).LAB_GAMES.length;
     w = f.contentWindow; d = w.document;
     w.localStorage.clear();
     const oldDoc = d;
@@ -186,7 +188,7 @@ f.addEventListener('load', async () => {
     check('laboratoire : 6 appuis sur Profil l’activent', JSON.parse(w.localStorage.getItem('aj:settings')).labs === true && $('.labs').length === 1);
     w.location.hash = '#/';
     await until(() => $('.game-card').length > NB);
-    check('laboratoire : les 4 jeux en test apparaissent avec un badge', $('.game-card').length === NB + 4 && $('.game-badge.lab').length === 4);
+    check('laboratoire : les jeux en test apparaissent avec un badge', $('.game-card').length === NB + NLAB && $('.game-badge.lab').length === NLAB);
     $('.game-card').find((c) => c.textContent.includes('Tri de liquides')).click();
     await until(sheet);
     d.querySelector('dialog[open] .choice').click();
@@ -225,6 +227,42 @@ f.addEventListener('load', async () => {
     await until(sheet);
     check('favoris : la carte lance toujours une partie (l’étoile est un bouton séparé)', !!sheet());
     d.querySelectorAll('dialog').forEach((x) => x.close());
+
+    // Fin de partie sur mobile (Embouteillage) : la boîte de résultat fermée, « Nouvelle partie » reste accessible
+    d.querySelectorAll('dialog').forEach((x) => x.close());
+    w.location.hash = '#/profil';
+    await until(() => $('.tile').length === 4);
+    const RH = await import('../js/games/rushhour.js');
+    const { createRng } = await import('../js/rng.js');
+    const rhState = RH.default.create(createRng(3), 'easy');
+    w.localStorage.setItem('aj:s:rhfin', JSON.stringify({ id: 'rhfin', game: 'rushhour', diff: 'easy', seed: 1, createdAt: Date.now(), updatedAt: Date.now(), elapsed: 0, state: rhState }));
+    w.location.hash = '#/jeu/rushhour/rhfin';
+    await until(() => $('.rh-car').length > 0);
+    const rhBoard = d.querySelector('.rh-board');
+    const cellPx = rhBoard.getBoundingClientRect().width / 6;
+    for (const [i, p] of RH.solve(rhState.cars.map((c) => ({ ...c })))) {
+      const el = $('.rh-car')[i];
+      const r = el.getBoundingClientRect();
+      const car = rhState.cars[i];
+      const x = r.left + r.width / 2; const y = r.top + r.height / 2;
+      const dd = (p - (car.h ? car.c : car.r)) * cellPx;
+      const to = { clientX: x + (car.h ? dd : 0), clientY: y + (car.h ? 0 : dd), pointerId: 1, bubbles: true };
+      el.dispatchEvent(new w.PointerEvent('pointerdown', { clientX: x, clientY: y, pointerId: 1, bubbles: true }));
+      rhBoard.dispatchEvent(new w.PointerEvent('pointermove', to));
+      rhBoard.dispatchEvent(new w.PointerEvent('pointerup', to));
+    }
+    await until(() => sheet() && sheet().textContent.includes('Victoire'), 4000);
+    check('fin (mobile) : la boîte de résultat s’affiche', !!sheet() && sheet().textContent.includes('Nouvelle partie'));
+    sheet().close();                                               // le joueur ferme la boîte (toucher à côté, retour…)
+    await sleep(200);
+    const endBar = d.querySelector('.end-bar');
+    const er = endBar ? endBar.getBoundingClientRect() : null;
+    check('fin (mobile) : un bandeau « Nouvelle partie » reste visible sans faire défiler', !!er && er.height > 0 && er.top >= 0 && er.bottom <= w.innerHeight && endBar.textContent.includes('Nouvelle partie'));
+    check('fin (mobile) : la voiture qui sort n’élargit pas la page', d.documentElement.scrollWidth <= w.innerWidth + 1);
+    endBar.querySelector('.btn-primary').click();
+    await until(() => w.location.hash.startsWith('#/jeu/rushhour/') && !w.location.hash.endsWith('rhfin'));
+    await until(() => !d.querySelector('.end-bar') && $('.rh-car').length > 0);
+    check('fin (mobile) : « Nouvelle partie » lance une nouvelle grille', w.location.hash.startsWith('#/jeu/rushhour/') && !w.location.hash.endsWith('rhfin') && !d.querySelector('.end-bar'));
   } catch (e) { log.push('FAIL exception: ' + e.message); }
   out.textContent = log.concat(dbg.slice(0, 6)).join(String.fromCharCode(10));
 });

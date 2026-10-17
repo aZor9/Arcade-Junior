@@ -485,7 +485,7 @@ if (q.get('auto')) {
     };
     const win = mini([{ gap: [front - 0.3, 0.6], reds: [] }, { gap: [front - 0.3, 0.6], reds: [] }]);
     const lose = mini([{ gap: [front + 2, 0.3], reds: [[front - 0.4, 0.8]] }]);
-    await sleep(3000);
+    for (let t = 0; t < 10000 && !(win.some((l) => l.startsWith('FINISH')) && lose.some((l) => l.startsWith('FINISH'))); t += 100) await sleep(100);
     check('hélice : trous alignés = victoire', win.some((l) => l.startsWith('FINISH {"won":true')));
     check('hélice : zone rouge = défaite, score gardé', lose.some((l) => l.startsWith('FINISH {"won":false')));
   } else if (id === 'stack') {

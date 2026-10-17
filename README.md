@@ -24,13 +24,15 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🧮 Le compte est bon | Atteins la cible avec + − × ÷ (cible toujours atteignable) | 4 à 6 nombres |
 | 🖼️ Nonogram | Dessine d'après les indices ; chaque grille se résout par logique, sans deviner | 5×5 à 10×10 |
 | 🔴 Puissance 4 | Affronte l'ordinateur (IA à recherche alpha-bêta) | 4 niveaux |
+| 🌀 Hélice | Fais tourner la tour pour faire descendre la balle par les trous, sans toucher le rouge (type Helix Jump) | 12 à 30 étages |
+| 🧱 Pile | Pose les blocs au bon moment pour monter la tour le plus haut possible (type Stack) | 3 vitesses |
 | 🧠 Number Match | Efface les paires de chiffres identiques ou de somme 10 (ligne, colonne, diagonale) ; grilles garanties gagnables | 4 niveaux |
 
 Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
 ### Laboratoire (jeux en test)
 
-Quatre jeux sont en test et cachés par défaut : **🧪 Tri de liquides**, **🚗 Embouteillage**, **🌀 Hélice** (type Helix Jump) et **🧱 Pile** (type Stack). Pour les afficher : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
+Deux jeux sont en test et cachés par défaut : **🧪 Tri de liquides** et **🚗 Embouteillage**. Pour les afficher : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
 
 Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l’ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
 
