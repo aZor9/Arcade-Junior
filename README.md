@@ -34,7 +34,7 @@ Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
 ### Laboratoire (jeux en test)
 
-Le laboratoire sert à tester des jeux avant de les publier ; il est vide pour le moment (Tri de liquides et Embouteillage, Hélice et Pile y sont passés avant d’être publiés). Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
+Le laboratoire sert à tester des jeux avant de les publier. Il contient en ce moment **⋚ Futoshiki** (chiffres et signes < >) et **🏙️ Gratte-ciel** (indices de vue depuis les bords), tous deux à solution unique. Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
 
 Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l’ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
 

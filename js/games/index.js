@@ -19,13 +19,15 @@ import watersort from './watersort.js';
 import rushhour from './rushhour.js';
 import helix from './helix.js';
 import stack from './stack.js';
+import futoshiki from './futoshiki.js';
+import skyscrapers from './skyscrapers.js';
 
 // Jeux publiés : visibles par tout le monde.
 export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch, helix, stack, watersort, rushhour];
 
 // Jeux en test (« Laboratoire ») : visibles seulement quand le laboratoire est activé
 // (6 appuis rapides sur l'onglet Profil). Une partie déjà commencée reste jouable même s'il est désactivé.
-export const LAB_GAMES = [];
+export const LAB_GAMES = [futoshiki, skyscrapers];
 LAB_GAMES.forEach((g) => { g.lab = true; });
 
 export const ALL_GAMES = [...GAMES, ...LAB_GAMES];

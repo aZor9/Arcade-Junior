@@ -4,20 +4,20 @@
 
 Les jeux en test sont en ligne mais cachés derrière le laboratoire (6 appuis rapides sur l'onglet **Profil**) :
 
-_Aucun jeu en test pour le moment._
+- [ ] ⋚ **Futoshiki** : carré latin avec signes < > entre cases voisines (4×4 à 7×7, solution unique).
+- [ ] 🏙️ **Gratte-ciel** (Skyscrapers) : hauteurs 1 à N, indices de vue depuis les bords (4×4 à 6×6, solution unique).
 
 Pour publier un jeu du laboratoire : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l'ajouter au plan du site (`plan.html`) et à la page « À propos ». Le test `tests/site.test.mjs` rappelle ce qui manque.
 
 ## Nouveaux jeux retenus
 
 - [ ] **Blocs** (type 1010!) : poser des pièces sur une grille 10×10 pour effacer lignes et colonnes ; jeu au score sans fin, glisser-déposer.
-- [ ] **Gratte-ciel** (Skyscrapers) : grille de hauteurs avec indices de vue depuis les bords ; réutilise le moteur du Sudoku (solution unique).
 - [ ] **Reversi** (Othello) contre l'IA : même moteur de recherche que Puissance 4.
 - [ ] **Hashi** (Ponts) : relier des îles par des ponts selon leur chiffre, sans croiser ; génération avec solution unique à soigner.
 
 ## Autres idées de jeux
 
-- Casse-têtes de grille : Futoshiki, Hitori, Akari (ampoules), Tentes et arbres, Slitherlink, KenKen.
+- Casse-têtes de grille : Hitori, Akari (ampoules), Tentes et arbres, Slitherlink, KenKen.
 - Stratégie contre l'ordinateur : Awalé (Mancala), Gomoku, Nim.
 - Maths : le jeu du 24 (4 nombres pour atteindre 24), avec le moteur de « Le compte est bon ».
 - Réflexes et mémoire : Simon, table de Schulte.

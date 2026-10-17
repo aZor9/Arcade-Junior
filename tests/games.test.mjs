@@ -6,6 +6,8 @@ import { solve as solveRH } from '../js/games/rushhour.js';
 import { LEVELS as RH_LEVELS } from '../js/games/rushhour-levels.js';
 import { step as helixStep, phiUnderBall as helixPhi, segmentAt as helixSeg } from '../js/games/helix.js';
 import { drop as stackDrop, move as stackMove, place as stackPlace } from '../js/games/stack.js';
+import { solve as solveFU, faults as faultsFU } from '../js/games/futoshiki.js';
+import { solve as solveSK, visible as skVisible, sightLines as skLines } from '../js/games/skyscrapers.js';
 import { createRng } from '../js/rng.js';
 import { solve } from '../js/games/sudoku.js';
 import { evaluate } from '../js/games/mastermind.js';
@@ -384,6 +386,45 @@ ok('pile : coupe, parfait, raté, rebond sur les bords, agrandissement après tr
   for (let k = 0; k < 3; k++) { st.cur.x = st.blocks.at(-1).x; stackPlace(st); }
   assert.ok(st.blocks.at(-1).w > 0.5 + 1e-9, 'trois parfaits : le bloc s’élargit');
   assert.equal(st.score, 4);
+});
+
+ok('futoshiki : solution unique, signes justes, fautes détectées', () => {
+  const fu = ALL_GAMES.find((g) => g.id === 'futoshiki');
+  for (const d of fu.difficulties) {
+    for (let seed = 1; seed <= 4; seed++) {
+      const st = fu.create(createRng(seed * 977), d.id);
+      assert.deepEqual(JSON.parse(JSON.stringify(st)), st);
+      const r = solveFU(st.puzzle, st.n, st.ineq, 2);
+      assert.equal(r.count, 1, `${d.id} : une seule solution`);
+      assert.deepEqual(r.solution, st.solution);
+      st.puzzle.forEach((v, i) => { if (v) assert.equal(v, st.solution[i]); });
+      for (const { a, b, lt } of st.ineq) assert.equal(st.solution[a] < st.solution[b], lt, 'signe tiré de la solution');
+      const f = faultsFU(st.solution, st.n, st.ineq);
+      assert.equal(f.bad.size + f.badSigns.size, 0, 'la solution n’a aucune faute');
+    }
+  }
+  const ineq = [{ a: 0, b: 1, lt: true }];
+  const f = faultsFU([3, 1, 0, 0, 0, 0, 0, 0, 0], 3, ineq);
+  assert.ok(f.badSigns.has(0) && f.bad.has(0) && f.bad.has(1), 'signe non respecté');
+  assert.ok(faultsFU([1, 0, 1, 0, 0, 0, 0, 0, 0], 3, []).bad.has(2), 'doublon dans la ligne');
+});
+
+ok('gratte-ciel : immeubles visibles, indices justes, solution unique', () => {
+  assert.equal(skVisible([2, 1, 4, 3]), 2);
+  assert.equal(skVisible([1, 2, 3, 4]), 4);
+  assert.equal(skVisible([4, 1, 2, 3]), 1);
+  const sk = ALL_GAMES.find((g) => g.id === 'skyscrapers');
+  for (const d of sk.difficulties) {
+    for (let seed = 1; seed <= 3; seed++) {
+      const st = sk.create(createRng(seed * 613), d.id);
+      assert.deepEqual(JSON.parse(JSON.stringify(st)), st);
+      const r = solveSK(st.puzzle, st.n, st.clues, 2);
+      assert.equal(r.count, 1, `${d.id} : une seule solution`);
+      assert.deepEqual(r.solution, st.solution);
+      skLines(st.n).forEach((l, k) => { if (st.clues[k]) assert.equal(skVisible(l.cells.map((i) => st.solution[i])), st.clues[k]); });
+      assert.ok(st.clues.some(Boolean), 'au moins un indice');
+    }
+  }
 });
 
 console.log(`\n${n} groupes de tests réussis`);

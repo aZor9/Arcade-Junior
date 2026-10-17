@@ -467,6 +467,41 @@ if (q.get('auto')) {
     check('embouteillage : le minimum affiché correspond au solveur', sol.length === state.par);
     for (const [i, p] of sol) dragCar(i, p);
     check('embouteillage : sortie libérée = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'futoshiki') {
+    const n = state.n;
+    const cellEls = () => $('.fu-cell');
+    check('futoshiki : une case par chiffre et un signe par contrainte', cellEls().length === n * n && $('.fu-sign').length === state.ineq.length);
+    const k = state.ineq.findIndex(({ a, b }) => !state.puzzle[a] && !state.puzzle[b]);
+    if (k >= 0) {
+      const { a, b, lt } = state.ineq[k];
+      click(cellEls()[a]); click($('.fu-pad .key')[lt ? n - 1 : 0]);
+      click(cellEls()[b]); click($('.fu-pad .key')[lt ? 0 : n - 1]);
+      check('futoshiki : signe non respecté marqué en rouge', $('.fu-sign')[k].classList.contains('bad') && cellEls()[a].classList.contains('bad'));
+      click(cellEls()[b]); key('Backspace');
+      check('futoshiki : effacer au clavier', state.cur[b] === 0 && !$('.fu-sign')[k].classList.contains('bad'));
+    }
+    const given = state.puzzle.findIndex(Boolean);
+    if (given >= 0) { click(cellEls()[given]); key(String(state.puzzle[given] % n + 1)); check('futoshiki : une case donnée ne change pas', state.cur[given] === state.puzzle[given]); }
+    state.solution.forEach((v, i) => { if (!state.puzzle[i]) { click(cellEls()[i]); key(String(v)); } });
+    check('futoshiki : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'skyscrapers') {
+    const n = state.n;
+    const cellEls = () => $('.sk-cell');
+    check('gratte-ciel : une case par immeuble et les indices affichés', cellEls().length === n * n && $('.sk-clue').filter((e) => e.textContent).length === state.clues.filter(Boolean).length);
+    const empty = state.cur.findIndex((v, i) => !state.puzzle[i]);
+    click(cellEls()[empty]);
+    check('gratte-ciel : case sélectionnée', cellEls()[empty].classList.contains('sel'));
+    const r = Math.floor(empty / n);
+    const other = Array.from({ length: n }, (_, j) => r * n + j).find((i) => i !== empty && !state.puzzle[i]);
+    if (other !== undefined) {
+      click($('.sk-pad .key')[0]); click(cellEls()[other]); click($('.sk-pad .key')[0]);
+      check('gratte-ciel : doublon dans la ligne marqué', cellEls()[other].classList.contains('bad'));
+      click($('.sk-pad .key')[n]);
+      check('gratte-ciel : effacer', state.cur[other] === 0);
+    }
+    state.solution.forEach((v, i) => { if (!state.puzzle[i]) { click(cellEls()[i]); click($('.sk-pad .key')[v - 1]); } });
+    check('gratte-ciel : tous les indices validés', $('.sk-clue').filter((e) => e.textContent).every((e) => e.classList.contains('ok')));
+    check('gratte-ciel : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));
   } else if (id === 'helix') {
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check('hélice : un canvas de jeu', !!stage.querySelector('canvas.arc-canvas'));

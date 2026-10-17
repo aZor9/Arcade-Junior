@@ -287,6 +287,26 @@ body.playing main { padding-top: 0; }
 .sd { --w: var(--board); }
 .sd-pad { width: var(--w); display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 10px; }
 
+/* Futoshiki : 2n − 1 pistes, les cases sur les pistes impaires, les signes entre elles */
+.fu, .sk { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding-bottom: 24px; --w: var(--board); }
+.sd-pad.fu-pad, .sd-pad.sk-pad { grid-template-columns: repeat(var(--k), minmax(0, 1fr)); gap: 6px; }
+.fu-board { --cell: calc(var(--w) / (var(--n) * 1.45 - 0.45)); width: var(--w); aspect-ratio: 1; display: grid; grid-template-columns: repeat(var(--m), minmax(0, 1fr) minmax(0, 0.45fr)) minmax(0, 1fr); grid-template-rows: repeat(var(--m), minmax(0, 1fr) minmax(0, 0.45fr)) minmax(0, 1fr); }
+.fu-cell, .sk-cell { grid-row: var(--gr); grid-column: var(--gc); display: grid; place-items: center; min-width: 0; padding: 0; border: 3px solid var(--line); border-radius: 10px; background: var(--surface); font-weight: 700; color: var(--grape); }
+.fu-cell { font-size: calc(var(--cell) * 0.55); }
+.fu-sign { grid-row: var(--gr); grid-column: var(--gc); display: grid; place-items: center; font-size: calc(var(--cell) * 0.5); font-weight: 900; line-height: 1; color: var(--ink); user-select: none; }
+.fu-sign.bad { color: var(--danger); }
+.fu-cell.given, .sk-cell.given { color: var(--ink); font-weight: 800; background: color-mix(in srgb, var(--ink) 10%, var(--surface)); }
+.fu-cell.peer, .sk-cell.peer { background: color-mix(in srgb, var(--grape) 14%, var(--surface)); }
+.fu-cell.sel, .sk-cell.sel { background: var(--sun); color: #1c1740; }
+.fu-cell.bad, .sk-cell.bad { color: var(--danger); background: color-mix(in srgb, var(--danger) 18%, var(--surface)); }
+
+/* Gratte-ciel : indices sur le pourtour, immeubles au centre (teinte selon la hauteur) */
+.sk-board { --cell: calc(var(--w) / (var(--n) + 1.3)); width: var(--w); aspect-ratio: 1; display: grid; grid-template-columns: minmax(0, 0.65fr) repeat(var(--n), minmax(0, 1fr)) minmax(0, 0.65fr); grid-template-rows: minmax(0, 0.65fr) repeat(var(--n), minmax(0, 1fr)) minmax(0, 0.65fr); gap: 4px; }
+.sk-cell { font-size: calc(var(--cell) * 0.5); background: color-mix(in srgb, var(--grape) calc(var(--v, 0) * 45%), var(--surface)); }
+.sk-clue { grid-row: var(--gr); grid-column: var(--gc); display: grid; place-items: center; font-size: calc(var(--cell) * 0.4); font-weight: 800; color: var(--ink); user-select: none; }
+.sk-clue.ok { color: var(--muted); opacity: 0.5; }
+.sk-clue.bad { color: var(--danger); }
+
 /* Démêle */
 .ud { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; padding-bottom: 24px; }
 .ud-svg { width: var(--board); height: var(--board); touch-action: none; user-select: none; -webkit-user-select: none; border: 2.5px solid var(--line); border-radius: 18px; background: var(--surface-2); box-shadow: 0 5px 0 var(--line); }
@@ -592,7 +612,7 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
   .nb-pad { gap: 8px; }
   .nb-pad .key { min-height: 44px; }
   .mem-board, .ms-board { --w: min(var(--board), max(200px, calc((var(--avail) - 90px) / var(--ratio)))); }
-  .g2048, .lo, .tq, .mem, .ms, .sd, .ud, .pp, .tk, .hn, .fl, .cb, .ng, .c4g, .nm, .ws, .rh, .arc { gap: 12px; padding-bottom: 0; }
+  .g2048, .lo, .tq, .mem, .ms, .sd, .ud, .pp, .tk, .hn, .fl, .cb, .ng, .c4g, .nm, .ws, .rh, .arc, .fu, .sk { gap: 12px; padding-bottom: 0; }
   .nm { --w: min(var(--board), 460px); }
   .ws-tubes { width: min(var(--board), 560px); }
   .rh-board, .rh-actions { width: min(var(--board), calc(var(--avail) - 64px)); }
@@ -602,6 +622,8 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
   .cb-tile { min-height: 54px; }
   .c4-col:not(:disabled):hover { background: rgba(255, 255, 255, 0.1); }
   .sd { --w: min(var(--board), max(240px, calc(var(--avail) - 52px))); }
+  .fu, .sk { --w: min(var(--board), max(240px, calc(var(--avail) - 64px))); }
+  .fu-pad .key, .sk-pad .key { min-height: 44px; font-size: 1.15rem; }
   .sd-pad { grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 6px; }
   .sd-pad .key, .sd-tools .key { min-height: 44px; }
   .sd-pad .key { font-size: 1.15rem; }
