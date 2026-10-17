@@ -187,7 +187,7 @@ f.addEventListener('load', async () => {
     await until(() => $('.labs').length === 1);
     check('laboratoire : 6 appuis sur Profil l’activent', JSON.parse(w.localStorage.getItem('aj:settings')).labs === true && $('.labs').length === 1);
     w.location.hash = '#/';
-    await until(() => $('.game-card').length > NB);
+    await until(() => $('.game-card').length >= NB + NLAB);
     check('laboratoire : les jeux en test apparaissent avec un badge', $('.game-card').length === NB + NLAB && $('.game-badge.lab').length === NLAB);
     $('.game-card').find((c) => c.textContent.includes('Tri de liquides')).click();
     await until(sheet);

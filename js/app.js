@@ -2,6 +2,7 @@ import * as store from './storage.js';
 import { h, toast, dialog, confirmDialog, formatDuration, howtoList } from './ui.js';
 import { GAMES, ALL_GAMES, LAB_GAMES, getGame } from './games/index.js';
 import { createRng, newSeed, newId } from './rng.js';
+import { starIcon } from './icons.js';
 
 const root = document.getElementById('app');
 let teardown = null;
@@ -77,7 +78,10 @@ const h2random = (game) => game.difficulties[Math.floor(Math.random() * game.dif
 // Jeux proposés : les jeux publiés, plus ceux du laboratoire s'il est activé.
 const visibleGames = () => (store.getSettings().labs ? ALL_GAMES : GAMES);
 
+let justToggled = null; // pour animer l'étoile qu'on vient de toucher
+
 function toggleFavorite(id) {
+  justToggled = id;
   const s = store.getSettings();
   const favs = new Set(s.favorites);
   if (favs.has(id)) favs.delete(id); else favs.add(id);
@@ -100,10 +104,10 @@ function gameCard(g, sessions, favs) {
         g.lab ? h('span', { class: 'game-badge lab', text: '🧪 Labo' }) : null,
         running ? h('span', { class: 'game-badge', text: `${running} en cours` }) : null) : null),
     h('button', {
-      class: `fav-btn${fav ? ' on' : ''}`, type: 'button', 'aria-pressed': String(fav),
+      class: `fav-btn${fav ? ' on' : ''}${justToggled === g.id ? ' pop' : ''}`, type: 'button', 'aria-pressed': String(fav),
       'aria-label': fav ? `Retirer ${g.name} des favoris` : `Ajouter ${g.name} aux favoris`,
-      text: fav ? '★' : '☆', onclick: () => toggleFavorite(g.id),
-    }));
+      onclick: () => toggleFavorite(g.id),
+    }, starIcon(fav)));
 }
 
 function surprise() {
@@ -189,6 +193,7 @@ function hubView() {
     h('div', { class: 'games' }, games.map((g) => gameCard(g, sessions, favs)))));
 
   root.replaceChildren(...els);
+  justToggled = null;
 }
 
 /* ---------- Vue : partie ---------- */
@@ -436,7 +441,7 @@ function profileView() {
     settings.labs ? h('section', { class: 'labs' },
       h('div', { class: 'section-head' }, h('h2', { text: '🧪 Laboratoire' })),
       h('p', { class: 'muted', text: 'Ces jeux sont en test : ils peuvent changer ou disparaître. Ils sont visibles sur l’accueil tant que le laboratoire est activé.' }),
-      h('ul', { class: 'bests' }, LAB_GAMES.map((g) => h('li', null, h('span', { text: `${g.emoji} ${g.name}` })))),
+      LAB_GAMES.length ? h('ul', { class: 'bests' }, LAB_GAMES.map((g) => h('li', null, h('span', { text: `${g.emoji} ${g.name}` })))) : h('p', { class: 'muted', text: 'Aucun jeu en test pour le moment.' }),
       h('div', { class: 'btn-row' },
         h('button', { class: 'btn btn-ghost', type: 'button', text: 'Désactiver le laboratoire', onclick: () => setLabs(false) }))) : null,
 
@@ -524,7 +529,7 @@ function setLabs(on) {
   const s = store.getSettings();
   s.labs = on;
   store.saveSettings(s);
-  toast(on ? `🧪 Laboratoire activé : ${LAB_GAMES.length} jeux en test sont visibles sur l’accueil.` : 'Laboratoire désactivé.');
+  toast(on ? (LAB_GAMES.length ? `🧪 Laboratoire activé : ${LAB_GAMES.length} jeu${LAB_GAMES.length > 1 ? 'x' : ''} en test visible${LAB_GAMES.length > 1 ? 's' : ''} sur l’accueil.` : '🧪 Laboratoire activé : aucun jeu en test pour le moment.') : 'Laboratoire désactivé.');
   route();
 }
 let profileTaps = [];

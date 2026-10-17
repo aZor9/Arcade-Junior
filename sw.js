@@ -2,11 +2,11 @@
 // Stratégie : on répond depuis le cache et on met à jour en arrière-plan.
 // Pense à changer VERSION et à tenir ASSETS à jour quand tu ajoutes un fichier.
 
-const VERSION = 'aj-v14';
+const VERSION = 'aj-v16';
 const ASSETS = [
   './', 'index.html', 'about.html', 'plan.html', 'privacy.html', 'legal.html',
   'css/style.css',
-  'js/theme.js', 'js/app.js', 'js/rng.js', 'js/storage.js', 'js/ui.js',
+  'js/theme.js', 'js/app.js', 'js/rng.js', 'js/storage.js', 'js/ui.js', 'js/icons.js',
   'js/games/index.js', 'js/games/g2048.js', 'js/games/mastermind.js', 'js/games/nombre.js',
   'js/games/lights.js', 'js/games/taquin.js', 'js/games/memory.js', 'js/games/demineur.js', 'js/games/sudoku.js',
   'js/games/untangle.js', 'js/games/pipes.js', 'js/games/takuzu.js', 'js/games/hanoi.js',

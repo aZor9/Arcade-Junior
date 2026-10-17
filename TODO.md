@@ -2,10 +2,9 @@
 
 ## Laboratoire : à valider avant publication
 
-Ces jeux sont en ligne mais cachés derrière le laboratoire (6 appuis rapides sur l'onglet **Profil**) :
+Les jeux en test sont en ligne mais cachés derrière le laboratoire (6 appuis rapides sur l'onglet **Profil**) :
 
-- [ ] 🧪 **Tri de liquides**
-- [ ] 🚗 **Embouteillage**
+_Aucun jeu en test pour le moment._
 
 Pour publier un jeu du laboratoire : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l'ajouter au plan du site (`plan.html`) et à la page « À propos ». Le test `tests/site.test.mjs` rappelle ce qui manque.
 
@@ -29,7 +28,6 @@ Pour publier un jeu du laboratoire : le déplacer de `LAB_GAMES` vers `GAMES` da
 ## Fonctionnalités
 
 - [ ] Hélice et Pile (publiés) : affiner la prise en main sur téléphone (sensibilité de la rotation, vitesses).
-- [ ] Icône d'étoile des favoris plus soignée (choix de l'icône en cours).
 
 - [ ] **Défi du jour** : même grille pour tout le monde (graine = date), série de jours, résultat à partager.
 - [ ] Annuler et indices dans tous les jeux (Sudoku : vérifier une case, donner un chiffre).

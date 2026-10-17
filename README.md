@@ -26,13 +26,15 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🔴 Puissance 4 | Affronte l'ordinateur (IA à recherche alpha-bêta) | 4 niveaux |
 | 🌀 Hélice | Fais tourner la tour pour faire descendre la balle par les trous, sans toucher le rouge (type Helix Jump) | 12 à 30 étages |
 | 🧱 Pile | Pose les blocs au bon moment pour monter la tour le plus haut possible (type Stack) | 3 vitesses |
+| 🧪 Tri de liquides | Verse d’un tube à l’autre jusqu’à n’avoir qu’une couleur par tube ; grilles vérifiées résolubles | 4 à 10 couleurs |
+| 🚗 Embouteillage | Fais glisser les véhicules pour libérer la voiture rouge ; minimum de coups exact affiché | 3 à 36 coups |
 | 🧠 Number Match | Efface les paires de chiffres identiques ou de somme 10 (ligne, colonne, diagonale) ; grilles garanties gagnables | 4 niveaux |
 
 Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
 ### Laboratoire (jeux en test)
 
-Deux jeux sont en test et cachés par défaut : **🧪 Tri de liquides** et **🚗 Embouteillage**. Pour les afficher : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
+Le laboratoire sert à tester des jeux avant de les publier ; il est vide pour le moment (Tri de liquides et Embouteillage, Hélice et Pile y sont passés avant d’être publiés). Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
 
 Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l’ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
 
@@ -175,6 +177,10 @@ Générer une grille difficile prendrait plusieurs secondes sur un téléphone :
 ## À faire
 
 Voir [TODO.md](TODO.md) : jeux du laboratoire à valider, idées de jeux, fonctionnalités, accessibilité.
+
+## Crédits
+
+Icônes d’étoile des favoris : [Tabler Icons](https://tabler.io/icons) (`star`, `star-filled`, v3.19.0), licence MIT, © 2020-2024 Paweł Kuna. Elles sont copiées dans `js/icons.js` avec leur mention de licence.
 
 ## Licence
 

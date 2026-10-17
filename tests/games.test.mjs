@@ -306,7 +306,7 @@ ok('tri de liquides : règles de versement et grilles toujours résolubles', () 
   const t2 = [[2, 1, 1], [1], []];
   assert.equal(pourWS(t2, 0, 1), 2, 'les couches identiques du dessus partent ensemble');
   assert.deepEqual(t2, [[2], [1, 1, 1], []]);
-  const ws = LAB_GAMES.find((g) => g.id === 'watersort');
+  const ws = ALL_GAMES.find((g) => g.id === 'watersort');
   for (const d of ws.difficulties) {
     for (let seed = 1; seed <= 8; seed++) {
       const st = ws.create(createRng(seed * 41), d.id);

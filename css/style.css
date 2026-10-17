@@ -136,7 +136,11 @@ body.playing main { padding-top: 0; }
 .game-badge { padding: 1px 8px; border: 2px solid var(--line); border-radius: 99px; background: var(--surface); font-size: 0.72rem; font-weight: 800; }
 .game-badge.lab { background: var(--sun); color: #1c1740; }
 .fav-btn { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink); font-size: 1.35rem; line-height: 1; }
-.fav-btn.on { color: #ffb800; text-shadow: 0 1px 0 var(--line); }
+.fav-btn svg { width: 24px; height: 24px; overflow: visible; }
+.fav-btn .star-line { color: color-mix(in srgb, var(--ink) 70%, transparent); }
+.fav-btn .star-fill { fill: #ffcf3f; stroke: var(--line); stroke-width: 1.4px; stroke-linejoin: round; paint-order: stroke; }
+.fav-btn.pop svg { animation: starpop 0.35s ease-out; }
+@keyframes starpop { 40% { transform: scale(1.35) rotate(-12deg); } }
 .fav-btn:focus-visible { outline: 3px solid var(--grape); outline-offset: 0; }
 
 .sessions { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
