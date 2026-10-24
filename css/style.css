@@ -71,7 +71,7 @@ button:disabled { opacity: 0.45; cursor: default; }
 .muted { color: var(--muted); }
 [hidden] { display: none !important; }
 
-main { width: min(100%, 640px); margin: 0 auto; padding: 8px 16px 24px; display: grid; gap: 28px; }
+main { width: min(100%, 640px); margin: 0 auto; padding: 8px 16px 24px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; } /* minmax : une rangée qui défile (catégories) ne doit pas élargir la page */
 
 /* ---------- Entête, pied de page, barre d'onglets ---------- */
 
