@@ -19,6 +19,8 @@ let n = 0;
 for (const [name, url] of routes) {
   const u = url.replace(/^([^#]*)/, '$1?t=' + (++n));
   f.src = '../' + u; await new Promise((r) => { f.onload = r; });
+  // ?text=1.125 : texte agrandi (réglage « grand texte » des téléphones, polices plus larges selon le système).
+  if (q.get('text')) f.contentDocument.documentElement.style.fontSize = (100 * Number(q.get('text'))) + '%';
   await sleep(250);
   const de = f.contentDocument.documentElement;
   const over = de.scrollHeight - f.contentWindow.innerHeight;
