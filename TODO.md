@@ -4,24 +4,28 @@
 
 Les jeux en test sont en ligne mais cachés derrière le laboratoire (6 appuis rapides sur l'onglet **Profil**) :
 
-- [ ] ⋚ **Futoshiki** : carré latin avec signes < > entre cases voisines (4×4 à 7×7, solution unique).
-- [ ] 🏙️ **Gratte-ciel** (Skyscrapers) : hauteurs 1 à N, indices de vue depuis les bords (4×4 à 6×6, solution unique).
+- [ ] ➗ **Cages** (dans l'esprit du KenKen) : carré latin et cages à opération (4×4 à 6×6, solution unique).
+- [ ] ⬛ **Hitori** : noircir les doublons, cases noires jamais voisines, blanches reliées (5×5 à 8×8, solution unique).
+- [ ] ⚫ **Reversi** contre l'ordinateur (negamax alpha-bêta, 1 à 4 coups d'avance).
+- [ ] 🔵 **Solitaire à billes** : plateau anglais, positions générées à l'envers (toujours résolubles) et plateau classique.
+- [ ] 🟪 **Blocs** (type 1010!) : jeu au score sans fin. À voir : poser par glisser-déposer en plus du toucher.
+- [ ] 🐍 **Serpent** : flèches, glissement ou boutons ; accélère à chaque pomme.
+- [ ] 🏓 **Casse-briques** : niveaux enchaînés, briques à deux coups, 3 balles.
+- [ ] 🔆 **Simon** : suite de couleurs (avec chiffres et formes) à répéter.
+- [ ] 🔢 **Table de Schulte** : toucher 1 à N² dans l'ordre, au chrono.
+- [ ] 🗂️ **Accueil par catégories** (Logique, Arcade, Modernes, Classiques, Mémoire et calcul) : visible seulement avec le laboratoire.
 
 Pour publier un jeu du laboratoire : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l'ajouter au plan du site (`plan.html`) et à la page « À propos ». Le test `tests/site.test.mjs` rappelle ce qui manque.
 
 ## Nouveaux jeux retenus
 
-- [ ] **Blocs** (type 1010!) : poser des pièces sur une grille 10×10 pour effacer lignes et colonnes ; jeu au score sans fin, glisser-déposer.
-- [ ] **Reversi** (Othello) contre l'IA : même moteur de recherche que Puissance 4.
 - [ ] **Hashi** (Ponts) : relier des îles par des ponts selon leur chiffre, sans croiser ; génération avec solution unique à soigner.
 
 ## Autres idées de jeux
 
-- Casse-têtes de grille : Hitori, Akari (ampoules), Tentes et arbres, Slitherlink, KenKen.
+- Casse-têtes de grille : Akari (ampoules), Tentes et arbres, Slitherlink.
 - Stratégie contre l'ordinateur : Awalé (Mancala), Gomoku, Nim.
 - Maths : le jeu du 24 (4 nombres pour atteindre 24), avec le moteur de « Le compte est bon ».
-- Réflexes et mémoire : Simon, table de Schulte.
-- Solitaire à billes (Hi-Q) avec positions de départ garanties résolubles.
 - Jeux de mots (Wordle en français, mots mêlés, pendu) : choisir d'abord une liste de mots libre de droits.
 - Sokoban : niveaux générés « à l'envers » depuis une position résolue.
 

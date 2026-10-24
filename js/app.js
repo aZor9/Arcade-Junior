@@ -1,6 +1,6 @@
 import * as store from './storage.js';
 import { h, toast, dialog, confirmDialog, formatDuration, howtoList } from './ui.js';
-import { GAMES, ALL_GAMES, LAB_GAMES, getGame } from './games/index.js';
+import { GAMES, ALL_GAMES, LAB_GAMES, CATEGORIES, getGame } from './games/index.js';
 import { createRng, newSeed, newId } from './rng.js';
 import { starIcon } from './icons.js';
 
@@ -188,9 +188,29 @@ function hubView() {
       h('div', { class: 'section-head' }, h('h2', { text: '⭐ Favoris' })),
       h('div', { class: 'games' }, favGames.map((g) => gameCard(g, sessions, favs)))));
   }
-  els.push(h('section', null,
-    h('div', { class: 'section-head' }, h('h2', { text: 'Tous les jeux' })),
-    h('div', { class: 'games' }, games.map((g) => gameCard(g, sessions, favs)))));
+  if (store.getSettings().labs) {
+    // Laboratoire : tous les jeux rangés par catégorie, avec des raccourcis vers chaque catégorie.
+    const cats = [...CATEGORIES, { id: null, emoji: '🎲', label: 'Autres', desc: '' }]
+      .map((c) => ({ ...c, games: games.filter((g) => (g.category || null) === c.id) }))
+      .filter((c) => c.games.length);
+    els.push(h('section', null,
+      h('div', { class: 'section-head' }, h('h2', { text: 'Tous les jeux' })),
+      h('nav', { class: 'cat-chips', 'aria-label': 'Catégories' }, cats.map((c) => h('button', {
+        type: 'button', class: 'chip',
+        onclick: () => document.getElementById(`cat-${c.id || 'autres'}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      }, `${c.emoji} ${c.label}`, h('span', { class: 'chip-count', text: String(c.games.length) }))))));
+    cats.forEach((c) => {
+      els.push(h('section', { class: 'cat-section', id: `cat-${c.id || 'autres'}` },
+        h('div', { class: 'section-head' },
+          h('h3', { text: `${c.emoji} ${c.label}` }),
+          c.desc ? h('span', { class: 'muted', text: c.desc }) : null),
+        h('div', { class: 'games' }, c.games.map((g) => gameCard(g, sessions, favs)))));
+    });
+  } else {
+    els.push(h('section', null,
+      h('div', { class: 'section-head' }, h('h2', { text: 'Tous les jeux' })),
+      h('div', { class: 'games' }, games.map((g) => gameCard(g, sessions, favs)))));
+  }
 
   root.replaceChildren(...els);
   justToggled = null;

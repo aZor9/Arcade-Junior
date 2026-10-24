@@ -21,14 +21,40 @@ import helix from './helix.js';
 import stack from './stack.js';
 import futoshiki from './futoshiki.js';
 import skyscrapers from './skyscrapers.js';
+import reversi from './reversi.js';
+import cages from './cages.js';
+import hitori from './hitori.js';
+import billes from './billes.js';
+import blocs from './blocs.js';
+import snake from './snake.js';
+import breakout from './breakout.js';
+import simon from './simon.js';
+import schulte from './schulte.js';
 
 // Jeux publiés : visibles par tout le monde.
-export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch, helix, stack, watersort, rushhour];
+export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch, helix, stack, watersort, rushhour, futoshiki, skyscrapers];
 
 // Jeux en test (« Laboratoire ») : visibles seulement quand le laboratoire est activé
 // (6 appuis rapides sur l'onglet Profil). Une partie déjà commencée reste jouable même s'il est désactivé.
-export const LAB_GAMES = [futoshiki, skyscrapers];
+export const LAB_GAMES = [cages, hitori, reversi, billes, blocs, snake, breakout, simon, schulte];
 LAB_GAMES.forEach((g) => { g.lab = true; });
 
 export const ALL_GAMES = [...GAMES, ...LAB_GAMES];
+
+// Catégories (affichées sur l'accueil quand le laboratoire est activé).
+export const CATEGORIES = [
+  { id: 'logique', emoji: '🧩', label: 'Logique', desc: 'Casse-têtes à solution unique' },
+  { id: 'arcade', emoji: '🕹️', label: 'Arcade', desc: 'Réflexes et rapidité' },
+  { id: 'moderne', emoji: '📱', label: 'Modernes', desc: 'Les succès des téléphones' },
+  { id: 'classique', emoji: '♟️', label: 'Classiques', desc: 'Jeux de plateau et grands classiques' },
+  { id: 'memoire', emoji: '🧠', label: 'Mémoire et calcul', desc: 'Retenir, compter, deviner' },
+];
+const CATEGORY_OF = {
+  logique: ['sudoku', 'takuzu', 'nonogram', 'flow', 'pipes', 'untangle', 'lights', 'rushhour', 'futoshiki', 'skyscrapers', 'cages', 'hitori'],
+  arcade: ['helix', 'stack', 'snake', 'breakout'],
+  moderne: ['2048', 'watersort', 'nummatch', 'blocs'],
+  classique: ['connect4', 'reversi', 'demineur', 'mastermind', 'taquin', 'hanoi', 'billes'],
+  memoire: ['memory', 'simon', 'schulte', 'nombre', 'compte'],
+};
+for (const [cat, ids] of Object.entries(CATEGORY_OF)) ids.forEach((id) => { const g = ALL_GAMES.find((x) => x.id === id); if (g) g.category = cat; });
 export const getGame = (id) => ALL_GAMES.find((g) => g.id === id) || null;

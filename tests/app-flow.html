@@ -189,6 +189,7 @@ f.addEventListener('load', async () => {
     w.location.hash = '#/';
     await until(() => $('.game-card').length >= NB + NLAB);
     check('laboratoire : les jeux en test apparaissent avec un badge', $('.game-card').length === NB + NLAB && $('.game-badge.lab').length === NLAB);
+    check('laboratoire : jeux rangés par catégorie, avec raccourcis', $('.cat-section').length >= 5 && $('.cat-chips .chip').length === $('.cat-section').length);
     $('.game-card').find((c) => c.textContent.includes('Tri de liquides')).click();
     await until(sheet);
     d.querySelector('dialog[open] .choice').click();
@@ -202,6 +203,7 @@ f.addEventListener('load', async () => {
     w.location.hash = '#/';
     await until(() => $('.game-card').length >= NB);
     check('laboratoire : désactivé, les jeux en test disparaissent', $('.game-card').length === NB);
+    check('laboratoire : désactivé, plus de catégories', $('.cat-section').length === 0);
     check('laboratoire : la partie commencée reste jouable dans « en cours »', $('.session').some((s) => s.textContent.includes('Tri de liquides')));
 
     // Favoris

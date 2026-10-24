@@ -28,13 +28,15 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🧱 Pile | Pose les blocs au bon moment pour monter la tour le plus haut possible (type Stack) | 3 vitesses |
 | 🧪 Tri de liquides | Verse d’un tube à l’autre jusqu’à n’avoir qu’une couleur par tube ; grilles vérifiées résolubles | 4 à 10 couleurs |
 | 🚗 Embouteillage | Fais glisser les véhicules pour libérer la voiture rouge ; minimum de coups exact affiché | 3 à 36 coups |
+| ⋚ Futoshiki | Chiffres uniques par ligne et colonne, en respectant les signes < > ; solution unique | 4×4 à 7×7 |
+| 🏙️ Gratte-ciel | Immeubles de hauteurs 1 à N, indices de vue depuis les bords ; solution unique | 4×4 à 6×6 |
 | 🧠 Number Match | Efface les paires de chiffres identiques ou de somme 10 (ligne, colonne, diagonale) ; grilles garanties gagnables | 4 niveaux |
 
 Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
 ### Laboratoire (jeux en test)
 
-Le laboratoire sert à tester des jeux avant de les publier. Il contient en ce moment **⋚ Futoshiki** (chiffres et signes < >) et **🏙️ Gratte-ciel** (indices de vue depuis les bords), tous deux à solution unique. Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
+Le laboratoire sert à tester des jeux avant de les publier. Il contient en ce moment 9 jeux : **➗ Cages**, **⬛ Hitori** (grilles à solution unique), **⚫ Reversi**, **🔵 Solitaire à billes**, **🟪 Blocs**, **🐍 Serpent**, **🏓 Casse-briques**, **🔆 Simon** et **🔢 Table de Schulte**. Avec le laboratoire, l’accueil range aussi tous les jeux par catégorie (Logique, Arcade, Modernes, Classiques, Mémoire et calcul). Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
 
 Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l’ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
 

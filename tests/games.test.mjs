@@ -8,6 +8,15 @@ import { step as helixStep, phiUnderBall as helixPhi, segmentAt as helixSeg } fr
 import { drop as stackDrop, move as stackMove, place as stackPlace } from '../js/games/stack.js';
 import { solve as solveFU, faults as faultsFU } from '../js/games/futoshiki.js';
 import { solve as solveSK, visible as skVisible, sightLines as skLines } from '../js/games/skyscrapers.js';
+import { CATEGORIES } from '../js/games/index.js';
+import { startBoard as rvStart, legalMoves as rvLegal, play as rvPlay, bestMove as rvBest, count as rvCount } from '../js/games/reversi.js';
+import { solve as solveCG, cageValue } from '../js/games/cages.js';
+import { solve as solveHI, isSolved as hiSolved } from '../js/games/hitori.js';
+import { solve as solveBI, pegCount, jumpsFrom, classic as biClassic } from '../js/games/billes.js';
+import { SHAPES, fits as blFits, placePiece, fitsAnywhere } from '../js/games/blocs.js';
+import { advance as snAdvance, turn as snTurn } from '../js/games/snake.js';
+import { step as boStep, resetBall as boReset, launch as boLaunch, makeLevel as boLevel, brickRect } from '../js/games/breakout.js';
+import { press as siPress } from '../js/games/simon.js';
 import { createRng } from '../js/rng.js';
 import { solve } from '../js/games/sudoku.js';
 import { evaluate } from '../js/games/mastermind.js';
@@ -25,9 +34,9 @@ let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log('ok -', name); };
 
 ok('chaque jeu se crée dans chaque difficulté et survit à un aller-retour JSON', () => {
-  for (const g of GAMES) {
+  for (const g of ALL_GAMES) {
     for (const d of g.difficulties) {
-      for (let seed = 1; seed <= 5; seed++) {
+      for (let seed = 1; seed <= (g.lab ? 2 : 5); seed++) {
         const state = g.create(createRng(seed * 7919), d.id);
         assert.deepEqual(JSON.parse(JSON.stringify(state)), state, `${g.id}/${d.id}`);
       }
@@ -425,6 +434,120 @@ ok('gratte-ciel : immeubles visibles, indices justes, solution unique', () => {
       assert.ok(st.clues.some(Boolean), 'au moins un indice');
     }
   }
+});
+
+
+ok('catégories : chaque jeu en a une, et chaque catégorie a des jeux', () => {
+  const ids = CATEGORIES.map((c) => c.id);
+  for (const g of ALL_GAMES) assert.ok(ids.includes(g.category), `${g.id} sans catégorie`);
+  for (const c of CATEGORIES) assert.ok(ALL_GAMES.some((g) => g.category === c.id), `${c.id} vide`);
+});
+
+ok('reversi : coups de départ, retournements, l’ordinateur joue un coup légal', () => {
+  const b = rvStart();
+  assert.deepEqual(rvLegal(b, 1).sort((x, y) => x - y), [19, 26, 37, 44]);
+  assert.deepEqual(rvPlay(b, 19, 1), [27]);
+  assert.equal(rvCount(b, 1), 4);
+  assert.equal(rvCount(b, 2), 1);
+  const m = rvBest(b, 2, 3, createRng(1));
+  assert.ok(rvLegal(b, 2).includes(m));
+});
+
+ok('cages : opérations et solution unique', () => {
+  assert.equal(cageValue('−', [2, 5]), 3);
+  assert.equal(cageValue('÷', [2, 6]), 3);
+  assert.equal(cageValue('÷', [4, 6]), null);
+  assert.equal(cageValue('×', [2, 3, 4]), 24);
+  const cg = ALL_GAMES.find((g) => g.id === 'cages');
+  for (const d of cg.difficulties) {
+    for (let seed = 1; seed <= 4; seed++) {
+      const st = cg.create(createRng(seed * 331), d.id);
+      const r = solveCG(Array(st.n * st.n).fill(0), st.n, st.cages, 2);
+      assert.equal(r.count, 1, `${d.id} : une seule solution`);
+      assert.deepEqual(r.solutions[0], st.solution);
+      for (const c of st.cages) assert.equal(cageValue(c.op, c.cells.map((i) => st.solution[i])), c.target);
+      assert.equal(st.cages.reduce((a, c) => a + c.cells.length, 0), st.n * st.n);
+    }
+  }
+});
+
+ok('hitori : solution unique et conforme aux règles', () => {
+  const hi = ALL_GAMES.find((g) => g.id === 'hitori');
+  for (const d of hi.difficulties) {
+    for (let seed = 1; seed <= 4; seed++) {
+      const st = hi.create(createRng(seed * 211), d.id);
+      assert.ok(hiSolved(st.nums, st.solution.map(Boolean), st.n));
+      assert.equal(solveHI(st.nums, st.n, 2).count, 1);
+      assert.ok(!hiSolved(st.nums, Array(st.n * st.n).fill(false), st.n), 'au départ, il reste des doublons');
+    }
+  }
+  assert.ok(!hiSolved([1, 2, 2, 1], [true, false, false, true], 2), 'cases blanches non reliées');
+});
+
+ok('solitaire à billes : positions résolubles, sauts valides', () => {
+  const bi = ALL_GAMES.find((g) => g.id === 'billes');
+  for (const [d, n] of [['easy', 6], ['normal', 11], ['hard', 18]]) {
+    for (let seed = 1; seed <= 3; seed++) {
+      const st = bi.create(createRng(seed * 97), d);
+      assert.equal(pegCount(st.pegs), n);
+      assert.ok(solveBI(st.pegs), `${d} résoluble`);
+    }
+  }
+  const c = biClassic();
+  assert.equal(pegCount(c), 32);
+  assert.deepEqual(jumpsFrom(c, 10), [[24, 17]]);
+});
+
+ok('blocs : poser, effacer une ligne et une colonne, plus de place', () => {
+  const n = 5;
+  const grid = Array(n * n).fill(0);
+  for (let c = 0; c < 4; c++) grid[c] = 1;
+  for (let r = 1; r < 5; r++) grid[r * n + 4] = 1;
+  const res = placePiece(grid, n, SHAPES[0], 0, 4, 2);
+  assert.equal(res.lines, 2);
+  assert.equal(res.points, 1 + 30);
+  assert.ok(grid.every((v) => !v));
+  assert.ok(!blFits(grid, n, SHAPES[7], 0, 1), 'une pièce de 5 dépasse');
+  const full = Array(4).fill(1);
+  assert.ok(!fitsAnywhere(full, 2, SHAPES[0]));
+});
+
+ok('serpent : avance, mange, pas de demi-tour, mur', () => {
+  const st = { n: 5, snake: [12, 11, 10], dir: 'right', queue: [], food: 13, score: 0 };
+  assert.equal(snAdvance(st, createRng(1)), 'eat');
+  assert.equal(st.snake.length, 4);
+  assert.equal(st.score, 1);
+  snTurn(st, 'left');
+  assert.equal(st.queue.length, 0, 'demi-tour refusé');
+  st.food = 0;
+  assert.equal(snAdvance(st, createRng(1)), 'move');
+  assert.equal(snAdvance(st, createRng(1)), 'dead', 'le mur arrête la partie');
+});
+
+ok('casse-briques : rebond, brique cassée, balle perdue', () => {
+  const state = { speed: 1, level: 1, lives: 3, score: 0, bricks: boLevel(1) };
+  const world = { paddle: { x: 0.5, w: 0.2 } };
+  boReset(world);
+  boLaunch(world, 1);
+  let hit = false;
+  for (let k = 0; k < 200 && !hit; k++) hit = boStep(world, state, 1 / 60).includes('brick');
+  assert.ok(hit && state.score === 10, 'une brique cassée');
+  world.ball = { x: 0.5, y: 1.25, vx: 0, vy: 1 };
+  world.paddle.x = 0.1;
+  let lost = false;
+  for (let k = 0; k < 60 && !lost; k++) lost = boStep(world, state, 1 / 60).includes('lost');
+  assert.ok(lost);
+  const r = brickRect(9);
+  assert.ok(Math.abs(r.x - 1 / 8) < 1e-9);
+});
+
+ok('simon : bonne suite, manche complète, erreur', () => {
+  const st = { seq: [2, 0], pos: 0, score: 0 };
+  assert.equal(siPress(st, 2), 'next');
+  assert.equal(siPress(st, 0), 'round');
+  assert.equal(st.score, 2);
+  st.pos = 0;
+  assert.equal(siPress(st, 1), 'wrong');
 });
 
 console.log(`\n${n} groupes de tests réussis`);

@@ -10,6 +10,8 @@ import { applyOp } from '../js/games/compte.js';
 import { findSolution } from '../js/games/numbermatch.js';
 import { solve as solveWS } from '../js/games/watersort.js';
 import { solve as solveRH, range as rangeRH } from '../js/games/rushhour.js';
+import { solve as solveBI, pegCount, jumpsFrom } from '../js/games/billes.js';
+import { SHAPES } from '../js/games/blocs.js';
 import { createRng } from '../js/rng.js';
 const q = new URLSearchParams(location.search);
 const err = document.getElementById('err');
@@ -502,6 +504,83 @@ if (q.get('auto')) {
     state.solution.forEach((v, i) => { if (!state.puzzle[i]) { click(cellEls()[i]); click($('.sk-pad .key')[v - 1]); } });
     check('gratte-ciel : tous les indices validés', $('.sk-clue').filter((e) => e.textContent).every((e) => e.classList.contains('ok')));
     check('gratte-ciel : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'reversi') {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    check('reversi : 4 coups possibles au départ', $('.rv-cell.hint').length === 4);
+    click($('.rv-cell.hint')[0]);
+    check('reversi : un pion posé et un retourné', state.board.filter((v) => v === 1).length === 4 && state.turn === 2);
+    for (let k = 0; k < 40 && state.turn === 2; k++) await sleep(100);
+    check('reversi : l’ordinateur a joué', state.turn === 1 && state.board.filter(Boolean).length === 6);
+  } else if (id === 'cages') {
+    check('cages : une étiquette par cage', $('.cg-label').length === state.cages.length);
+    const empty = state.cur.findIndex((v, i) => !state.given[i]);
+    if (empty >= 0) {
+      click($('.cg-cell')[empty]);
+      key(String(state.solution[empty] % state.n + 1));
+      check('cages : une case remplie', state.cur[empty] > 0);
+    }
+    state.solution.forEach((v, i) => { if (!state.given[i]) { click($('.cg-cell')[i]); key(String(v)); } });
+    check('cages : grille complète = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'hitori') {
+    const white = state.solution.findIndex((b) => !b);
+    click($('.hi-cell')[white]); click($('.hi-cell')[white]);
+    check('hitori : deux appuis entourent la case', $('.hi-cell')[white].classList.contains('circle'));
+    click($('.hi-cell')[white]);
+    check('hitori : trois appuis l’effacent', state.marks[white] === 0);
+    state.solution.forEach((b, i) => { if (b) click($('.hi-cell')[i]); });
+    check('hitori : bonnes cases noircies = victoire', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'billes') {
+    const idx = (i) => stage.querySelector('.pg-board').children[i];
+    const before = pegCount(state.pegs);
+    const from = state.pegs.findIndex((v, i) => v && jumpsFrom(state.pegs, i).length);
+    const [to] = jumpsFrom(state.pegs, from)[0];
+    click(idx(from));
+    check('billes : arrivées possibles indiquées', idx(to).classList.contains('target'));
+    click(idx(to));
+    check('billes : un saut retire une bille', pegCount(state.pegs) === before - 1);
+    click($('.ws-actions .btn')[0]);
+    check('billes : annuler remet la bille', pegCount(state.pegs) === before);
+    if (before < 30) {
+      for (const [a, b] of solveBI(state.pegs)) { click(idx(a)); click(idx(b)); }
+      check('billes : une seule bille = victoire', document.getElementById('err').textContent.includes('FINISH'));
+    }
+  } else if (id === 'blocs') {
+    check('blocs : trois pièces proposées', $('.bl-slot:not(.empty)').length === 3);
+    const shape = SHAPES[state.tray[0].shape];
+    click($('.bl-slot')[0]);
+    click($('.bl-cell')[0]);
+    check('blocs : pièce posée et points comptés', state.score === shape.length && state.grid.filter(Boolean).length === shape.length);
+    check('blocs : la pièce posée quitte la réserve', $('.bl-slot.empty').length === 1);
+  } else if (id === 'snake') {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const head = state.snake[0];
+    key('ArrowUp');
+    await sleep(700);
+    check('serpent : il avance après la première direction', state.started && state.snake[0] !== head);
+    for (let k = 0; k < 60 && !document.getElementById('err').textContent.includes('FINISH'); k++) await sleep(100);
+    check('serpent : le mur termine la partie', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'breakout') {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    check('casse-briques : un canvas et 3 balles', !!stage.querySelector('canvas.arc-canvas') && state.lives === 3);
+    const total = state.bricks.reduce((a, b) => a + b, 0);
+    key(' ');
+    for (let k = 0; k < 40 && state.bricks.reduce((a, b) => a + b, 0) === total; k++) await sleep(100);
+    check('casse-briques : la balle lancée casse une brique', state.bricks.reduce((a, b) => a + b, 0) < total);
+  } else if (id === 'simon') {
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    check('simon : touches bloquées pendant la démonstration', $('.si-pad').every((b) => b.disabled));
+    for (let k = 0; k < 40 && $('.si-pad')[0].disabled; k++) await sleep(100);
+    click($('.si-pad')[state.seq[0]]);
+    check('simon : bonne touche = suite allongée', state.seq.length === 2 && state.score === 1);
+    for (let k = 0; k < 60 && $('.si-pad')[0].disabled; k++) await sleep(100);
+    click($('.si-pad')[(state.seq[0] + 1) % state.pads]);
+    check('simon : erreur = fin de partie', document.getElementById('err').textContent.includes('FINISH'));
+  } else if (id === 'schulte') {
+    const cellOf = (v) => $('.sc-cell').find((b) => b.textContent === String(v));
+    click(cellOf(2));
+    check('schulte : mauvais nombre compté comme erreur', state.misses === 1 && state.next === 1);
+    for (let v = 1; v <= state.n * state.n; v++) click(cellOf(v));
+    check('schulte : tous les nombres dans l’ordre = victoire', document.getElementById('err').textContent.includes('FINISH'));
   } else if (id === 'helix') {
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check('hélice : un canvas de jeu', !!stage.querySelector('canvas.arc-canvas'));
