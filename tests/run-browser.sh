@@ -88,8 +88,8 @@ else
   echo "ok     $(printf '%s\n' "$out" | grep -c .) pages mesurées, aucune page de jeu ne défile"
 fi
 
-echo "== Largeur sur téléphone (390x800, laboratoire activé) : aucune page ne doit déborder sur le côté"
-out=$(run_page "http://localhost:$PORT/tests/scroll-check.html?w=390&h=800&labs=1" 390,800 120000 '<pre id="out">(.*?)</pre>')
+echo "== Largeur sur petit téléphone (320x800, laboratoire activé) : aucune page ne doit déborder sur le côté"
+out=$(run_page "http://localhost:$PORT/tests/scroll-check.html?w=320&h=800&labs=1" 320,800 120000 '<pre id="out">(.*?)</pre>')
 wide=$(printf '%s\n' "$out" | grep 'WIDE' || true)
 if [ "$out" = "NO RESULT" ]; then
   echo "ECHEC  relevé de largeur : aucun résultat"; FAILS=$((FAILS + 1))

@@ -125,12 +125,12 @@ body.playing main { padding-top: 0; }
 .hero .btn-primary { background: var(--sun); color: #1c1740; }
 
 .games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.game-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 14px 16px; min-height: 148px; text-align: left; border: 2.5px solid var(--line); border-radius: 20px; background: color-mix(in srgb, var(--c) 32%, var(--surface)); box-shadow: 0 5px 0 var(--line); transition: transform 0.08s, box-shadow 0.08s; }
+.game-card { position: relative; min-width: 0; overflow-wrap: anywhere; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 14px 16px; min-height: 148px; text-align: left; border: 2.5px solid var(--line); border-radius: 20px; background: color-mix(in srgb, var(--c) 32%, var(--surface)); box-shadow: 0 5px 0 var(--line); transition: transform 0.08s, box-shadow 0.08s; }
 .game-card:active { transform: translateY(5px); box-shadow: 0 0 0 var(--line); }
 .game-emoji { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 6px; border: 2.5px solid var(--line); border-radius: 15px; background: var(--c); font-size: 1.7rem; transform: rotate(-4deg); }
 .game-card strong { font-size: 1.1rem; font-weight: 800; }
 .game-tag { font-size: 0.88rem; line-height: 1.3; color: var(--muted); }
-.game-tile { position: relative; display: grid; }
+.game-tile { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); }
 .game-tile > .game-card { padding-right: 44px; }
 .game-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; padding-top: 4px; }
 .game-badge { padding: 1px 8px; border: 2px solid var(--line); border-radius: 99px; background: var(--surface); font-size: 0.72rem; font-weight: 800; }
@@ -143,14 +143,15 @@ body.playing main { padding-top: 0; }
 @keyframes starpop { 40% { transform: scale(1.35) rotate(-12deg); } }
 .fav-btn:focus-visible { outline: 3px solid var(--grape); outline-offset: 0; }
 
-.sessions { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.sessions { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .session { display: flex; align-items: stretch; gap: 10px; }
 .session-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; border: 2.5px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--c) 32%, var(--surface)); box-shadow: var(--shadow); text-decoration: none; transition: transform 0.08s, box-shadow 0.08s; }
 .session-main:active { transform: translateY(4px); box-shadow: none; }
 .session-emoji { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border: 2.5px solid var(--line); border-radius: 13px; background: var(--c); font-size: 1.4rem; }
-.session-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.session-text { flex: 1; display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.session-text > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* petit écran : on coupe le texte plutôt que d'élargir la page */
 .session-text span { font-size: 0.85rem; color: var(--muted); }
-.session-go { margin-left: auto; font-weight: 800; font-size: 0.9rem; }
+.session-go { flex: none; margin-left: auto; font-weight: 800; font-size: 0.9rem; }
 .session > .icon-btn { align-self: center; }
 
 /* ---------- Partie ---------- */
@@ -630,7 +631,7 @@ body.playing #toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
 .prose ul { padding-left: 1.2rem; margin: 0 0 0.75rem; }
 .prose li { margin-bottom: 4px; }
 .prose table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 0.92rem; }
-.prose th, .prose td { text-align: left; vertical-align: top; padding: 8px 10px; border: 2px solid var(--line); }
+.prose th, .prose td { text-align: left; vertical-align: top; padding: 8px 10px; border: 2px solid var(--line); overflow-wrap: anywhere; } /* les clés comme aj:settings peuvent passer à la ligne sur petit écran */
 .prose th { background: var(--surface-2); }
 .prose code { padding: 1px 6px; border-radius: 6px; background: var(--surface-2); font-size: 0.9em; }
 .prose .updated { color: var(--muted); font-size: 0.9rem; }

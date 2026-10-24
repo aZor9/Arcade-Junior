@@ -24,8 +24,11 @@ for (const [name, url] of routes) {
   const over = de.scrollHeight - f.contentWindow.innerHeight;
   const side = f.contentDocument.querySelector('.sidebar');
   // Débordement horizontal : la page ne doit jamais être plus large que l'écran (téléphone compris).
-  const wide = de.scrollWidth - f.contentWindow.innerWidth;
-  out.push((over > 1 ? 'SCROLL +' + over : 'ok       ') + '  ' + name + (wide > 1 ? `  WIDE +${wide}` : '') + (side && side.scrollHeight > side.clientHeight + 1 ? '  (menu déborde +' + (side.scrollHeight - side.clientHeight) + ')' : ''));
+  const wide = de.scrollWidth - de.clientWidth;
+  // En cas de débordement, on nomme l'élément fautif (le plus profond qui dépasse), pour corriger sans deviner.
+  const culprit = wide > 1 ? [...f.contentDocument.querySelectorAll('body *')].reverse()
+    .find((e) => e.getBoundingClientRect().right > de.clientWidth + 1 && !e.closest('.cat-chips')) : null;
+  out.push((over > 1 ? 'SCROLL +' + over : 'ok       ') + '  ' + name + (wide > 1 ? `  WIDE +${wide}${culprit ? ` (${culprit.tagName.toLowerCase()}.${culprit.className})` : ''}` : '') + (side && side.scrollHeight > side.clientHeight + 1 ? '  (menu déborde +' + (side.scrollHeight - side.clientHeight) + ')' : ''));
 }
 document.getElementById('out').textContent = out.join(String.fromCharCode(10));
 </script>
