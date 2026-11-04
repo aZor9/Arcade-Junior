@@ -36,7 +36,7 @@ Sur l’accueil, **🎲 Surprends-moi** tire au sort un jeu et un niveau.
 
 ### Laboratoire (jeux en test)
 
-Le laboratoire sert à tester des jeux avant de les publier. Il contient en ce moment 9 jeux : **➗ Cages**, **⬛ Hitori** (grilles à solution unique), **⚫ Reversi**, **🔵 Solitaire à billes**, **🟪 Blocs**, **🐍 Serpent**, **🏓 Casse-briques**, **🔆 Simon** et **🔢 Table de Schulte**. Avec le laboratoire, l’accueil range aussi tous les jeux par catégorie (Logique, Arcade, Modernes, Classiques, Mémoire et calcul). Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
+Le laboratoire sert à tester des jeux avant de les publier. Il est vide en ce moment : Cages, Hitori, Reversi, Solitaire à billes, Blocs, Serpent, Casse-briques, Simon et Table de Schulte sont désormais publiés. Avec le laboratoire, l’accueil range aussi tous les jeux par catégorie (Logique, Arcade, Modernes, Classiques, Mémoire et calcul). Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
 
 Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l’ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
 
