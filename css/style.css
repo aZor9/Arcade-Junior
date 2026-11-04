@@ -84,7 +84,7 @@ main { width: min(100%, 640px); margin: 0 auto; padding: 8px 16px 24px; display:
 .site-footer { order: 2; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em; }
 /* Emojis du site : images Fluent Emoji, à la taille du texte */
-.emoji { width: 1.2em; height: 1.2em; vertical-align: -0.25em; object-fit: contain; }
+.emoji { flex: none; width: 1.15em; height: 1.15em; vertical-align: -0.25em; object-fit: contain; }
 .brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border: 2.5px solid var(--line); border-radius: 12px; background: var(--grape); color: var(--on-grape); box-shadow: 0 3px 0 var(--line); font-size: 1.1rem; transform: rotate(-6deg); }
 
 .site-footer { width: min(100%, 640px); margin: 0 auto; padding: 8px 16px 24px; color: var(--muted); font-size: 0.9rem; }
@@ -115,9 +115,9 @@ body.playing main { padding-top: 0; }
 
 .notice { margin: 0; padding: 12px 14px; border: 2.5px solid var(--line); border-radius: var(--radius); background: var(--sun); color: #1c1740; font-weight: 700; }
 
-.head-actions { display: flex; align-items: center; gap: 10px; }
+.head-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .btn-small { min-height: 36px; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; box-shadow: 0 3px 0 var(--line); }
-.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 12px; }
 
 /* ---------- Accueil ---------- */
 
