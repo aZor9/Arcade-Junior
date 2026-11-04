@@ -114,6 +114,7 @@ js/storage.js         localStorage : parties, profil, quota, export/import
 js/ui.js              Aides DOM, toasts, boîtes de dialogue (aucun innerHTML)
 js/rng.js             PRNG à graine
 js/games/*.js         Un fichier par jeu + index.js (jeux publiés et laboratoire)
+js/emoji.js           Remplace les emojis du système par les images de icons/emoji/
 js/games/shapes.js    Formes associées aux couleurs (jeux jouables en cas de daltonisme)
 js/games/loop.js      Boucle d’animation des jeux d’arcade (pause quand la page est cachée)
 js/games/rushhour-levels.js  Grilles de l’Embouteillage, générées par tools/gen-rushhour.mjs
@@ -183,6 +184,8 @@ Voir [TODO.md](TODO.md) : jeux du laboratoire à valider, idées de jeux, foncti
 ## Crédits
 
 Icônes d’étoile des favoris : [Tabler Icons](https://tabler.io/icons) (`star`, `star-filled`, v3.19.0), licence MIT, © 2020-2024 Paweł Kuna. Elles sont copiées dans `js/icons.js` avec leur mention de licence.
+
+Emojis du site : [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) de Microsoft (style 3D), licence MIT, © Microsoft Corporation. Les images sont dans `icons/emoji/`, converties en WebP.
 
 ## Licence
 
