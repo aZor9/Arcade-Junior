@@ -3,6 +3,7 @@ import { h, toast, dialog, confirmDialog, formatDuration, howtoList } from './ui
 import { GAMES, ALL_GAMES, LAB_GAMES, CATEGORIES, getGame } from './games/index.js';
 import { createRng, newSeed, newId } from './rng.js';
 import { starIcon } from './icons.js';
+import { useEmojiImages } from './emoji.js';
 
 const root = document.getElementById('app');
 let teardown = null;
@@ -565,6 +566,7 @@ document.querySelectorAll('.tabbar a[data-tab="profil"]').forEach((a) => a.addEv
 
 applyTheme();
 window.addEventListener('hashchange', route);
+useEmojiImages();
 route();
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
