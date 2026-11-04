@@ -32,11 +32,11 @@ import simon from './simon.js';
 import schulte from './schulte.js';
 
 // Jeux publiés : visibles par tout le monde.
-export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch, helix, stack, watersort, rushhour, futoshiki, skyscrapers];
+export const GAMES = [g2048, mastermind, sudoku, nombre, lights, taquin, memory, demineur, untangle, pipes, takuzu, hanoi, flow, compte, nonogram, connect4, nummatch, helix, stack, watersort, rushhour, futoshiki, skyscrapers, cages, hitori, reversi, billes, blocs, snake, breakout, simon, schulte];
 
 // Jeux en test (« Laboratoire ») : visibles seulement quand le laboratoire est activé
 // (6 appuis rapides sur l'onglet Profil). Une partie déjà commencée reste jouable même s'il est désactivé.
-export const LAB_GAMES = [cages, hitori, reversi, billes, blocs, snake, breakout, simon, schulte];
+export const LAB_GAMES = [];
 LAB_GAMES.forEach((g) => { g.lab = true; });
 
 export const ALL_GAMES = [...GAMES, ...LAB_GAMES];
