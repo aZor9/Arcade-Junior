@@ -1,4 +1,4 @@
-# À faire — Arcade Junior
+# À faire : Arcade Junior
 
 ## Laboratoire : à valider avant publication
 

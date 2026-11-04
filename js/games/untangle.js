@@ -95,7 +95,7 @@ export default {
   name: 'Démêle',
   emoji: '🕸️',
   color: '#ff6b6b',
-  tagline: 'Relie sans jamais croiser',
+  tagline: 'Plus aucun trait croisé',
   howto: 'Les points sont reliés par des traits qui se croisent.\nFais glisser les points pour démêler le graphe.\nUn trait rouge en croise un autre. Il n’y a plus qu’à tout rendre vert : aucun croisement !\nUne solution existe toujours.',
   keys: ['Glisser : déplacer un point', 'Tab puis flèches : déplacer au clavier (Maj : plus loin)'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
