@@ -2,7 +2,7 @@
 
 ## Laboratoire : à valider avant publication
 
-Aucun jeu en test pour le moment (Cages, Hitori, Reversi, Solitaire à billes, Blocs, Serpent, Casse-briques, Simon et Table de Schulte sont publiés).
+Aucun jeu en test pour le moment.
 
 - [ ] 🗂️ **Accueil par catégories** (Logique, Arcade, Modernes, Classiques, Mémoire et calcul) : visible seulement avec le laboratoire.
 
