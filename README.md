@@ -42,16 +42,16 @@ Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/
 
 ## Fonctionnalités
 
-- **Parties en cours** : lance plusieurs parties, quitte-les, reprends-les plus tard (jusqu’à 20), ou supprime-les toutes d'un coup (statistiques conservées). Une partie est sauvegardée à chaque coup, avec son temps écoulé.
-- **Génération aléatoire reproductible** : chaque partie vient d’une graine (PRNG `mulberry32`) dont l’état est sauvegardé, donc une reprise continue exactement la même suite.
-- **Favoris** : une étoile sur chaque carte ; les favoris s’affichent en tête de l’accueil (et restent dans « Tous les jeux »).
-- **Profil** : pseudo, avatar, parties jouées et gagnées, séries, records par jeu et par niveau, badges.
-- **Stockage visible** : jauge d’utilisation du `localStorage` (limite typique ≈ 5 Mo par site), limite de 20 parties, gestion du quota dépassé et du stockage bloqué (navigation privée).
-- **Export / import** de toutes les données en JSON (pour changer de téléphone).
-- **PWA** : installable sur l’écran d’accueil, utilisable hors ligne (service worker).
-- **Thème** clair / sombre / automatique.
-- **Mobile d'abord, mais aussi pensé pour ordinateur** : à partir de 960 px de large, barre latérale, grille de jeux élargie, et écran de partie en deux colonnes (plateau, puis règles, raccourcis clavier, record et actions). Clavier et clic droit pris en charge là où c'est utile.
-- **Vie privée** : aucune requête externe (polices système), CSP stricte, pas de cookie. Pages [confidentialité / RGPD](privacy.html), [mentions légales](legal.html), [à propos](about.html) et [plan du site](plan.html).
+- Parties en cours : lance plusieurs parties, quitte-les, reprends-les plus tard (jusqu’à 20), ou supprime-les toutes d'un coup (statistiques conservées). Une partie est sauvegardée à chaque coup, avec son temps écoulé.
+- Génération aléatoire reproductible : chaque partie vient d’une graine (PRNG `mulberry32`) dont l’état est sauvegardé, donc une reprise continue exactement la même suite.
+- Favoris : une étoile sur chaque carte ; les favoris s’affichent en tête de l’accueil (et restent dans « Tous les jeux »).
+- Profil : pseudo, avatar, parties jouées et gagnées, séries, records par jeu et par niveau, badges.
+- Stockage visible : jauge d’utilisation du `localStorage` (limite typique ≈ 5 Mo par site), limite de 20 parties, gestion du quota dépassé et du stockage bloqué (navigation privée).
+- Export / import de toutes les données en JSON (pour changer de téléphone).
+- PWA : installable sur l’écran d’accueil, utilisable hors ligne (service worker).
+- Thème clair / sombre / automatique.
+- Mobile d'abord, mais aussi pensé pour ordinateur : à partir de 960 px de large, barre latérale, grille de jeux élargie, et écran de partie en deux colonnes (plateau, puis règles, raccourcis clavier, record et actions). Clavier et clic droit pris en charge là où c'est utile.
+- Vie privée : aucune requête externe (polices système), CSP stricte, pas de cookie. Pages [confidentialité / RGPD](privacy.html), [mentions légales](legal.html), [à propos](about.html) et [plan du site](plan.html).
 
 ## Une base de données est-elle possible ?
 
@@ -96,12 +96,12 @@ Tous les chemins étant relatifs, le site fonctionnerait aussi dans un sous-doss
 
 ## Sécurité
 
-- **Aucun code ni requête tiers** : pas de CDN, de police ou de statistiques externes. Une CSP stricte (`default-src 'self'`, sans script ni style en ligne, `frame-src 'none'`, `upgrade-insecure-requests`) est posée dans chaque page.
-- **Aucun `innerHTML`** : tout le DOM est construit avec `createElement` / `textContent`.
-- **Données importées non fiables** : l'import n'accepte que des clés `aj:*` connues, de taille limitée, avec des jeux existants ; les statistiques sont reconstruites champ par champ, et une partie illisible est supprimée au lieu de bloquer l'appli.
-- **Pas de secret ni de donnée personnelle** : seulement des parties et des statistiques, dans le `localStorage` (non chiffré, visible par quiconque utilise le même navigateur).
-- **Limites connues** : GitHub Pages ne permet pas d'envoyer d'en-têtes HTTP, donc `frame-ancestors` (anti-clickjacking) ne peut pas être imposé. Le site ne gère aucune action sensible, l'impact est faible.
-- **À faire côté comptes** : activer l'authentification à deux facteurs sur GitHub et OVH (celui qui contrôle le dépôt ou le domaine contrôle le code servi), et vérifier le domaine dans GitHub (*Settings → Pages → Add a domain*, enregistrement TXT chez OVH) pour empêcher qu'un tiers ne réutilise le sous-domaine si Pages était désactivé un jour.
+- Pas de CDN, de police ni de statistiques externes. Une CSP stricte (`default-src 'self'`, sans script ni style en ligne, `frame-src 'none'`, `upgrade-insecure-requests`) est posée dans chaque page.
+- Le DOM est construit avec `createElement` / `textContent`, jamais avec `innerHTML`.
+- Données importées non fiables : l'import n'accepte que des clés `aj:*` connues, de taille limitée, avec des jeux existants ; les statistiques sont reconstruites champ par champ, et une partie illisible est supprimée au lieu de bloquer l'appli.
+- Le site ne stocke que des parties et des statistiques, dans le `localStorage` (non chiffré, visible par quiconque utilise le même navigateur).
+- Limites connues : GitHub Pages ne permet pas d'envoyer d'en-têtes HTTP, donc `frame-ancestors` (anti-clickjacking) ne peut pas être imposé. Le site ne gère aucune action sensible, l'impact est faible.
+- À faire côté comptes : activer l'authentification à deux facteurs sur GitHub et OVH (celui qui contrôle le dépôt ou le domaine contrôle le code servi), et vérifier le domaine dans GitHub (*Settings → Pages → Add a domain*, enregistrement TXT chez OVH) pour empêcher qu'un tiers ne réutilise le sous-domaine si Pages était désactivé un jour.
 
 ## Structure
 
