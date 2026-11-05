@@ -4,8 +4,6 @@
 
 Aucun jeu en test pour le moment.
 
-- [ ] 🗂️ **Accueil par catégories** (Logique, Arcade, Modernes, Classiques, Mémoire et calcul) : visible seulement avec le laboratoire.
-
 Pour publier un jeu du laboratoire : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l'ajouter au plan du site (`plan.html`) et à la page « À propos ». Le test `tests/site.test.mjs` rappelle ce qui manque.
 
 ## Nouveaux jeux retenus

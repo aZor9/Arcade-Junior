@@ -15,11 +15,13 @@ const dbg = [];
 const keys = () => Object.keys(w.localStorage).filter((k) => k.startsWith('aj:s:'));
 const sheet = () => d.querySelector('dialog.sheet[open]');
 
+const card = (i) => $('.game-card').find((c) => c.querySelector('strong').textContent === GN[i]);
+
 async function newGame(index) {
   w.location.hash = '#/';
   await until(() => $('.game-card').length === NB && !sheet());
   const before = keys().length;
-  $('.game-card')[index].click();
+  card(index).click();
   await until(sheet);
   const c = d.querySelector('dialog[open] .choice');
   if (!c) { dbg.push('no choice; sheet=' + !!sheet() + ' cards=' + $('.game-card').length); return false; }
@@ -31,12 +33,13 @@ async function newGame(index) {
 }
 
 let NB = 0;
+let GN = []; // noms des jeux, dans l'ordre de GAMES (l'accueil les range par catégorie)
 let NLAB = 0;
 let started = false;
 f.addEventListener('load', async () => {
   if (started) return; started = true;
   try {
-    NB = (await import('../js/games/index.js')).GAMES.length;
+    { const { GAMES } = await import('../js/games/index.js'); NB = GAMES.length; GN = GAMES.map((g) => g.name); }
     NLAB = (await import('../js/games/index.js')).LAB_GAMES.length;
     w = f.contentWindow; d = w.document;
     w.localStorage.clear();
@@ -46,6 +49,7 @@ f.addEventListener('load', async () => {
     w = f.contentWindow; d = w.document;
 
     check('accueil : tous les jeux affichés', $('.game-card').length === NB);
+    check('accueil : jeux rangés par catégorie, avec raccourcis', $('.cat-section').length >= 5 && $('.cat-chips .chip').length === $('.cat-section').length);
     check('nouvelle partie 2048 créée', await newGame(0));
     check('route de partie', w.location.hash.startsWith('#/jeu/2048/'));
     check('session enregistrée en localStorage', keys().length === 1);
@@ -89,7 +93,7 @@ f.addEventListener('load', async () => {
     check('limite de 20 parties respectée', keys().length === 20);
     w.location.hash = '#/';
     await until(() => $('.game-card').length === NB);
-    $('.game-card')[4].click();
+    card(4).click();
     await until(sheet);
     d.querySelector('dialog[open] .choice').click();
     await until(() => sheet() && sheet().textContent.includes('Trop de parties'));
@@ -127,7 +131,7 @@ f.addEventListener('load', async () => {
       w.scrollTo(0, 500);
       await sleep(50);
       const hubScroll = w.scrollY;
-      $('.game-card')[index].click();
+      card(index).click();
       await until(sheet);
       d.querySelector('dialog[open] .choice').click();
       await until(() => w.location.hash.startsWith('#/jeu/' + name + '/'));
@@ -189,7 +193,6 @@ f.addEventListener('load', async () => {
     w.location.hash = '#/';
     await until(() => $('.game-card').length >= NB + NLAB);
     check('laboratoire : les jeux en test apparaissent avec un badge', $('.game-card').length === NB + NLAB && $('.game-badge.lab').length === NLAB);
-    check('laboratoire : jeux rangés par catégorie, avec raccourcis', $('.cat-section').length >= 5 && $('.cat-chips .chip').length === $('.cat-section').length);
     $('.game-card').find((c) => c.textContent.includes('Tri de liquides')).click();
     await until(sheet);
     d.querySelector('dialog[open] .choice').click();
@@ -203,20 +206,21 @@ f.addEventListener('load', async () => {
     w.location.hash = '#/';
     await until(() => $('.game-card').length >= NB);
     check('laboratoire : désactivé, les jeux en test disparaissent', $('.game-card').length === NB);
-    check('laboratoire : désactivé, plus de catégories', $('.cat-section').length === 0);
+    check('laboratoire : désactivé, les catégories restent', $('.cat-section').length >= 5);
     check('laboratoire : la partie commencée reste jouable dans « en cours »', $('.session').some((s) => s.textContent.includes('Tri de liquides')));
 
     // Favoris
+    const catTile = (name) => [...d.querySelectorAll('.cat-section .game-tile')].find((t) => t.querySelector('.game-card strong').textContent === name);
     const tileOf = (section, name) => [...section.querySelectorAll('.game-tile')].find((t) => t.querySelector('.game-card strong').textContent === name);
     const sectionOf = (title) => { const h2 = $('.section-head h2').find((x) => x.textContent.includes(title)); return h2 ? h2.closest('section') : null; };
     check('favoris : pas de section tant qu’il n’y a pas de favori', !sectionOf('Favoris'));
-    tileOf(sectionOf('Tous les jeux'), 'Sudoku').querySelector('.fav-btn').click();
+    catTile('Sudoku').querySelector('.fav-btn').click();
     await until(() => sectionOf('Favoris'));
     check('favoris : une section en tête avec le jeu', sectionOf('Favoris').querySelectorAll('.game-card').length === 1 && !!tileOf(sectionOf('Favoris'), 'Sudoku'));
-    check('favoris : « Tous les jeux » les affiche toujours tous', sectionOf('Tous les jeux').querySelectorAll('.game-card').length === NB);
+    check('favoris : « Tous les jeux » les affiche toujours tous', $('.cat-section .game-card').length === NB);
     check('favoris : la section est avant « Tous les jeux »', Boolean(sectionOf('Favoris').compareDocumentPosition(sectionOf('Tous les jeux')) & Node.DOCUMENT_POSITION_FOLLOWING));
-    check('favoris : étoile pleine et état annoncé', tileOf(sectionOf('Tous les jeux'), 'Sudoku').querySelector('.fav-btn').getAttribute('aria-pressed') === 'true');
-    tileOf(sectionOf('Tous les jeux'), '2048').querySelector('.fav-btn').click();
+    check('favoris : étoile pleine et état annoncé', catTile('Sudoku').querySelector('.fav-btn').getAttribute('aria-pressed') === 'true');
+    catTile('2048').querySelector('.fav-btn').click();
     await until(() => sectionOf('Favoris') && sectionOf('Favoris').querySelectorAll('.game-card').length === 2);
     check('favoris : ordre d’ajout conservé', [...sectionOf('Favoris').querySelectorAll('.game-card strong')].map((s) => s.textContent).join(',') === 'Sudoku,2048');
     check('favoris : enregistrés dans les réglages', JSON.stringify(JSON.parse(w.localStorage.getItem('aj:settings')).favorites) === '["sudoku","2048"]');
