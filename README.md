@@ -32,7 +32,7 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🏙️ Gratte-ciel | Immeubles de hauteurs 1 à N, indices de vue depuis les bords ; solution unique | 4×4 à 6×6 |
 | 🧠 Number Match | Efface les paires de chiffres identiques ou de somme 10 (ligne, colonne, diagonale) ; grilles garanties gagnables | 4 niveaux |
 
-Sur l’accueil, les jeux sont rangés par catégorie (Logique, Arcade, Modernes, Classiques, Mémoire et calcul), avec un raccourci vers chacune. **🎲 Surprends-moi** tire au sort un jeu et un niveau.
+Sur l’accueil, les jeux sont rangés par catégorie (Logique, Arcade, Modernes, Classiques, Mémoire et calcul), avec un raccourci vers chacune. **Jeu au hasard** tire au sort un jeu et un niveau.
 
 ### Laboratoire (jeux en test)
 
@@ -51,7 +51,7 @@ Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/
 - PWA : installable sur l’écran d’accueil, utilisable hors ligne (service worker).
 - Thème clair / sombre / automatique.
 - Mobile d'abord, mais aussi pensé pour ordinateur : à partir de 960 px de large, barre latérale, grille de jeux élargie, et écran de partie en deux colonnes (plateau, puis règles, raccourcis clavier, record et actions). Clavier et clic droit pris en charge là où c'est utile.
-- Vie privée : aucune requête externe (polices système), CSP stricte, pas de cookie. Pages [confidentialité / RGPD](privacy.html), [mentions légales](legal.html), [à propos](about.html) et [plan du site](plan.html).
+- Vie privée : aucune requête externe (polices hébergées sur le site), CSP stricte, pas de cookie. Pages [confidentialité / RGPD](privacy.html), [mentions légales](legal.html), [à propos](about.html) et [plan du site](plan.html).
 
 ## Une base de données est-elle possible ?
 
@@ -96,7 +96,7 @@ Tous les chemins étant relatifs, le site fonctionnerait aussi dans un sous-doss
 
 ## Sécurité
 
-- Pas de CDN, de police ni de statistiques externes. Une CSP stricte (`default-src 'self'`, sans script ni style en ligne, `frame-src 'none'`, `upgrade-insecure-requests`) est posée dans chaque page.
+- Pas de CDN, de police externe ni de statistiques. Une CSP stricte (`default-src 'self'`, sans script ni style en ligne, `frame-src 'none'`, `upgrade-insecure-requests`) est posée dans chaque page.
 - Le DOM est construit avec `createElement` / `textContent`, jamais avec `innerHTML`.
 - Données importées non fiables : l'import n'accepte que des clés `aj:*` connues, de taille limitée, avec des jeux existants ; les statistiques sont reconstruites champ par champ, et une partie illisible est supprimée au lieu de bloquer l'appli.
 - Le site ne stocke que des parties et des statistiques, dans le `localStorage` (non chiffré, visible par quiconque utilise le même navigateur).
@@ -109,11 +109,13 @@ Tous les chemins étant relatifs, le site fonctionnerait aussi dans un sous-doss
 index.html            Accueil, parties et profil (une seule page, routage par #/)
 about.html, plan.html, privacy.html, legal.html
 css/style.css
+css/fonts/            Andika et Grandstander (licence OFL), hébergées ici
 js/app.js             Routeur, accueil, écran de partie, profil
 js/storage.js         localStorage : parties, profil, quota, export/import
 js/ui.js              Aides DOM, toasts, boîtes de dialogue (aucun innerHTML)
 js/rng.js             PRNG à graine
 js/games/*.js         Un fichier par jeu + index.js (jeux publiés et laboratoire)
+js/doodles.js         Croquis « à la main » de chaque jeu (ajouter un dessin pour tout nouveau jeu, sinon son emoji sert de repli)
 js/emoji.js           Remplace les emojis du système par les images de icons/emoji/
 js/games/shapes.js    Formes associées aux couleurs (jeux jouables en cas de daltonisme)
 js/games/loop.js      Boucle d’animation des jeux d’arcade (pause quand la page est cachée)

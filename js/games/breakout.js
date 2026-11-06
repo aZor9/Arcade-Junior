@@ -138,7 +138,7 @@ export default {
     function draw() {
       if (!W) return;
       g.clearRect(-ox, -oy, W + ox * 2, W * ASPECT + oy * 2);
-      g.fillStyle = '#1b1640';
+      g.fillStyle = '#1e2a4a';
       g.fillRect(0, 0, W, W * ASPECT);
       state.bricks.forEach((v, i) => {
         if (!v) return;

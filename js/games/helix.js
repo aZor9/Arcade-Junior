@@ -143,8 +143,8 @@ export default {
       const top = H * 0.3;
       const sy = (y) => (y - camY) * S + top;
       const bg = g.createLinearGradient(0, 0, 0, H);
-      bg.addColorStop(0, '#1b1640');
-      bg.addColorStop(1, '#2d2470');
+      bg.addColorStop(0, '#1e2a4a');
+      bg.addColorStop(1, '#2c3e6b');
       g.fillStyle = bg;
       g.fillRect(0, 0, W, H);
       const visible = [];
@@ -194,7 +194,7 @@ export default {
       g.fill();
       g.shadowBlur = 0;
       g.lineWidth = 2;
-      g.strokeStyle = '#1c1740';
+      g.strokeStyle = '#1d2b64';
       g.stroke();
     }
 

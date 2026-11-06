@@ -130,8 +130,8 @@ export default {
       if (!W) return;
       const bh = Math.max(16, H / 18);
       const bg = g.createLinearGradient(0, 0, 0, H);
-      bg.addColorStop(0, '#20194a');
-      bg.addColorStop(1, '#3a2f7a');
+      bg.addColorStop(0, '#1e2a4a');
+      bg.addColorStop(1, '#2c3e6b');
       g.fillStyle = bg;
       g.fillRect(0, 0, W, H);
       const baseY = H * 0.85;

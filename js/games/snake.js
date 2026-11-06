@@ -101,7 +101,7 @@ export default {
       if (!W) return;
       const n = state.n;
       const s = W / n;
-      g.fillStyle = '#1b1640';
+      g.fillStyle = '#1e2a4a';
       g.fillRect(0, 0, W, W);
       g.fillStyle = 'rgba(255,255,255,0.04)';
       for (let i = 0; i < n * n; i++) if ((Math.floor(i / n) + (i % n)) % 2) g.fillRect((i % n) * s, Math.floor(i / n) * s, s, s);

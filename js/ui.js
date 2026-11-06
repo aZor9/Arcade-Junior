@@ -21,8 +21,8 @@ export function h(tag, props, ...kids) {
 }
 
 // Élément SVG (espace de noms requis, createElement ne suffit pas).
-export function svg(markup) {
-  const doc = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">${markup}</svg>`, 'image/svg+xml');
+export function svg(markup, size = 24) {
+  const doc = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" aria-hidden="true">${markup}</svg>`, 'image/svg+xml');
   return document.importNode(doc.documentElement, true);
 }
 

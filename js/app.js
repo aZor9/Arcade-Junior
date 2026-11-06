@@ -3,6 +3,7 @@ import { h, toast, dialog, confirmDialog, formatDuration, howtoList } from './ui
 import { GAMES, ALL_GAMES, LAB_GAMES, CATEGORIES, getGame } from './games/index.js';
 import { createRng, newSeed, newId } from './rng.js';
 import { starIcon } from './icons.js';
+import { doodle } from './doodles.js';
 import { useEmojiImages } from './emoji.js';
 
 const root = document.getElementById('app');
@@ -27,6 +28,8 @@ function ago(ts) {
 }
 
 const gameStyle = (g) => ({ '--c': g.color });
+// Dessin du jeu ; l'emoji sert de repli pour un jeu qui n'a pas encore le sien (laboratoire).
+const gameArt = (g) => doodle(g.id) || g.emoji;
 const diffLabel = (g, id) => (g.difficulties.find((d) => d.id === id) || { label: id }).label;
 
 /* ---------- Nouvelle partie ---------- */
@@ -62,7 +65,7 @@ async function startGame(gameId, diffId) {
 
 async function chooseDifficulty(game) {
   const choice = await dialog({
-    title: `${game.emoji} ${game.name}`,
+    title: game.name,
     actions: [{ label: 'Fermer', value: null, kind: 'ghost' }],
     body: (close) => h('div', null,
       howtoList(game.howto),
@@ -70,7 +73,7 @@ async function chooseDifficulty(game) {
         game.difficulties.map((d) => h('button', { type: 'button', class: 'choice', vars: gameStyle(game), onclick: () => close(d.id) },
           h('strong', { text: d.label }), h('span', { text: d.desc }))),
         h('button', { type: 'button', class: 'choice choice-random', vars: gameStyle(game), onclick: () => close(h2random(game)) },
-          h('strong', { text: '🎲 Au hasard' }), h('span', { text: 'Niveau tiré au sort' })))),
+          h('strong', { text: 'Au hasard' }), h('span', { text: 'Niveau tiré au sort' })))),
   });
   if (choice) startGame(game.id, choice);
 }
@@ -88,7 +91,7 @@ function toggleFavorite(id) {
   if (favs.has(id)) favs.delete(id); else favs.add(id);
   s.favorites = [...favs];
   store.saveSettings(s);
-  toast(favs.has(id) ? '⭐ Ajouté aux favoris.' : 'Retiré des favoris.');
+  toast(favs.has(id) ? 'Ajouté aux favoris.' : 'Retiré des favoris.');
   route();
 }
 
@@ -98,11 +101,11 @@ function gameCard(g, sessions, favs) {
   const fav = favs.includes(g.id);
   return h('div', { class: 'game-tile', vars: gameStyle(g) },
     h('button', { class: 'game-card', type: 'button', onclick: () => chooseDifficulty(g) },
-      h('span', { class: 'game-emoji', 'aria-hidden': 'true', text: g.emoji }),
+      h('span', { class: 'game-emoji', 'aria-hidden': 'true' }, gameArt(g)),
       h('strong', { text: g.name }),
       h('span', { class: 'game-tag', text: g.tagline }),
       running || g.lab ? h('span', { class: 'game-meta' },
-        g.lab ? h('span', { class: 'game-badge lab', text: '🧪 Labo' }) : null,
+        g.lab ? h('span', { class: 'game-badge lab', text: 'Labo' }) : null,
         running ? h('span', { class: 'game-badge', text: `${running} en cours` }) : null) : null),
     h('button', {
       class: `fav-btn${fav ? ' on' : ''}${justToggled === g.id ? ' pop' : ''}`, type: 'button', 'aria-pressed': String(fav),
@@ -136,14 +139,12 @@ async function clearSessions() {
 
 function hubView() {
   const sessions = store.listSessions().filter((s) => getGame(s.game));
-  const profile = store.getProfile();
   const u = store.usage();
 
   const els = [
-    h('section', { class: 'hero' },
-      h('h1', { text: `Salut ${profile.name} !` }),
-      h('p', { text: `${visibleGames().length} mini-jeux de réflexion, sans compte, qui marchent aussi hors ligne.` }),
-      h('button', { class: 'btn btn-primary btn-big', type: 'button', onclick: surprise, text: '🎲 Surprends-moi' })),
+    h('div', { class: 'home-head' },
+      h('h1', { text: 'Les jeux' }),
+      h('button', { class: 'btn btn-primary', type: 'button', onclick: surprise }, doodle('surprise'), 'Jeu au hasard')),
   ];
 
   if (!store.isPersistent()) {
@@ -158,18 +159,18 @@ function hubView() {
         h('h2', { text: 'Parties en cours' }),
         h('div', { class: 'head-actions' },
           h('span', { class: 'muted', text: `${sessions.length}/${store.MAX_SESSIONS}` }),
-          h('button', { class: 'btn btn-ghost btn-small', type: 'button', text: '🗑 Tout supprimer', onclick: clearSessions }))),
+          h('button', { class: 'btn btn-ghost btn-small', type: 'button', text: 'Tout supprimer', onclick: clearSessions }))),
       h('ul', { class: 'sessions' }, sessions.map((s) => {
         const g = getGame(s.game);
         return h('li', { class: 'session', vars: gameStyle(g) },
           h('a', { class: 'session-main', href: `#/jeu/${g.id}/${s.id}` },
-            h('span', { class: 'session-emoji', 'aria-hidden': 'true', text: g.emoji }),
+            h('span', { class: 'session-emoji', 'aria-hidden': 'true' }, gameArt(g)),
             h('span', { class: 'session-text' },
               h('strong', { text: g.name }),
               h('span', { text: `${diffLabel(g, s.diff)} · ${ago(s.updatedAt)}` })),
             h('span', { class: 'session-go', text: 'Reprendre' })),
           h('button', {
-            class: 'icon-btn', type: 'button', 'aria-label': `Supprimer la partie de ${g.name}`, text: '🗑',
+            class: 'icon-btn', type: 'button', 'aria-label': `Supprimer la partie de ${g.name}`, text: '×',
             onclick: async () => {
               if (await confirmDialog('Supprimer cette partie ?', 'Elle sera perdue et ne comptera pas dans tes statistiques.', 'Supprimer', true)) {
                 store.deleteSession(s.id);
@@ -186,23 +187,23 @@ function hubView() {
   const favGames = favs.map((id) => games.find((g) => g.id === id)).filter(Boolean);
   if (favGames.length) {
     els.push(h('section', null,
-      h('div', { class: 'section-head' }, h('h2', { text: '⭐ Favoris' })),
+      h('div', { class: 'section-head' }, h('h2', { text: 'Favoris' })),
       h('div', { class: 'games' }, favGames.map((g) => gameCard(g, sessions, favs)))));
   }
   // Tous les jeux rangés par catégorie, avec des raccourcis vers chaque catégorie.
-  const cats = [...CATEGORIES, { id: null, emoji: '🎲', label: 'Autres', desc: '' }]
+  const cats = [...CATEGORIES, { id: null, label: 'Autres', desc: '' }]
     .map((c) => ({ ...c, games: games.filter((g) => (g.category || null) === c.id) }))
     .filter((c) => c.games.length);
   els.push(h('section', null,
-    h('div', { class: 'section-head' }, h('h2', { text: 'Tous les jeux' })),
+    h('div', { class: 'section-head' }, h('h2', { class: 'sr-only', text: 'Tous les jeux' })),
     h('nav', { class: 'cat-chips', 'aria-label': 'Catégories' }, cats.map((c) => h('button', {
       type: 'button', class: 'chip',
       onclick: () => document.getElementById(`cat-${c.id || 'autres'}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
-    }, `${c.emoji} ${c.label}`, h('span', { class: 'chip-count', text: String(c.games.length) }))))));
+    }, c.label)))));
   cats.forEach((c) => {
     els.push(h('section', { class: 'cat-section', id: `cat-${c.id || 'autres'}` },
       h('div', { class: 'section-head' },
-        h('h3', { text: `${c.emoji} ${c.label}` }),
+        h('h3', { text: c.label }),
         c.desc ? h('span', { class: 'muted', text: c.desc }) : null),
       h('div', { class: 'games' }, c.games.map((g) => gameCard(g, sessions, favs)))));
   });
@@ -267,17 +268,17 @@ function playView(gameId, sid) {
       // Bandeau de fin, en haut de l'écran de jeu : reste accessible si la boîte de résultat est fermée
       // (sur mobile, le panneau latéral « Nouvelle partie » n'existe pas).
       stage.prepend(h('div', { class: 'end-bar', role: 'group', 'aria-label': 'Partie terminée' },
-        h('p', { class: 'end-title', text: won && !game.endless ? '🎉 Partie gagnée !' : 'Partie terminée' }),
+        h('p', { class: 'end-title', text: won && !game.endless ? 'Partie gagnée !' : 'Partie terminée' }),
         h('div', { class: 'end-actions' },
           h('button', { class: 'btn btn-primary', type: 'button', text: 'Nouvelle partie', onclick: () => startGame(game.id, session.diff) }),
           h('a', { class: 'btn btn-ghost', href: '#/', text: 'Accueil' }))));
       resultTimer = setTimeout(async () => {
-        const lines = [h('p', { class: 'result-line', text: game.endless ? 'Belle partie !' : won ? 'Bien joué, tu as réussi !' : 'Raté cette fois… une autre partie ?' })];
+        const lines = [h('p', { class: 'result-line', text: game.endless ? 'Belle partie !' : won ? 'Bien joué !' : 'Raté.' })];
         if (Number.isFinite(score)) lines.push(h('p', { class: 'result-score', text: fmt(score) }));
-        if (isBest) lines.push(h('p', { class: 'result-best', text: '🏆 Nouveau record pour ce niveau !' }));
+        if (isBest) lines.push(h('p', { class: 'result-best', text: 'Nouveau record pour ce niveau !' }));
         lines.push(h('p', { class: 'muted', text: `Temps : ${formatDuration(ms)}` }));
         const choice = await dialog({
-          title: won && !game.endless ? '🎉 Victoire !' : 'Partie terminée',
+          title: won && !game.endless ? 'Victoire !' : 'Partie terminée',
           body: h('div', null, lines),
           actions: [{ label: 'Accueil', value: 'home', kind: 'ghost' }, { label: 'Nouvelle partie', value: 'again', kind: 'primary' }],
         });
@@ -299,9 +300,9 @@ function playView(gameId, sid) {
       h('h2', { text: 'Ton record' }),
       h('p', { class: Number.isFinite(record) ? 'side-best' : 'side-best none', text: Number.isFinite(record) ? fmtScore(record) : 'Pas encore de record à ce niveau.' }),
       h('div', { class: 'side-actions' },
-        h('button', { class: 'btn btn-primary', type: 'button', text: '↻ Nouvelle partie', onclick: () => startGame(game.id, session.diff) }),
+        h('button', { class: 'btn btn-primary', type: 'button', text: 'Nouvelle partie', onclick: () => startGame(game.id, session.diff) }),
         h('button', {
-          class: 'btn btn-ghost', type: 'button', text: '🗑 Abandonner',
+          class: 'btn btn-ghost', type: 'button', text: 'Abandonner',
           onclick: async () => {
             if (finished || !(await confirmDialog('Abandonner la partie ?', 'Elle sera supprimée, sans effet sur tes statistiques.', 'Abandonner', true))) return;
             store.deleteSession(sid);
@@ -323,8 +324,8 @@ function playView(gameId, sid) {
             body: (close) => h('div', null,
               howtoList(game.howto),
               h('div', { class: 'choices' },
-                h('button', { type: 'button', class: 'choice', onclick: () => close('new') }, h('strong', { text: '↻ Nouvelle partie' }), h('span', { text: 'Même niveau, nouvelle grille. Celle-ci reste en cours.' })),
-                finished ? null : h('button', { type: 'button', class: 'choice choice-danger', onclick: () => close('abandon') }, h('strong', { text: '🗑 Abandonner' }), h('span', { text: 'Supprime la partie sans toucher aux statistiques.' })))),
+                h('button', { type: 'button', class: 'choice', onclick: () => close('new') }, h('strong', { text: 'Nouvelle partie' }), h('span', { text: 'Même niveau, nouvelle grille. Celle-ci reste en cours.' })),
+                finished ? null : h('button', { type: 'button', class: 'choice choice-danger', onclick: () => close('abandon') }, h('strong', { text: 'Abandonner' }), h('span', { text: 'Supprime la partie sans toucher aux statistiques.' })))),
           });
           if (act === 'new') startGame(game.id, session.diff);
           else if (act === 'abandon') {
@@ -438,7 +439,7 @@ function profileView() {
         const bests = s ? g.difficulties.filter((d) => s.best[d.id] !== undefined) : [];
         return h('li', { class: 'stat', vars: gameStyle(g) },
           h('div', { class: 'stat-head' },
-            h('strong', { text: `${g.emoji} ${g.name}` }),
+            h('strong', { class: 'stat-name' }, gameArt(g), g.name),
             h('span', { class: 'muted', text: s ? `${s.won}/${s.played} gagnées${s.bestStreak ? ` · série max ${s.bestStreak}` : ''}` : 'Pas encore joué' })),
           bests.length ? h('ul', { class: 'bests' }, bests.map((d) => h('li', null, h('span', { text: d.label }), h('strong', { text: fmt(s.best[d.id]) })))) : null);
       }))),
