@@ -51,7 +51,7 @@ export default {
   color: '#8ce99a',
   endless: true,
   tagline: 'Mange et grandis',
-  howto: 'Dirige le serpent avec les flèches, en glissant le doigt sur le plateau ou avec les boutons.\nChaque pomme le fait grandir et accélérer un peu.\nLa partie s’arrête s’il touche un mur ou sa propre queue.',
+  howto: "Dirige le serpent avec les flèches, en glissant le doigt sur le plateau ou avec les boutons.\nChaque pomme le fait grandir et accélérer un peu.\nLa partie s'arrête s'il touche un mur ou sa propre queue.",
   keys: ['Flèches ou Z Q S D : diriger', 'Espace : pause'],
   score: { label: 'Plus long serpent', better: 'high', always: true, fmt: (v) => `${v} pomme${v > 1 ? 's' : ''}` },
   difficulties: [

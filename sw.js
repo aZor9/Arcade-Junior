@@ -2,7 +2,7 @@
 // Stratégie : on répond depuis le cache et on met à jour en arrière-plan.
 // Pense à changer VERSION et à tenir ASSETS à jour quand tu ajoutes un fichier.
 
-const VERSION = 'aj-v23';
+const VERSION = 'aj-v24';
 const ASSETS = [
   './', 'index.html', 'about.html', 'plan.html', 'privacy.html', 'legal.html',
   'css/style.css', 'css/fonts/andika-400.woff2', 'css/fonts/andika-700.woff2', 'css/fonts/grandstander-700.woff2', 'css/fonts/OFL-andika.txt', 'css/fonts/OFL-grandstander.txt',

@@ -71,15 +71,15 @@ export default {
   emoji: '🔟',
   color: '#2f7bff',
   tagline: 'Chaque chiffre une seule fois',
-  howto: 'Remplis la grille pour que chaque ligne, chaque colonne et chaque bloc contienne une seule fois chaque chiffre.\nTouche une case vide puis un chiffre. Les doublons s’affichent en rouge.\nMode notes ✏️ : note au crayon les chiffres possibles. Un chiffre posé s’efface des notes voisines.\nChaque grille a une solution unique.',
+  howto: "Remplis la grille pour que chaque ligne, chaque colonne et chaque bloc contienne une seule fois chaque chiffre.\nTouche une case vide puis un chiffre. Les doublons s'affichent en rouge.\nMode notes ✏️ : note au crayon les chiffres possibles. Un chiffre posé s'efface des notes voisines.\nChaque grille a une solution unique.",
   keys: ['Chiffres : remplir ou noter', 'N : mode notes', 'Flèches : changer de case', 'Retour arrière : effacer'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
     { id: 'mini', label: 'Mini 4×4', desc: 'Pour découvrir' },
     { id: 'junior', label: 'Junior 6×6', desc: 'Blocs de 3×2' },
-    { id: 'easy', label: 'Facile 9×9', desc: 'Beaucoup d’indices' },
+    { id: 'easy', label: 'Facile 9×9', desc: "Beaucoup d'indices" },
     { id: 'normal', label: 'Moyen 9×9', desc: 'Le classique' },
-    { id: 'hard', label: 'Difficile 9×9', desc: 'Peu d’indices' },
+    { id: 'hard', label: 'Difficile 9×9', desc: "Peu d'indices" },
   ],
 
   create(rng, diff) {

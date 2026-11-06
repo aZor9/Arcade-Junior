@@ -25,7 +25,7 @@ let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log('ok -', name); };
 const session = (id, game = '2048', extra = {}) => ({ id, game, diff: 'classic', seed: 1, createdAt: 1, updatedAt: 1, elapsed: 0, state: { x: 1 }, ...extra });
 
-ok('sauvegarde, relecture, liste et suppression d’une partie', () => {
+ok("sauvegarde, relecture, liste et suppression d'une partie", () => {
   assert.ok(store.saveSession(session('abc123', '2048', { updatedAt: 5 })).ok);
   assert.equal(store.getSession('abc123').state.x, 1);
   assert.equal(store.listSessions().length, 1);
@@ -110,7 +110,7 @@ ok('import : clés étrangères, jeux inconnus, entrées énormes et clés piég
   assert.equal(({}).played, undefined, 'pas de pollution de prototype');
 });
 
-ok('quota dépassé : l’écriture refusée est signalée', () => {
+ok("quota dépassé : l'écriture refusée est signalée", () => {
   limit = 200;
   const r = store.saveSession(session('q1', '2048', { state: { big: 'x'.repeat(500) } }));
   limit = Infinity;

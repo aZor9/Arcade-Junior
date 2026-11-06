@@ -186,9 +186,9 @@ const MAX_ENTRY = 100000; // une partie réelle pèse quelques Ko : au-delà, l'
 // Retourne le nombre d'entrées importées, ou lève une Error au message lisible.
 export function importAll(text, knownGames) {
   let doc;
-  try { doc = JSON.parse(text); } catch (e) { throw new Error('Ce fichier n’est pas un JSON valide.'); }
+  try { doc = JSON.parse(text); } catch (e) { throw new Error("Ce fichier n'est pas un JSON valide."); }
   if (!doc || doc.app !== 'arcade-junior' || !doc.data || typeof doc.data !== 'object') {
-    throw new Error('Ce fichier n’est pas une sauvegarde Arcade Junior.');
+    throw new Error("Ce fichier n'est pas une sauvegarde Arcade Junior.");
   }
   const entries = [];
   for (const [k, v] of Object.entries(doc.data)) {

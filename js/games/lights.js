@@ -19,8 +19,8 @@ export default {
   howto: 'Toucher une ampoule change son état et celui de ses 4 voisines (haut, bas, gauche, droite).\nÉteins-les toutes en un minimum de coups.\nChaque grille est garantie résoluble.',
   score: { label: 'Moins de coups', better: 'low', fmt: (v) => `${v} coup${v > 1 ? 's' : ''}` },
   difficulties: [
-    { id: 'easy', label: 'Facile 3×3', desc: 'Pour s’échauffer' },
-    { id: 'normal', label: 'Classique 5×5', desc: 'Le format d’origine' },
+    { id: 'easy', label: 'Facile 3×3', desc: "Pour s'échauffer" },
+    { id: 'normal', label: 'Classique 5×5', desc: "Le format d'origine" },
     { id: 'hard', label: 'Difficile 7×7', desc: 'Prévois du temps' },
   ],
 

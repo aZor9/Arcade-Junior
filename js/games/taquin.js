@@ -19,8 +19,8 @@ export default {
   name: 'Taquin',
   emoji: '🧩',
   color: '#ff5c8a',
-  tagline: 'Remets les tuiles dans l’ordre',
-  howto: 'Touche une tuile alignée avec la case vide : elle glisse vers elle, avec celles qui la séparent du vide.\nRange les tuiles dans l’ordre, de 1 à la dernière.\nLa case vide termine en bas à droite.',
+  tagline: "Remets les tuiles dans l'ordre",
+  howto: "Touche une tuile alignée avec la case vide : elle glisse vers elle, avec celles qui la séparent du vide.\nRange les tuiles dans l'ordre, de 1 à la dernière.\nLa case vide termine en bas à droite.",
   score: { label: 'Moins de coups', better: 'low', fmt: (v) => `${v} coup${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile 3×3', desc: '8 tuiles' },

@@ -51,12 +51,12 @@ export default {
   emoji: '🧮',
   color: '#ffd166',
   tagline: 'Atteins la cible exacte',
-  howto: 'Forme exactement le nombre cible.\nTouche un nombre, une opération, puis un deuxième nombre : ils sont remplacés par le résultat.\nLe résultat doit rester entier et positif.\nChaque nombre ne sert qu’une fois. Tu peux annuler ou recommencer.',
+  howto: "Forme exactement le nombre cible.\nTouche un nombre, une opération, puis un deuxième nombre : ils sont remplacés par le résultat.\nLe résultat doit rester entier et positif.\nChaque nombre ne sert qu'une fois. Tu peux annuler ou recommencer.",
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
-    { id: 'easy', label: 'Facile', desc: '4 nombres, cible jusqu’à 150' },
-    { id: 'normal', label: 'Normal', desc: '5 nombres, cible jusqu’à 500' },
-    { id: 'hard', label: 'Difficile', desc: '6 nombres, cible jusqu’à 999' },
+    { id: 'easy', label: 'Facile', desc: "4 nombres, cible jusqu'à 150" },
+    { id: 'normal', label: 'Normal', desc: "5 nombres, cible jusqu'à 500" },
+    { id: 'hard', label: 'Difficile', desc: "6 nombres, cible jusqu'à 999" },
     { id: 'expert', label: 'Expert', desc: '6 nombres, grosses cibles' },
   ],
 

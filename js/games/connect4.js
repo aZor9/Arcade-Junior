@@ -103,14 +103,14 @@ export default {
   emoji: '🔴',
   color: '#ff6f91',
   tagline: 'Aligne quatre jetons',
-  howto: 'Chacun son tour, laisse tomber un jeton dans une colonne.\nAligne quatre jetons de ta couleur (ligne, colonne ou diagonale) avant l’ordinateur.\nLe premier joueur est tiré au sort.',
+  howto: "Chacun son tour, laisse tomber un jeton dans une colonne.\nAligne quatre jetons de ta couleur (ligne, colonne ou diagonale) avant l'ordinateur.\nLe premier joueur est tiré au sort.",
   keys: ['1 à 7 : choisir la colonne'],
   score: { label: 'Moins de coups', better: 'low', fmt: (v) => `${v} coup${v > 1 ? 's' : ''}` },
   difficulties: [
-    { id: 'easy', label: 'Facile', desc: 'L’ordinateur se trompe parfois' },
-    { id: 'normal', label: 'Normal', desc: 'Il voit 3 coups à l’avance' },
-    { id: 'hard', label: 'Difficile', desc: 'Il voit 5 coups à l’avance' },
-    { id: 'expert', label: 'Expert', desc: 'Il voit 7 coups à l’avance' },
+    { id: 'easy', label: 'Facile', desc: "L'ordinateur se trompe parfois" },
+    { id: 'normal', label: 'Normal', desc: "Il voit 3 coups à l'avance" },
+    { id: 'hard', label: 'Difficile', desc: "Il voit 5 coups à l'avance" },
+    { id: 'expert', label: 'Expert', desc: "Il voit 7 coups à l'avance" },
   ],
 
   create(rng, diff) {
@@ -153,7 +153,7 @@ export default {
         col.disabled = over || state.turn !== 1 || state.board[(H - 1) * W + c] !== 0;
       });
       movesEl.textContent = state.moves;
-      statusEl.textContent = over ? (state.winner === 1 ? 'Toi, bravo !' : state.winner === 2 ? 'L’ordinateur' : 'Match nul') : state.turn === 1 ? 'Toi' : 'L’ordinateur…';
+      statusEl.textContent = over ? (state.winner === 1 ? 'Toi, bravo !' : state.winner === 2 ? "L'ordinateur" : 'Match nul') : state.turn === 1 ? 'Toi' : "L'ordinateur…";
     }
 
     function place(col, who) {

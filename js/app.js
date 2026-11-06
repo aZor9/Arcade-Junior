@@ -21,7 +21,7 @@ const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
 function ago(ts) {
   const s = Math.round((ts - Date.now()) / 1000);
   const abs = Math.abs(s);
-  if (abs < 60) return 'à l’instant';
+  if (abs < 60) return "à l'instant";
   if (abs < 3600) return rtf.format(Math.round(s / 60), 'minute');
   if (abs < 86400) return rtf.format(Math.round(s / 3600), 'hour');
   return rtf.format(Math.round(s / 86400), 'day');
@@ -40,14 +40,14 @@ async function startGame(gameId, diffId) {
   if (u.sessions >= store.MAX_SESSIONS) {
     await dialog({
       title: 'Trop de parties en cours',
-      body: h('p', { text: `Tu as déjà ${store.MAX_SESSIONS} parties en cours, c’est la limite. Termine-en une ou supprime-en une depuis l’accueil pour en lancer une nouvelle.` }),
+      body: h('p', { text: `Tu as déjà ${store.MAX_SESSIONS} parties en cours, c'est la limite. Termine-en une ou supprime-en une depuis l'accueil pour en lancer une nouvelle.` }),
     });
     return;
   }
   if (u.ratio > 0.9) {
     await dialog({
       title: 'Stockage presque plein',
-      body: h('p', { text: 'L’espace de stockage du navigateur est presque saturé. Supprime des parties en cours ou vide les données du site depuis ton profil.' }),
+      body: h('p', { text: "L'espace de stockage du navigateur est presque saturé. Supprime des parties en cours ou vide les données du site depuis ton profil." }),
     });
     return;
   }
@@ -57,7 +57,7 @@ async function startGame(gameId, diffId) {
   const session = { id: newId(), game: game.id, diff: diffId, seed, createdAt: now, updatedAt: now, elapsed: 0, state: game.create(rng, diffId) };
   const res = store.saveSession(session);
   if (!res.ok) {
-    toast(res.quota ? 'Stockage plein : impossible de créer la partie.' : 'Impossible d’enregistrer la partie.');
+    toast(res.quota ? 'Stockage plein : impossible de créer la partie.' : "Impossible d'enregistrer la partie.");
     return;
   }
   location.hash = `#/jeu/${game.id}/${session.id}`;
@@ -223,7 +223,7 @@ function playView(gameId, sid) {
     return;
   }
   document.body.classList.add('playing');
-  document.title = `${game.name} – Arcade Junior`;
+  document.title = `${game.name} - Arcade Junior`;
 
   let base = Number.isFinite(session.elapsed) && session.elapsed >= 0 ? session.elapsed : 0;
   let t0 = performance.now();
@@ -240,7 +240,7 @@ function playView(gameId, sid) {
     session.elapsed = elapsed();
     session.updatedAt = Date.now();
     const r = store.saveSession(session);
-    if (!r.ok) toast(r.quota ? 'Stockage plein : la partie n’est plus sauvegardée !' : 'Sauvegarde impossible.');
+    if (!r.ok) toast(r.quota ? "Stockage plein : la partie n'est plus sauvegardée !" : 'Sauvegarde impossible.');
   }
   const onVisibility = () => {
     if (document.hidden) {
@@ -312,7 +312,7 @@ function playView(gameId, sid) {
         }))));
   root.replaceChildren(
     h('div', { class: 'topbar', vars: gameStyle(game) },
-      h('a', { class: 'icon-btn', href: '#/', 'aria-label': 'Retour à l’accueil', text: '←' }),
+      h('a', { class: 'icon-btn', href: '#/', 'aria-label': "Retour à l'accueil", text: '←' }),
       h('div', { class: 'topbar-title' }, h('strong', { text: game.name }), h('span', { text: diffLabel(game, session.diff) })),
       timerEl,
       h('button', {
@@ -427,8 +427,8 @@ function profileView() {
     h('div', { class: 'tiles' },
       h('div', { class: 'tile' }, h('strong', { text: String(played) }), h('span', { text: 'parties jouées' })),
       h('div', { class: 'tile' }, h('strong', { text: String(won) }), h('span', { text: 'victoires' })),
-      h('div', { class: 'tile' }, h('strong', { text: played ? `${Math.round((won / played) * 100)} %` : '–' }), h('span', { text: 'de réussite' })),
-      h('div', { class: 'tile' }, h('strong', { text: ms ? formatDuration(ms) : '–' }), h('span', { text: 'de jeu' }))),
+      h('div', { class: 'tile' }, h('strong', { text: played ? `${Math.round((won / played) * 100)} %` : '-' }), h('span', { text: 'de réussite' })),
+      h('div', { class: 'tile' }, h('strong', { text: ms ? formatDuration(ms) : '-' }), h('span', { text: 'de jeu' }))),
 
     h('div', { class: 'cols' }, h('div', { class: 'col' },
     h('section', null,
@@ -456,7 +456,7 @@ function profileView() {
 
     settings.labs ? h('section', { class: 'labs' },
       h('div', { class: 'section-head' }, h('h2', { text: '🧪 Laboratoire' })),
-      h('p', { class: 'muted', text: 'Ces jeux sont en test : ils peuvent changer ou disparaître. Ils sont visibles sur l’accueil tant que le laboratoire est activé.' }),
+      h('p', { class: 'muted', text: "Ces jeux sont en test : ils peuvent changer ou disparaître. Ils sont visibles sur l'accueil tant que le laboratoire est activé." }),
       LAB_GAMES.length ? h('ul', { class: 'bests' }, LAB_GAMES.map((g) => h('li', null, h('span', { text: `${g.emoji} ${g.name}` })))) : h('p', { class: 'muted', text: 'Aucun jeu en test pour le moment.' }),
       h('div', { class: 'btn-row' },
         h('button', { class: 'btn btn-ghost', type: 'button', text: 'Désactiver le laboratoire', onclick: () => setLabs(false) }))) : null,
@@ -469,7 +469,7 @@ function profileView() {
         h('span', { text: `Arcade Junior : ${kb(u.ours)}` }),
         h('span', { text: `Total du site : ${kb(u.total)} / ~${kb(u.quota)}` })),
       h('p', { class: 'muted', text: `${u.sessions} partie${u.sessions > 1 ? 's' : ''} en cours sur ${store.MAX_SESSIONS} maximum. Une partie terminée est effacée : seules tes statistiques restent.` }),
-      !store.isPersistent() ? h('p', { class: 'notice', text: 'Stockage bloqué par le navigateur : rien n’est conservé après fermeture.' }) : null,
+      !store.isPersistent() ? h('p', { class: 'notice', text: "Stockage bloqué par le navigateur : rien n'est conservé après fermeture." }) : null,
       h('div', { class: 'btn-row' },
         h('button', { class: 'btn btn-ghost', type: 'button', text: 'Exporter', onclick: exportData }),
         h('button', { class: 'btn btn-ghost', type: 'button', text: 'Importer', onclick: importData }),
@@ -524,7 +524,7 @@ let lastHash = null;
 
 function route() {
   if (teardown) { teardown(); teardown = null; }
-  document.title = 'Arcade Junior – mini-jeux de réflexion';
+  document.title = 'Arcade Junior - mini-jeux de réflexion';
   const [, page, a, b] = location.hash.split('/');
   document.querySelectorAll('.tabbar a').forEach((l) => {
     const on = (l.dataset.tab === 'profil') === (page === 'profil');
@@ -532,7 +532,7 @@ function route() {
     if (on) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current');
   });
   if (page === 'jeu' && a && b) playView(a, b);
-  else if (page === 'profil') { document.title = 'Profil – Arcade Junior'; profileView(); }
+  else if (page === 'profil') { document.title = 'Profil - Arcade Junior'; profileView(); }
   else hubView();
   // Sans cela, une partie ouverte depuis un accueil défilé gardait ce défilement et ses infos du haut passaient sous la barre collante.
   if (location.hash !== lastHash) window.scrollTo(0, 0);
@@ -545,7 +545,7 @@ function setLabs(on) {
   const s = store.getSettings();
   s.labs = on;
   store.saveSettings(s);
-  toast(on ? (LAB_GAMES.length ? `🧪 Laboratoire activé : ${LAB_GAMES.length} jeu${LAB_GAMES.length > 1 ? 'x' : ''} en test visible${LAB_GAMES.length > 1 ? 's' : ''} sur l’accueil.` : '🧪 Laboratoire activé : aucun jeu en test pour le moment.') : 'Laboratoire désactivé.');
+  toast(on ? (LAB_GAMES.length ? `🧪 Laboratoire activé : ${LAB_GAMES.length} jeu${LAB_GAMES.length > 1 ? 'x' : ''} en test visible${LAB_GAMES.length > 1 ? 's' : ''} sur l'accueil.` : '🧪 Laboratoire activé : aucun jeu en test pour le moment.') : 'Laboratoire désactivé.');
   route();
 }
 let profileTaps = [];

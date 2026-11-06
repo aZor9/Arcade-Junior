@@ -55,7 +55,7 @@ if (q.get('auto')) {
     check('mastermind : combinaison remplie', !state.current.includes(null));
     click($('.mm-actions .btn-primary')[0]);
     check('mastermind : un essai enregistré', state.guesses.length === 1);
-    check('mastermind : ligne d’essai affichée avec retour', $('.mm-row.done .mm-fb i').length === state.len);
+    check("mastermind : ligne d'essai affichée avec retour", $('.mm-row.done .mm-fb i').length === state.len);
   } else if (id === 'nombre') {
     '5'.split('').forEach((c) => click($('.key').find((b) => b.textContent === c)));
     click($('.key-ok')[0]);
@@ -109,7 +109,7 @@ if (q.get('auto')) {
     const e0 = empties[0];
     click($('.sd-cell')[e0]);
     click(btnNote());
-    check('notes : le mode s’active', state.noteMode === true && btnNote().classList.contains('on'));
+    check("notes : le mode s'active", state.noteMode === true && btnNote().classList.contains('on'));
     const bit = (v) => 1 << (v - 1);
     click(keyOf(A)); click(keyOf(B)); click(keyOf(C));
     check('notes : 3 chiffres notés', state.notes[e0] === (bit(A) | bit(B) | bit(C)) && state.cur[e0] === 0);
@@ -190,7 +190,7 @@ if (q.get('auto')) {
     click(tiles[0]);
     check('pipes : un clic tourne la tuile', state.rot[0] === (before + 1) % 4 && state.moves === 1);
     tiles[0].dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true }));
-    check('pipes : clic droit tourne dans l’autre sens', state.rot[0] === before && state.moves === 2);
+    check("pipes : clic droit tourne dans l'autre sens", state.rot[0] === before && state.moves === 2);
     check('pipes : la source est alimentée', tiles[state.source].classList.contains('lit'));
     // Chaque tuile : on la ramène à sa position résolue (rotation 0).
     tiles.forEach((t, i) => { const k = (4 - state.rot[i]) % 4; for (let j = 0; j < k; j++) click(t); });
@@ -345,13 +345,13 @@ if (q.get('auto')) {
     check('nonogram (clavier) : flèche bas déplace le focus', document.activeElement === cells[state.n + 1]);
     document.activeElement.click();
     check('nonogram (clavier) : Entrée / Espace noircit la case', state.cur[state.n + 1] === 1);
-    check('nonogram (lecteur d’écran) : l’état de la case est annoncé', /noircie/.test(cells[state.n + 1].getAttribute('aria-label')));
+    check("nonogram (lecteur d'écran) : l'état de la case est annoncé", /noircie/.test(cells[state.n + 1].getAttribute('aria-label')));
     // 5. compteur : jamais négatif, signale l'excès
     state.cur.fill(0);
     state.cur.forEach((_, i) => { if (state.solution[i] !== 1 && i < 3) state.cur[i] = 1; });
     click($('.mode-btn')[0]); click($('.mode-btn')[0]);          // force un repaint sans changer l'état
     const label = $('.hud-item span')[0].textContent; const value = Number($('.hud-item strong')[0].textContent);
-    check('nonogram : le compteur n’est jamais négatif', value >= 0 && /noircir|trop/.test(label));
+    check("nonogram : le compteur n'est jamais négatif", value >= 0 && /noircir|trop/.test(label));
     state.cur.fill(0);
     click($('.mode-btn')[0]); click($('.mode-btn')[0]);
     for (let i = 0; i < state.n; i++) { if ((state.solution[i] === 1) !== (state.cur[i] === 1)) press(cells[i]); }
@@ -363,12 +363,12 @@ if (q.get('auto')) {
     const colEls = $('.c4-col');
     check('puissance 4 : 7 colonnes de 6 cases', colEls.length === 7 && $('.c4-slot').length === 42);
     if (state.turn === 2) await sleep(900);
-    check('puissance 4 : c’est au joueur de jouer', state.turn === 1 && !colEls[3].disabled);
+    check("puissance 4 : c'est au joueur de jouer", state.turn === 1 && !colEls[3].disabled);
     click(colEls[3]);
     check('puissance 4 : le jeton tombe en bas de la colonne', state.board[3] === 1 && state.moves === 1);
     check('puissance 4 : pendant le tour adverse, les colonnes sont bloquées', colEls.every((c) => c.disabled));
     await sleep(900);
-    check('puissance 4 : l’ordinateur répond', state.board.filter((v) => v === 2).length >= 1 && state.turn === 1);
+    check("puissance 4 : l'ordinateur répond", state.board.filter((v) => v === 2).length >= 1 && state.turn === 1);
     state.board.fill(0);
     state.board[6] = state.board[13] = state.board[20] = 1;
     state.turn = 1; state.winner = 0; state.line = [];
@@ -384,7 +384,7 @@ if (q.get('auto')) {
     state.cells.forEach((v, i) => state.cells.forEach((w, j) => { if (bi < 0 && i < j && v && w && v !== w && v + w !== 10) { bi = i; bj = j; } }));
     const total0 = state.cells.filter(Boolean).length;
     click(cellEls()[bi]); click(cellEls()[bj]);
-    check('number match : une mauvaise paire n’efface rien', state.cells.filter(Boolean).length === total0 && state.moves === 0);
+    check("number match : une mauvaise paire n'efface rien", state.cells.filter(Boolean).length === total0 && state.moves === 0);
     click(cellEls()[bj]);                                           // désélectionne
     // indice
     const hints0 = state.hints;
@@ -416,7 +416,7 @@ if (q.get('auto')) {
     const m2 = mini([1, 9, 2, 3], 0);
     const b2 = m2.box.querySelectorAll('.nm-cell');
     b2[0].click(); b2[1].click();
-    check('number match : plus de paire et plus d’ajout = défaite', m2.log.some((l) => l === 'FINISH {"won":false}'));
+    check("number match : plus de paire et plus d'ajout = défaite", m2.log.some((l) => l === 'FINISH {"won":false}'));
     const m3 = mini([5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5], 0);
     const b3 = m3.box.querySelectorAll('.nm-cell');
     b3[0].click(); b3[18].click();
@@ -510,7 +510,7 @@ if (q.get('auto')) {
     click($('.rv-cell.hint')[0]);
     check('reversi : un pion posé et un retourné', state.board.filter((v) => v === 1).length === 4 && state.turn === 2);
     for (let k = 0; k < 40 && state.turn === 2; k++) await sleep(100);
-    check('reversi : l’ordinateur a joué', state.turn === 1 && state.board.filter(Boolean).length === 6);
+    check("reversi : l'ordinateur a joué", state.turn === 1 && state.board.filter(Boolean).length === 6);
   } else if (id === 'cages') {
     check('cages : une étiquette par cage', $('.cg-label').length === state.cages.length);
     const empty = state.cur.findIndex((v, i) => !state.given[i]);
@@ -526,7 +526,7 @@ if (q.get('auto')) {
     click($('.hi-cell')[white]); click($('.hi-cell')[white]);
     check('hitori : deux appuis entourent la case', $('.hi-cell')[white].classList.contains('circle'));
     click($('.hi-cell')[white]);
-    check('hitori : trois appuis l’effacent', state.marks[white] === 0);
+    check("hitori : trois appuis l'effacent", state.marks[white] === 0);
     state.solution.forEach((b, i) => { if (b) click($('.hi-cell')[i]); });
     check('hitori : bonnes cases noircies = victoire', document.getElementById('err').textContent.includes('FINISH'));
   } else if (id === 'billes') {
@@ -580,7 +580,7 @@ if (q.get('auto')) {
     click(cellOf(2));
     check('schulte : mauvais nombre compté comme erreur', state.misses === 1 && state.next === 1);
     for (let v = 1; v <= state.n * state.n; v++) click(cellOf(v));
-    check('schulte : tous les nombres dans l’ordre = victoire', document.getElementById('err').textContent.includes('FINISH'));
+    check("schulte : tous les nombres dans l'ordre = victoire", document.getElementById('err').textContent.includes('FINISH'));
   } else if (id === 'helix') {
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check('hélice : un canvas de jeu', !!stage.querySelector('canvas.arc-canvas'));

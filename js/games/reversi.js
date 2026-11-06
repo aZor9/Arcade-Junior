@@ -97,10 +97,10 @@ export default {
   keys: ['Tab puis Entrée : poser un pion'],
   score: { label: 'Meilleur score', better: 'high', fmt: (v) => `${v} pion${v > 1 ? 's' : ''}` },
   difficulties: [
-    { id: 'easy', label: 'Facile', desc: 'L’ordinateur se trompe souvent' },
-    { id: 'normal', label: 'Normal', desc: 'Il voit 2 coups à l’avance' },
-    { id: 'hard', label: 'Difficile', desc: 'Il voit 3 coups à l’avance' },
-    { id: 'expert', label: 'Expert', desc: 'Il voit 4 coups à l’avance' },
+    { id: 'easy', label: 'Facile', desc: "L'ordinateur se trompe souvent" },
+    { id: 'normal', label: 'Normal', desc: "Il voit 2 coups à l'avance" },
+    { id: 'hard', label: 'Difficile', desc: "Il voit 3 coups à l'avance" },
+    { id: 'expert', label: 'Expert', desc: "Il voit 4 coups à l'avance" },
   ],
 
   create(rng, diff) {
@@ -141,7 +141,7 @@ export default {
       const other = 3 - state.turn;
       if (legalMoves(state.board, other).length) state.turn = other;
       else if (!legalMoves(state.board, state.turn).length) state.over = true;
-      else ctx.toast(other === 1 ? 'Aucun coup possible : tu passes ton tour.' : 'L’ordinateur ne peut pas jouer : à toi.');
+      else ctx.toast(other === 1 ? 'Aucun coup possible : tu passes ton tour.' : "L'ordinateur ne peut pas jouer : à toi.");
       state.rng = rng.state;
       paint();
       ctx.save(state);

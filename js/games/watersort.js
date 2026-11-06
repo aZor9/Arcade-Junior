@@ -86,7 +86,7 @@ export default {
   emoji: '🧪',
   color: '#4fc3f7',
   tagline: 'Une seule couleur par tube',
-  howto: 'Touche un tube, puis un autre pour y verser le liquide du dessus.\nOn ne verse que sur la même couleur ou dans un tube vide, et seulement s’il reste de la place.\nGagne quand chaque tube ne contient plus qu’une couleur : il reçoit alors son bouchon.',
+  howto: "Touche un tube, puis un autre pour y verser le liquide du dessus.\nOn ne verse que sur la même couleur ou dans un tube vide, et seulement s'il reste de la place.\nGagne quand chaque tube ne contient plus qu'une couleur : il reçoit alors son bouchon.",
   keys: ['Tab puis Entrée : choisir un tube', 'U : annuler'],
   score: { label: 'Moins de versements', better: 'low', fmt: (v) => `${v} versement${v > 1 ? 's' : ''}` },
   difficulties: [

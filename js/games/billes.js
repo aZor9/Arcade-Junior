@@ -97,8 +97,8 @@ export default {
   name: 'Solitaire à billes',
   emoji: '🔵',
   color: '#4cc9f0',
-  tagline: 'Saute et ne garde qu’une bille',
-  howto: 'Touche une bille, puis le trou où elle doit sauter : elle passe par-dessus une bille voisine, qui est retirée.\nOn saute en ligne ou en colonne, jamais en diagonale, et seulement vers un trou libre juste derrière.\nGagne en ne laissant qu’une seule bille. Chaque position proposée a une solution.',
+  tagline: "Saute et ne garde qu'une bille",
+  howto: "Touche une bille, puis le trou où elle doit sauter : elle passe par-dessus une bille voisine, qui est retirée.\nOn saute en ligne ou en colonne, jamais en diagonale, et seulement vers un trou libre juste derrière.\nGagne en ne laissant qu'une seule bille. Chaque position proposée a une solution.",
   keys: ['Tab puis Entrée : choisir une bille puis un trou', 'U : annuler'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [

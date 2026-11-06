@@ -62,7 +62,7 @@ export default {
   color: '#9775fa',
   endless: true,
   tagline: 'Remplis les lignes',
-  howto: 'Choisis une des trois pièces, puis touche la case de la grille où poser son coin haut gauche.\nUne ligne ou une colonne pleine s’efface et rapporte des points (encore plus si plusieurs s’effacent ensemble).\nTrois nouvelles pièces arrivent quand les trois sont posées. La partie s’arrête quand plus aucune pièce ne rentre.',
+  howto: "Choisis une des trois pièces, puis touche la case de la grille où poser son coin haut gauche.\nUne ligne ou une colonne pleine s'efface et rapporte des points (encore plus si plusieurs s'effacent ensemble).\nTrois nouvelles pièces arrivent quand les trois sont posées. La partie s'arrête quand plus aucune pièce ne rentre.",
   keys: ['1, 2, 3 : choisir une pièce', 'Flèches et Entrée : viser et poser'],
   score: { label: 'Meilleur score', better: 'high', always: true, fmt: (v) => `${v} point${v > 1 ? 's' : ''}` },
   difficulties: [
@@ -133,7 +133,7 @@ export default {
 
     function drop(i) {
       if (over) return;
-      if (pick < 0 || !state.tray[pick]) { ctx.toast('Choisis d’abord une pièce sous la grille.'); return; }
+      if (pick < 0 || !state.tray[pick]) { ctx.toast("Choisis d'abord une pièce sous la grille."); return; }
       const shape = shapeOf(pick);
       const r = Math.floor(i / n);
       const c = i % n;

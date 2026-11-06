@@ -54,7 +54,7 @@ export default {
   color: '#ffb84d',
   endless: true,
   tagline: 'Empile le plus haut possible',
-  howto: 'Un bloc va et vient au-dessus de la tour : touche l’écran (ou Espace) pour le poser.\nCe qui dépasse est coupé : le bloc suivant sera plus étroit.\nUn placement parfait garde la largeur ; trois d’affilée l’agrandissent.\nLa partie s’arrête quand tu rates complètement la pile.',
+  howto: "Un bloc va et vient au-dessus de la tour : touche l'écran (ou Espace) pour le poser.\nCe qui dépasse est coupé : le bloc suivant sera plus étroit.\nUn placement parfait garde la largeur ; trois d'affilée l'agrandissent.\nLa partie s'arrête quand tu rates complètement la pile.",
   keys: ['Clic, Espace ou Entrée : poser le bloc'],
   score: { label: 'Plus haute tour', better: 'high', always: true, fmt: (v) => `${v} étage${v > 1 ? 's' : ''}` },
   difficulties: [
@@ -80,7 +80,7 @@ export default {
     root.append(h('div', { class: 'arc' },
       h('div', { class: 'hud' },
         h('div', { class: 'hud-item' }, h('span', { text: 'Hauteur' }), scoreEl),
-        h('div', { class: 'hud-item' }, h('span', { text: 'Parfaits d’affilée' }), comboEl)),
+        h('div', { class: 'hud-item' }, h('span', { text: "Parfaits d'affilée" }), comboEl)),
       canvas));
     const g = canvas.getContext('2d');
     let W = 0;

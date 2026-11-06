@@ -120,8 +120,8 @@ export default {
   emoji: '⬛',
   color: '#ef476f',
   tagline: 'Noircis les doublons',
-  howto: 'Noircis des cases pour qu’aucun chiffre ne se répète dans une ligne ou une colonne parmi les cases blanches.\nDeux cases noires ne doivent jamais se toucher par un côté, et toutes les cases blanches doivent rester reliées.\nTouche une case pour la noircir, encore une fois pour l’entourer (sûre d’être blanche), une troisième pour l’effacer.',
-  keys: ['Tab puis Entrée : changer l’état d’une case'],
+  howto: "Noircis des cases pour qu'aucun chiffre ne se répète dans une ligne ou une colonne parmi les cases blanches.\nDeux cases noires ne doivent jamais se toucher par un côté, et toutes les cases blanches doivent rester reliées.\nTouche une case pour la noircir, encore une fois pour l'entourer (sûre d'être blanche), une troisième pour l'effacer.",
+  keys: ["Tab puis Entrée : changer l'état d'une case"],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
     { id: 'easy', label: 'Facile 5×5', desc: 'Pour découvrir' },

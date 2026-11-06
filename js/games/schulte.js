@@ -9,8 +9,8 @@ export default {
   name: 'Table de Schulte',
   emoji: '🔢',
   color: '#20c997',
-  tagline: 'Touche les nombres dans l’ordre',
-  howto: 'Touche les nombres dans l’ordre, de 1 jusqu’au dernier, le plus vite possible.\nLe prochain nombre à trouver est indiqué en haut. Une erreur ne coûte rien, à part du temps.\nEn Expert, la grille se mélange à chaque bonne réponse.',
+  tagline: "Touche les nombres dans l'ordre",
+  howto: "Touche les nombres dans l'ordre, de 1 jusqu'au dernier, le plus vite possible.\nLe prochain nombre à trouver est indiqué en haut. Une erreur ne coûte rien, à part du temps.\nEn Expert, la grille se mélange à chaque bonne réponse.",
   keys: ['Tab puis Entrée : toucher un nombre'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${(v / 10).toFixed(1).replace('.', ',')} s` },
   difficulties: [

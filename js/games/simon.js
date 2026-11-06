@@ -34,7 +34,7 @@ export default {
   color: '#ffd43b',
   endless: true,
   tagline: 'Retiens la suite',
-  howto: 'Regarde les touches s’allumer, puis touche-les dans le même ordre.\nÀ chaque manche réussie, la suite s’allonge d’une touche.\nUne erreur, et la partie s’arrête.',
+  howto: "Regarde les touches s'allumer, puis touche-les dans le même ordre.\nÀ chaque manche réussie, la suite s'allonge d'une touche.\nUne erreur, et la partie s'arrête.",
   keys: ['1 à 6 : appuyer sur une touche'],
   score: { label: 'Plus longue suite', better: 'high', always: true, fmt: (v) => `${v} touche${v > 1 ? 's' : ''}` },
   difficulties: [

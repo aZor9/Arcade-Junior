@@ -85,9 +85,9 @@ export default {
   name: 'Pipes',
   emoji: '🔧',
   color: '#7ed957',
-  tagline: 'Fais circuler l’eau partout',
-  howto: 'Touche une tuile pour la faire pivoter d’un quart de tour.\nL’eau part de l’ampoule jaune au centre et colore les tuyaux qu’elle atteint.\nRelie toute la grille, sans tuyau qui débouche dans le vide.',
-  keys: ['Clic : tourner dans le sens horaire', 'Clic droit : tourner dans l’autre sens', 'Tab puis Entrée : tourner une tuile'],
+  tagline: "Fais circuler l'eau partout",
+  howto: "Touche une tuile pour la faire pivoter d'un quart de tour.\nL'eau part de l'ampoule jaune au centre et colore les tuyaux qu'elle atteint.\nRelie toute la grille, sans tuyau qui débouche dans le vide.",
+  keys: ['Clic : tourner dans le sens horaire', "Clic droit : tourner dans l'autre sens", 'Tab puis Entrée : tourner une tuile'],
   score: { label: 'Moins de rotations', better: 'low', fmt: (v) => `${v} rotation${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile 5×5', desc: '25 tuiles' },

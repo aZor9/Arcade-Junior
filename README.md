@@ -10,10 +10,10 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | --- | --- | --- |
 | 🔢 2048 | Fusionne les tuiles identiques | 3×3, 4×4, 5×5 |
 | 🎯 Mastermind | Devine un code de couleurs (symboles inclus, accessible au daltonisme) | 3 |
-| 🔟 Sudoku | Grilles à solution unique générées sur l’appareil, avec mode notes au crayon ; un chiffre terminé est grisé | 4×4, 6×6, 9×9 (3 niveaux) |
-| 🔮 Nombre mystère | « Plus grand / plus petit » en nombre d’essais limité | 3 |
+| 🔟 Sudoku | Grilles à solution unique générées sur l'appareil, avec mode notes au crayon ; un chiffre terminé est grisé | 4×4, 6×6, 9×9 (3 niveaux) |
+| 🔮 Nombre mystère | « Plus grand / plus petit » en nombre d'essais limité | 3 |
 | 💡 Lumières | Éteins toutes les ampoules (grille toujours résoluble) | 3×3, 5×5, 7×7 |
-| 🧩 Taquin | Remets les tuiles dans l’ordre (mélange toujours résoluble) | 3×3, 4×4, 5×5 |
+| 🧩 Taquin | Remets les tuiles dans l'ordre (mélange toujours résoluble) | 3×3, 4×4, 5×5 |
 | 🃏 Mémoire | Retrouve les paires | 6 à 15 paires |
 | 💣 Démineur | Premier coup toujours sûr, appui long = drapeau | 3 |
 | 🕸️ Démêle | Déplace les points d'un graphe pour qu'aucun trait n'en croise un autre (toujours possible) | 7 à 25 points |
@@ -26,36 +26,36 @@ Des mini-jeux de réflexion à jouer sur téléphone. **Site 100 % statique** (H
 | 🔴 Puissance 4 | Affronte l'ordinateur (IA à recherche alpha-bêta) | 4 niveaux |
 | 🌀 Hélice | Fais tourner la tour pour faire descendre la balle par les trous, sans toucher le rouge (type Helix Jump) | 12 à 30 étages |
 | 🧱 Pile | Pose les blocs au bon moment pour monter la tour le plus haut possible (type Stack) | 3 vitesses |
-| 🧪 Tri de liquides | Verse d’un tube à l’autre jusqu’à n’avoir qu’une couleur par tube ; grilles vérifiées résolubles | 4 à 10 couleurs |
+| 🧪 Tri de liquides | Verse d'un tube à l'autre jusqu'à n'avoir qu'une couleur par tube ; grilles vérifiées résolubles | 4 à 10 couleurs |
 | 🚗 Embouteillage | Fais glisser les véhicules pour libérer la voiture rouge ; minimum de coups exact affiché | 3 à 36 coups |
 | ⋚ Futoshiki | Chiffres uniques par ligne et colonne, en respectant les signes < > ; solution unique | 4×4 à 7×7 |
 | 🏙️ Gratte-ciel | Immeubles de hauteurs 1 à N, indices de vue depuis les bords ; solution unique | 4×4 à 6×6 |
 | 🧠 Number Match | Efface les paires de chiffres identiques ou de somme 10 (ligne, colonne, diagonale) ; grilles garanties gagnables | 4 niveaux |
 
-Sur l’accueil, les jeux sont rangés par catégorie (Logique, Arcade, Modernes, Classiques, Mémoire et calcul), avec un raccourci vers chacune. **Jeu au hasard** tire au sort un jeu et un niveau.
+Sur l'accueil, les jeux sont rangés par catégorie (Logique, Arcade, Modernes, Classiques, Mémoire et calcul), avec un raccourci vers chacune. **Jeu au hasard** tire au sort un jeu et un niveau.
 
 ### Laboratoire (jeux en test)
 
-Le laboratoire sert à tester des jeux avant de les publier. Il est vide en ce moment. Pour activer le laboratoire : **appuyer 6 fois rapidement sur l’onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
+Le laboratoire sert à tester des jeux avant de les publier. Il est vide en ce moment. Pour activer le laboratoire : **appuyer 6 fois rapidement sur l'onglet Profil** (en moins de 4 secondes). Une section « Laboratoire » apparaît alors dans le profil, avec un bouton pour le désactiver. Une partie commencée reste jouable même après la désactivation.
 
-Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l’ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
+Pour publier un de ces jeux : le déplacer de `LAB_GAMES` vers `GAMES` dans `js/games/index.js`, puis l'ajouter à `plan.html` et à `about.html` (voir [TODO.md](TODO.md)).
 
 ## Fonctionnalités
 
-- Parties en cours : lance plusieurs parties, quitte-les, reprends-les plus tard (jusqu’à 20), ou supprime-les toutes d'un coup (statistiques conservées). Une partie est sauvegardée à chaque coup, avec son temps écoulé.
-- Génération aléatoire reproductible : chaque partie vient d’une graine (PRNG `mulberry32`) dont l’état est sauvegardé, donc une reprise continue exactement la même suite.
-- Favoris : une étoile sur chaque carte ; les favoris s’affichent en tête de l’accueil (et restent dans « Tous les jeux »).
+- Parties en cours : lance plusieurs parties, quitte-les, reprends-les plus tard (jusqu'à 20), ou supprime-les toutes d'un coup (statistiques conservées). Une partie est sauvegardée à chaque coup, avec son temps écoulé.
+- Génération aléatoire reproductible : chaque partie vient d'une graine (PRNG `mulberry32`) dont l'état est sauvegardé, donc une reprise continue exactement la même suite.
+- Favoris : une étoile sur chaque carte ; les favoris s'affichent en tête de l'accueil (et restent dans « Tous les jeux »).
 - Profil : pseudo, avatar, parties jouées et gagnées, séries, records par jeu et par niveau, badges.
-- Stockage visible : jauge d’utilisation du `localStorage` (limite typique ≈ 5 Mo par site), limite de 20 parties, gestion du quota dépassé et du stockage bloqué (navigation privée).
+- Stockage visible : jauge d'utilisation du `localStorage` (limite typique ≈ 5 Mo par site), limite de 20 parties, gestion du quota dépassé et du stockage bloqué (navigation privée).
 - Export / import de toutes les données en JSON (pour changer de téléphone).
-- PWA : installable sur l’écran d’accueil, utilisable hors ligne (service worker).
+- PWA : installable sur l'écran d'accueil, utilisable hors ligne (service worker).
 - Thème clair / sombre / automatique.
 - Mobile d'abord, mais aussi pensé pour ordinateur : à partir de 960 px de large, barre latérale, grille de jeux élargie, et écran de partie en deux colonnes (plateau, puis règles, raccourcis clavier, record et actions). Clavier et clic droit pris en charge là où c'est utile.
 - Vie privée : aucune requête externe (polices hébergées sur le site), CSP stricte, pas de cookie. Pages [confidentialité / RGPD](privacy.html), [mentions légales](legal.html), [à propos](about.html) et [plan du site](plan.html).
 
 ## Une base de données est-elle possible ?
 
-Pas besoin pour l’instant : tout vit dans le navigateur. Un site statique peut quand même parler à un service externe si tu veux plus tard des classements ou la synchronisation entre appareils (Supabase, Firebase, Cloudflare D1/Workers…). Cela impliquerait des comptes ou des pseudos côté serveur, donc de mettre à jour la page confidentialité (RGPD) et la CSP. D’ici là, « Exporter / Importer » du profil sert de sauvegarde manuelle.
+Pas besoin pour l'instant : tout vit dans le navigateur. Un site statique peut quand même parler à un service externe si tu veux plus tard des classements ou la synchronisation entre appareils (Supabase, Firebase, Cloudflare D1/Workers…). Cela impliquerait des comptes ou des pseudos côté serveur, donc de mettre à jour la page confidentialité (RGPD) et la CSP. D'ici là, « Exporter / Importer » du profil sert de sauvegarde manuelle.
 
 ## Lancer en local
 
@@ -118,8 +118,8 @@ js/games/*.js         Un fichier par jeu + index.js (jeux publiés et laboratoir
 js/doodles.js         Croquis « à la main » de chaque jeu (ajouter un dessin pour tout nouveau jeu, sinon son emoji sert de repli)
 js/emoji.js           Remplace les emojis du système par les images de icons/emoji/
 js/games/shapes.js    Formes associées aux couleurs (jeux jouables en cas de daltonisme)
-js/games/loop.js      Boucle d’animation des jeux d’arcade (pause quand la page est cachée)
-js/games/rushhour-levels.js  Grilles de l’Embouteillage, générées par tools/gen-rushhour.mjs
+js/games/loop.js      Boucle d'animation des jeux d'arcade (pause quand la page est cachée)
+js/games/rushhour-levels.js  Grilles de l'Embouteillage, générées par tools/gen-rushhour.mjs
 tools/                Outils de développement (non publiés)
 sw.js, manifest.webmanifest, icons/
 tests/                Tests de logique, pages de test navigateur, script run-browser.sh
@@ -175,9 +175,9 @@ node tests/site.test.mjs         # pages, liens, plan du site, service worker, d
 
 Wordle en français, Simon, Hashi (ponts entre îles), Slitherlink, indices et annulation dans tous les jeux, défis du jour (même graine pour tout le monde, sans serveur), classement optionnel via un service externe.
 
-## Grilles de l’Embouteillage
+## Grilles de l'Embouteillage
 
-Générer une grille difficile prendrait plusieurs secondes sur un téléphone : les grilles sont donc produites à l’avance par `node tools/gen-rushhour.mjs` (environ 4 minutes), qui vérifie chacune avec le solveur (nombre minimum de coups exact) et écrit `js/games/rushhour-levels.js`.
+Générer une grille difficile prendrait plusieurs secondes sur un téléphone : les grilles sont donc produites à l'avance par `node tools/gen-rushhour.mjs` (environ 4 minutes), qui vérifie chacune avec le solveur (nombre minimum de coups exact) et écrit `js/games/rushhour-levels.js`.
 
 ## À faire
 
@@ -185,7 +185,7 @@ Voir [TODO.md](TODO.md) : jeux du laboratoire à valider, idées de jeux, foncti
 
 ## Crédits
 
-Icônes d’étoile des favoris : [Tabler Icons](https://tabler.io/icons) (`star`, `star-filled`, v3.19.0), licence MIT, © 2020-2024 Paweł Kuna. Elles sont copiées dans `js/icons.js` avec leur mention de licence.
+Icônes d'étoile des favoris : [Tabler Icons](https://tabler.io/icons) (`star`, `star-filled`, v3.19.0), licence MIT, © 2020-2024 Paweł Kuna. Elles sont copiées dans `js/icons.js` avec leur mention de licence.
 
 Emojis du site : [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) de Microsoft (style 3D), licence MIT, © Microsoft Corporation. Les images sont dans `icons/emoji/`, converties en WebP.
 

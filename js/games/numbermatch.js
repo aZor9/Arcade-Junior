@@ -91,7 +91,7 @@ export default {
   emoji: '🧠',
   color: '#c3e34a',
   tagline: 'Efface les paires qui font 10',
-  howto: 'Efface deux chiffres identiques, ou dont la somme fait 10.\nIls doivent se voir : côte à côte, ou séparés de cases vides, en ligne, colonne ou diagonale. La fin d’une ligne rejoint le début de la suivante.\nPlus de paire ? Le bouton + recopie les chiffres restants à la fin de la grille (nombre limité).\nEfface tout pour gagner. Une ligne vide disparaît.',
+  howto: "Efface deux chiffres identiques, ou dont la somme fait 10.\nIls doivent se voir : côte à côte, ou séparés de cases vides, en ligne, colonne ou diagonale. La fin d'une ligne rejoint le début de la suivante.\nPlus de paire ? Le bouton + recopie les chiffres restants à la fin de la grille (nombre limité).\nEfface tout pour gagner. Une ligne vide disparaît.",
   keys: ['Clic : choisir un chiffre', 'H : indice', 'A : ajouter les chiffres'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [

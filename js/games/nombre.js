@@ -6,9 +6,9 @@ export default {
   emoji: '🔮',
   color: '#19c29a',
   tagline: 'Plus grand ou plus petit ?',
-  howto: 'Un nombre est caché dans l’intervalle indiqué.\nPropose un nombre : on te dit s’il faut viser plus grand ou plus petit.\nTrouve-le avant d’avoir épuisé tes essais.\nAstuce : coupe l’intervalle en deux à chaque fois.',
+  howto: "Un nombre est caché dans l'intervalle indiqué.\nPropose un nombre : on te dit s'il faut viser plus grand ou plus petit.\nTrouve-le avant d'avoir épuisé tes essais.\nAstuce : coupe l'intervalle en deux à chaque fois.",
   keys: ['Chiffres : saisir un nombre', 'Retour arrière : effacer', 'Entrée : valider'],
-  score: { label: 'Moins d’essais', better: 'low', fmt: (v) => `${v} essai${v > 1 ? 's' : ''}` },
+  score: { label: "Moins d'essais", better: 'low', fmt: (v) => `${v} essai${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile', desc: 'De 1 à 50, 8 essais' },
     { id: 'normal', label: 'Normal', desc: 'De 1 à 100, 7 essais' },

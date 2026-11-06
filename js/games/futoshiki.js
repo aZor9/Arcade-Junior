@@ -127,7 +127,7 @@ export default {
   emoji: '⋚',
   color: '#f4845f',
   tagline: 'Chiffres et signes < >',
-  howto: 'Remplis la grille : chaque chiffre apparaît une seule fois par ligne et par colonne.\nRespecte les signes entre les cases : « < » et « > » à l’horizontale, « ∧ » et « ∨ » à la verticale (la pointe désigne la plus petite case).\nTouche une case puis un chiffre. Les fautes s’affichent en rouge. Chaque grille a une solution unique.',
+  howto: "Remplis la grille : chaque chiffre apparaît une seule fois par ligne et par colonne.\nRespecte les signes entre les cases : « < » et « > » à l'horizontale, « ∧ » et « ∨ » à la verticale (la pointe désigne la plus petite case).\nTouche une case puis un chiffre. Les fautes s'affichent en rouge. Chaque grille a une solution unique.",
   keys: ['Chiffres : remplir la case choisie', 'Flèches : changer de case', 'Retour arrière ou 0 : effacer'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [

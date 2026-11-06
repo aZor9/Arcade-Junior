@@ -83,7 +83,7 @@ export default {
   emoji: '🌀',
   color: '#7c5cff',
   tagline: 'Fais descendre la balle',
-  howto: 'Glisse le doigt vers la gauche ou la droite pour faire tourner la tour.\nAmène un trou sous la balle pour descendre. Évite les zones rouges !\nTraverse trois étages d’affilée sans rebondir : la balle devient une boule de feu et brise l’étage suivant.\nAtteins le bas de la tour pour gagner.',
+  howto: "Glisse le doigt vers la gauche ou la droite pour faire tourner la tour.\nAmène un trou sous la balle pour descendre. Évite les zones rouges !\nTraverse trois étages d'affilée sans rebondir : la balle devient une boule de feu et brise l'étage suivant.\nAtteins le bas de la tour pour gagner.",
   keys: ['Glisser : tourner la tour', 'Flèches gauche / droite : tourner'],
   score: { label: 'Meilleur score', better: 'high', always: true, fmt: (v) => `${v} pt${v > 1 ? 's' : ''}` },
   difficulties: [
@@ -106,7 +106,7 @@ export default {
 
     const scoreEl = h('strong', { text: '0' });
     const floorEl = h('strong', { text: '' });
-    const canvas = h('canvas', { class: 'arc-canvas', tabindex: '0', role: 'img', 'aria-label': 'Tour de l’hélice : glisse ou utilise les flèches pour la faire tourner' });
+    const canvas = h('canvas', { class: 'arc-canvas', tabindex: '0', role: 'img', 'aria-label': "Tour de l'hélice : glisse ou utilise les flèches pour la faire tourner" });
     root.append(h('div', { class: 'arc' },
       h('div', { class: 'hud' },
         h('div', { class: 'hud-item' }, h('span', { text: 'Score' }), scoreEl),

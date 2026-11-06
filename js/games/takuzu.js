@@ -143,9 +143,9 @@ export default {
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
     { id: 'mini', label: 'Mini 6×6', desc: 'Pour comprendre les règles' },
-    { id: 'easy', label: 'Facile 8×8', desc: 'Beaucoup d’indices' },
+    { id: 'easy', label: 'Facile 8×8', desc: "Beaucoup d'indices" },
     { id: 'normal', label: 'Normal 10×10', desc: 'Le format classique' },
-    { id: 'hard', label: 'Difficile 12×12', desc: 'Peu d’indices' },
+    { id: 'hard', label: 'Difficile 12×12', desc: "Peu d'indices" },
   ],
 
   create(rng, diff) {

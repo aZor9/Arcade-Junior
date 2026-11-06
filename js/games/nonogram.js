@@ -99,7 +99,7 @@ export default {
   emoji: '🖼️',
   color: '#5ee2b4',
   tagline: 'Dessine grâce aux indices',
-  howto: 'Les chiffres indiquent la longueur des blocs de cases pleines, dans l’ordre, pour chaque ligne et chaque colonne.\nTouche (ou glisse) pour noircir. Le bouton ✖ passe en mode « case vide » pour marquer ce que tu sais.\nUn indice devient clair quand sa ligne est correcte.\nChaque grille se résout par logique, sans deviner.',
+  howto: "Les chiffres indiquent la longueur des blocs de cases pleines, dans l'ordre, pour chaque ligne et chaque colonne.\nTouche (ou glisse) pour noircir. Le bouton ✖ passe en mode « case vide » pour marquer ce que tu sais.\nUn indice devient clair quand sa ligne est correcte.\nChaque grille se résout par logique, sans deviner.",
   keys: ['Clic ou glisser : noircir', 'Clic droit : marquer une case vide', 'X : changer de mode'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [

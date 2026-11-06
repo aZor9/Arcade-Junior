@@ -137,7 +137,7 @@ ok('takuzu : solution unique, valide, et fautes détectées', () => {
   assert.ok(takuzuErrors(triple, 6).has(0), 'un triplé est une faute');
   const duo = Int8Array.from(Array(36).fill(0));
   duo[0] = duo[1] = 1;
-  assert.ok(propagate(duo, 6) && duo[2] === 2, 'deux identiques de suite : le suivant est l’autre chiffre');
+  assert.ok(propagate(duo, 6) && duo[2] === 2, "deux identiques de suite : le suivant est l'autre chiffre");
 });
 
 ok('hanoï : règles de déplacement et minimum', () => {
@@ -239,7 +239,7 @@ ok('nonogram : solution unique (vérifiée par force brute en 5×5) et résolue 
   }
 });
 
-ok('puissance 4 : alignements, victoire immédiate, blocage, force de l’IA', () => {
+ok("puissance 4 : alignements, victoire immédiate, blocage, force de l'IA", () => {
   const b = Array(c4W * c4H).fill(0);
   [0, 1, 2].forEach((c) => c4Drop(b, c, 1));
   const r = c4Drop(b, 3, 1);
@@ -370,7 +370,7 @@ ok('hélice : traverser, rebondir, perdre sur le rouge, boule de feu, gagner en 
   assert.ok(b.ev.filter((e) => e === 'bounce').length >= 3 && b.s.floor === 0, 'étage plein : rebonds');
   assert.ok(run([{ gap: [front + 2, 0.4], reds: [[front - 0.4, 0.8]] }], 0, 4).ev.includes('lose'), 'zone rouge : défaite');
   const fire = run([open(), open(), open(), { gap: [front + 2, 0.3], reds: [[front - 0.4, 0.8]] }, shut()], 0, 4);
-  assert.ok(fire.ev.includes('smash') && !fire.ev.includes('lose'), 'boule de feu : l’étage rouge est brisé');
+  assert.ok(fire.ev.includes('smash') && !fire.ev.includes('lose'), "boule de feu : l'étage rouge est brisé");
   assert.equal(helixSeg({ gap: [1, 1], reds: [[3, 0.5]] }, 1.5), 'gap');
   assert.equal(helixSeg({ gap: [1, 1], reds: [[3, 0.5]] }, 3.2), 'red');
   assert.equal(helixSeg({ gap: [1, 1], reds: [[3, 0.5]] }, 5), 'solid');
@@ -393,7 +393,7 @@ ok('pile : coupe, parfait, raté, rebond sur les bords, agrandissement après tr
   const st = ALL_GAMES.find((g) => g.id === 'stack').create(createRng(1), 'normal');
   st.cur.x = 0.3; stackPlace(st);                     // coupe : largeur 0,5
   for (let k = 0; k < 3; k++) { st.cur.x = st.blocks.at(-1).x; stackPlace(st); }
-  assert.ok(st.blocks.at(-1).w > 0.5 + 1e-9, 'trois parfaits : le bloc s’élargit');
+  assert.ok(st.blocks.at(-1).w > 0.5 + 1e-9, "trois parfaits : le bloc s'élargit");
   assert.equal(st.score, 4);
 });
 
@@ -409,7 +409,7 @@ ok('futoshiki : solution unique, signes justes, fautes détectées', () => {
       st.puzzle.forEach((v, i) => { if (v) assert.equal(v, st.solution[i]); });
       for (const { a, b, lt } of st.ineq) assert.equal(st.solution[a] < st.solution[b], lt, 'signe tiré de la solution');
       const f = faultsFU(st.solution, st.n, st.ineq);
-      assert.equal(f.bad.size + f.badSigns.size, 0, 'la solution n’a aucune faute');
+      assert.equal(f.bad.size + f.badSigns.size, 0, "la solution n'a aucune faute");
     }
   }
   const ineq = [{ a: 0, b: 1, lt: true }];
@@ -443,7 +443,7 @@ ok('catégories : chaque jeu en a une, et chaque catégorie a des jeux', () => {
   for (const c of CATEGORIES) assert.ok(ALL_GAMES.some((g) => g.category === c.id), `${c.id} vide`);
 });
 
-ok('reversi : coups de départ, retournements, l’ordinateur joue un coup légal', () => {
+ok("reversi : coups de départ, retournements, l'ordinateur joue un coup légal", () => {
   const b = rvStart();
   assert.deepEqual(rvLegal(b, 1).sort((x, y) => x - y), [19, 26, 37, 44]);
   assert.deepEqual(rvPlay(b, 19, 1), [27]);

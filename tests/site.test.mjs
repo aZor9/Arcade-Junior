@@ -16,7 +16,7 @@ ok('pages attendues présentes (accueil, à propos, plan du site, confidentialit
   for (const p of ['index.html', 'about.html', 'plan.html', 'privacy.html', 'legal.html']) assert.ok(pages.includes(p), p);
 });
 
-ok('bases d’accessibilité de chaque page : langue, titre, un seul h1, un seul main, navigation nommée, zoom autorisé', () => {
+ok("bases d'accessibilité de chaque page : langue, titre, un seul h1, un seul main, navigation nommée, zoom autorisé", () => {
   for (const p of pages) {
     const html = read(p);
     assert.match(html, /<html lang="fr"/, `${p} : langue`);

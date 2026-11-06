@@ -110,15 +110,15 @@ export default {
   name: 'Gratte-ciel',
   emoji: '🏙️',
   color: '#5aa9e6',
-  tagline: 'Combien d’immeubles vois-tu ?',
-  howto: 'Chaque case est un immeuble de hauteur 1 à N : chaque hauteur apparaît une seule fois par ligne et par colonne.\nLes nombres au bord indiquent combien d’immeubles on voit depuis ce côté : un immeuble plus haut cache ceux qui sont plus petits derrière lui.\nTouche une case puis une hauteur. Un indice devient clair quand sa rangée est juste, rouge quand elle est fausse.',
+  tagline: "Combien d'immeubles vois-tu ?",
+  howto: "Chaque case est un immeuble de hauteur 1 à N : chaque hauteur apparaît une seule fois par ligne et par colonne.\nLes nombres au bord indiquent combien d'immeubles on voit depuis ce côté : un immeuble plus haut cache ceux qui sont plus petits derrière lui.\nTouche une case puis une hauteur. Un indice devient clair quand sa rangée est juste, rouge quand elle est fausse.",
   keys: ['Chiffres : hauteur de la case choisie', 'Flèches : changer de case', 'Retour arrière ou 0 : effacer'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [
-    { id: 'easy', label: 'Facile 4×4', desc: 'Beaucoup d’indices' },
+    { id: 'easy', label: 'Facile 4×4', desc: "Beaucoup d'indices" },
     { id: 'normal', label: 'Normal 5×5', desc: 'Le classique' },
-    { id: 'hard', label: 'Difficile 6×6', desc: 'Moins d’indices' },
-    { id: 'expert', label: 'Expert 6×6', desc: 'Le strict minimum d’indices' },
+    { id: 'hard', label: 'Difficile 6×6', desc: "Moins d'indices" },
+    { id: 'expert', label: 'Expert 6×6', desc: "Le strict minimum d'indices" },
   ],
 
   create(rng, diff) {
