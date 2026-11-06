@@ -8,6 +8,7 @@ const read = (f) => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g,
 const walk = (d) => fs.readdirSync(path.join(root, d), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(`${d}/${e.name}`) : [`${d}/${e.name}`]));
 
 const { GAMES } = await import('../js/games/index.js');
+const { GUIDES } = await import('../js/guides.js');
 const pages = fs.readdirSync(root).filter((f) => f.endsWith('.html'));
 let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log('ok -', name); };
@@ -75,6 +76,14 @@ ok('le service worker met en cache tous les fichiers du site', () => {
   const files = [...pages, 'manifest.webmanifest', ...walk('css'), ...walk('js'), ...walk('icons')];
   for (const f of files) assert.ok(list.has(f), `sw.js : ${f} absent du cache`);
   for (const f of list) if (f !== './') assert.ok(fs.existsSync(path.join(root, f)), `sw.js : ${f} n'existe pas`);
+});
+
+ok('« Comment jouer ? » : chaque explication vise un jeu existant, avec des exemples bien formés', () => {
+  for (const [id, steps] of Object.entries(GUIDES)) {
+    assert.ok(GAMES.some((g) => g.id === id), `guides.js : jeu ${id} inconnu`);
+    assert.ok(steps.length && steps.every((s) => s.text), `guides.js : ${id} sans texte`);
+    for (const s of steps) if (s.grid) assert.equal(new Set(s.grid.map((r) => r.split(' ').length)).size, 1, `guides.js : ${id}, lignes de longueurs différentes`);
+  }
 });
 
 ok('le déploiement publie toutes les pages et les dossiers du site', () => {

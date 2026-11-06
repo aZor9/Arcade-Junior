@@ -111,7 +111,7 @@ export default {
   emoji: '🏙️',
   color: '#5aa9e6',
   tagline: "Combien d'immeubles vois-tu ?",
-  howto: "Chaque case est un immeuble de hauteur 1 à N : chaque hauteur apparaît une seule fois par ligne et par colonne.\nLes nombres au bord indiquent combien d'immeubles on voit depuis ce côté : un immeuble plus haut cache ceux qui sont plus petits derrière lui.\nTouche une case puis une hauteur. Un indice devient clair quand sa rangée est juste, rouge quand elle est fausse.",
+  howto: "Chaque case est un immeuble de hauteur 1 à N : chaque hauteur apparaît une seule fois par ligne et par colonne.\nLes nombres au bord indiquent combien d'immeubles on voit depuis ce côté : un immeuble plus haut cache ceux qui sont plus petits derrière lui.\nTouche une case puis une hauteur. Un indice se grise quand sa rangée est juste, et passe en rouge quand elle est fausse.",
   keys: ['Chiffres : hauteur de la case choisie', 'Flèches : changer de case', 'Retour arrière ou 0 : effacer'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [

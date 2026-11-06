@@ -154,8 +154,8 @@ export default {
   name: 'Cages',
   emoji: '➗',
   color: '#c77dff',
-  tagline: 'Calcul et carré latin',
-  howto: "Remplis la grille : chaque chiffre apparaît une seule fois par ligne et par colonne.\nLes traits épais délimitent des cages. Avec ses chiffres, chaque cage doit donner le résultat indiqué dans son coin, avec l'opération indiquée (pour − et ÷, le plus grand d'abord).\nUne cage d'une seule case donne directement son chiffre. Chaque grille a une solution unique.",
+  tagline: 'Retrouve les chiffres de chaque cage',
+  howto: "Remplis la grille : chaque chiffre apparaît une seule fois par ligne et par colonne.\nLes traits épais délimitent des cages. Avec ses chiffres, chaque cage doit donner le résultat indiqué dans son coin : « 6× » veut dire que ses chiffres multipliés font 6 (pour − et ÷, on part du plus grand).\nUne cage d'une seule case donne directement son chiffre. Chaque grille a une solution unique.",
   keys: ['Chiffres : remplir la case choisie', 'Flèches : changer de case', 'Retour arrière ou 0 : effacer'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [

@@ -4,6 +4,7 @@ import { GAMES, ALL_GAMES, LAB_GAMES, CATEGORIES, getGame } from './games/index.
 import { createRng, newSeed, newId } from './rng.js';
 import { starIcon } from './icons.js';
 import { doodle } from './doodles.js';
+import { GUIDES, guideView } from './guides.js';
 import { useEmojiImages } from './emoji.js';
 
 const root = document.getElementById('app');
@@ -63,12 +64,21 @@ async function startGame(gameId, diffId) {
   location.hash = `#/jeu/${game.id}/${session.id}`;
 }
 
+// Bouton « Comment jouer ? » : uniquement pour les jeux qui ont une explication détaillée.
+const guideButton = (game) => (GUIDES[game.id]
+  ? h('button', {
+    type: 'button', class: 'btn btn-ghost btn-small guide-btn', text: 'Comment jouer ?',
+    onclick: () => dialog({ title: `Comment jouer : ${game.name}`, body: guideView(game.id), actions: [{ label: 'Compris', value: true, kind: 'primary' }] }),
+  })
+  : null);
+
 async function chooseDifficulty(game) {
   const choice = await dialog({
     title: game.name,
     actions: [{ label: 'Fermer', value: null, kind: 'ghost' }],
     body: (close) => h('div', null,
       howtoList(game.howto),
+      guideButton(game),
       h('div', { class: 'choices' },
         game.difficulties.map((d) => h('button', { type: 'button', class: 'choice', vars: gameStyle(game), onclick: () => close(d.id) },
           h('strong', { text: d.label }), h('span', { text: d.desc }))),
@@ -294,7 +304,7 @@ function playView(gameId, sid) {
   const record = (store.getProfile().stats[game.id] || { best: {} }).best[session.diff];
   const fmtScore = game.score.fmt || String;
   const side = h('aside', { class: 'side', vars: gameStyle(game), 'aria-label': 'Aide et actions' },
-    h('section', { class: 'side-card' }, h('h2', { text: 'Règles' }), howtoList(game.howto)),
+    h('section', { class: 'side-card' }, h('h2', { text: 'Règles' }), howtoList(game.howto), guideButton(game)),
     game.keys ? h('section', { class: 'side-card' }, h('h2', { text: 'Clavier et souris' }), h('ul', { class: 'howto' }, game.keys.map((k) => h('li', { text: k })))) : null,
     h('section', { class: 'side-card' },
       h('h2', { text: 'Ton record' }),
@@ -323,6 +333,7 @@ function playView(gameId, sid) {
             actions: [{ label: 'Fermer', value: null }],
             body: (close) => h('div', null,
               howtoList(game.howto),
+              guideButton(game),
               h('div', { class: 'choices' },
                 h('button', { type: 'button', class: 'choice', onclick: () => close('new') }, h('strong', { text: 'Nouvelle partie' }), h('span', { text: 'Même niveau, nouvelle grille. Celle-ci reste en cours.' })),
                 finished ? null : h('button', { type: 'button', class: 'choice choice-danger', onclick: () => close('abandon') }, h('strong', { text: 'Abandonner' }), h('span', { text: 'Supprime la partie sans toucher aux statistiques.' })))),

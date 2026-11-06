@@ -71,7 +71,7 @@ export default {
   emoji: '🔟',
   color: '#2f7bff',
   tagline: 'Chaque chiffre une seule fois',
-  howto: "Remplis la grille pour que chaque ligne, chaque colonne et chaque bloc contienne une seule fois chaque chiffre.\nTouche une case vide puis un chiffre. Les doublons s'affichent en rouge.\nMode notes ✏️ : note au crayon les chiffres possibles. Un chiffre posé s'efface des notes voisines.\nChaque grille a une solution unique.",
+  howto: "Remplis la grille pour que chaque ligne, chaque colonne et chaque bloc (les zones aux traits épais) contienne une seule fois chaque chiffre.\nTouche une case vide puis un chiffre. Les doublons s'affichent en rouge.\nMode notes ✏️ : note au crayon les chiffres possibles. Un chiffre posé s'efface des notes voisines.\nChaque grille a une solution unique.",
   keys: ['Chiffres : remplir ou noter', 'N : mode notes', 'Flèches : changer de case', 'Retour arrière : effacer'],
   score: { label: 'Meilleur temps', better: 'low', fmt: (v) => `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}` },
   difficulties: [

@@ -115,6 +115,7 @@ js/storage.js         localStorage : parties, profil, quota, export/import
 js/ui.js              Aides DOM, toasts, boîtes de dialogue (aucun innerHTML)
 js/rng.js             PRNG à graine
 js/games/*.js         Un fichier par jeu + index.js (jeux publiés et laboratoire)
+js/guides.js          Popups « Comment jouer ? » avec exemples (facultatif, pour les jeux où la règle ne suffit pas)
 js/doodles.js         Croquis « à la main » de chaque jeu (ajouter un dessin pour tout nouveau jeu, sinon son emoji sert de repli)
 js/emoji.js           Remplace les emojis du système par les images de icons/emoji/
 js/games/shapes.js    Formes associées aux couleurs (jeux jouables en cas de daltonisme)

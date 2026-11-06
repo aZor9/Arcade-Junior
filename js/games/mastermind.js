@@ -23,7 +23,7 @@ export default {
   emoji: '🎯',
   color: '#6a4cff',
   tagline: 'Devine le code secret',
-  howto: "Un code de couleurs est caché. Une couleur peut apparaître plusieurs fois.\nTouche les couleurs pour composer ta combinaison, puis valide.\nPastille noire : bonne couleur au bon endroit.\nPastille blanche : bonne couleur au mauvais endroit.\nChaque couleur a sa propre forme, pour t'aider si tu confonds certaines teintes.",
+  howto: "Un code de couleurs est caché. Une couleur peut apparaître plusieurs fois.\nTouche les couleurs pour composer ta combinaison, puis valide.\nPastille noire : bonne couleur au bon endroit.\nPastille blanche : bonne couleur au mauvais endroit.\nLes noires sont affichées d'abord : la place d'une pastille ne désigne aucun pion.\nChaque couleur a sa propre forme, pour t'aider si tu confonds certaines teintes.",
   score: { label: "Moins d'essais", better: 'low', fmt: (v) => `${v} essai${v > 1 ? 's' : ''}` },
   difficulties: [
     { id: 'easy', label: 'Facile', desc: '4 pions, 5 couleurs, 12 essais' },

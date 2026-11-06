@@ -604,6 +604,19 @@ dialog.sheet::backdrop { background: rgba(15, 22, 40, 0.55); }
 .howto { margin: 0 0 4px; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
 .howto li { padding-left: 22px; position: relative; }
 .howto li::before { content: "•"; position: absolute; left: 6px; color: var(--ink); font-weight: 800; }
+.guide-btn { margin-top: 10px; }
+.guide { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.guide-step p { margin: 0; }
+.guide-fig { display: grid; grid-template-columns: repeat(var(--cols), 34px); width: fit-content; max-width: 100%; margin-top: 8px; padding: 0 1px 1px 0; }
+.guide-cell { display: grid; place-items: center; height: 34px; margin: 0 -1px -1px 0; border: 1px solid var(--line); background: var(--surface); font-weight: 700; }
+.gc-clue { border-color: transparent; background: transparent; color: var(--muted); }
+.gc-key { background: var(--mark); }
+.gc-black { background: var(--ink); }
+.gc-hidden { background: var(--pen); }
+.gc-cross { color: var(--muted); }
+.gc-ring::after { content: ""; position: absolute; width: 26px; height: 26px; border: 2px solid var(--pen); border-radius: 50%; }
+.gc-ring { position: relative; }
+.guide-list { margin: 6px 0 0; padding-left: 1.1rem; font-variant-numeric: tabular-nums; }
 .result-line { font-family: var(--title); font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
 .result-score { font-size: 2.2rem; font-weight: 800; line-height: 1.1; margin-bottom: 4px; }
 .result-best { font-weight: 800; color: var(--good); }
